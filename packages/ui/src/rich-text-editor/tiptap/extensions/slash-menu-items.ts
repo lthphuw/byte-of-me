@@ -33,10 +33,8 @@ export type CommandGroupType = {
 };
 
 /**
- * The slash menu's entries, built from the app's text rather than held as a
- * constant: every group name, title and description is a label (see
- * `EditorLabels`). `keywords` are search aliases that are never drawn, so they
- * stay as written.
+ * The slash menu's entries, built from the app's text (every group, title and description
+ * is a label). `keywords` are search aliases that are never drawn, so they stay as written.
  */
 export const buildGroups = (labels: EditorLabels): CommandGroupType[] => [
   {

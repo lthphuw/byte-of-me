@@ -30,10 +30,8 @@ type ShouldShowProps = Parameters<
 >[0];
 
 /**
- * Memoised: the host re-renders for outline, preview and raw-mode state, and each
- * one would rebuild ~20 cmdk items whether or not the menu is open. Safe to skip —
- * the props are the editor and the labels, and neither changes between those
- * renders; what shows is own state, set from `shouldShow`.
+ * Memoised: the host re-renders for outline, preview and raw mode, each rebuilding ~20 cmdk
+ * items. Safe to skip: the props (editor, labels) do not change then; what shows is own state.
  */
 export const TipTapFloatingMenu = memo(function TipTapFloatingMenu({
   editor,

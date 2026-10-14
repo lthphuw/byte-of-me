@@ -1,10 +1,7 @@
 /**
- * When a paste is Markdown source, not text.
- *
- * ProseMirror reads `text/plain` as paragraphs, so `## Title` pasted from an editor or a
- * chat arrived as the characters `## Title`. Only the inline marks (`**bold**`, `` `code` ``)
- * converted, because the mark extensions carry paste rules. A heading, a list, a table or a
- * fence has none, and the author had to retype each one.
+ * When a paste is Markdown source, not text: ProseMirror reads `text/plain` as paragraphs, so
+ * `## Title` arrived literally and only inline marks (which have paste rules) converted;
+ * headings, lists, tables and fences have none.
  */
 
 /**

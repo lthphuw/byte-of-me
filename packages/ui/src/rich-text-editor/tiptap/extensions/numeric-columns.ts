@@ -1,47 +1,25 @@
 import type { JSONContent } from '@tiptap/core';
 
 /**
- * Works out which table columns hold nothing but numbers, so the styles can
- * treat them as numbers: right-aligned, never wrapped, and only as wide as a
- * figure needs.
- *
- * Notion can do this because a database column has a declared type. A table in
- * a document has no such metadata, so the type is inferred here instead, from
- * the cells themselves. It is what turns an eleven-column benchmark table from
- * eleven equal-width columns of wrapped text into a row label and ten tight
- * columns of figures.
- *
- * The rule lives here once and is applied twice — as a render pass over the
- * stored JSON ({@link markNumericTableColumns}, for the published page, the
- * preview and the print views) and as editor decorations
- * (`numeric-columns-plugin.ts`). Two implementations would be free to disagree
- * about the same table, and the author would watch its alignment change when
- * they hit preview.
- *
- * Never stored, in either case: it is derived from the content, so a stored
- * copy would go stale the moment a cell is edited.
+ * Infers which table columns hold only numbers (right-aligned, unwrapped, tight). One rule,
+ * applied twice: `markNumericTableColumns` over stored JSON (published, preview, print) and
+ * editor decorations (`numeric-columns-plugin.ts`). Never stored: derived from the content.
  */
 
 /** Values that neither prove nor disprove a numeric column. */
 const PLACEHOLDERS = new Set(['', '-', '–', '—', 'n/a', 'na', '?', '.']);
 
 /**
- * A figure, with the decoration such tables actually carry: a leading
- * approximation or comparison sign, thousands separators, and a trailing unit.
- * Deliberately strict about the shape — one wrong match turns a column of
- * prose right-aligned, which looks like a bug rather than a style.
+ * A figure with the decoration such tables carry: a leading sign, thousands separators,
+ * a trailing unit. Deliberately strict: one wrong match right-aligns a column of prose.
  */
 const NUMERIC =
   /^[~<>≈±+-]?\s*\d[\d,_ ]*(\.\d+)?\s*(%|×|x|ms|s|h|M|K|B|G|T|GB|MB|FLOPs|GFLOPs|fps|FPS)?$/i;
 
 /**
- * How much of a cell the two halves of the rule need, split deliberately.
- *
- * Placement needs only the spans. Reading a cell's text is the expensive part
- * — on a ProseMirror node it walks the subtree — and the editor calls
- * `placeCells` on every rebuild while its detection result is cached, so
- * bundling the text into one shape made every keystroke pay for text nobody
- * read. Measured on a thirty-table document: 1.06ms of the 2.42ms placement.
+ * Spans and text are split on purpose: placement needs only spans, and reading text walks
+ * the subtree. Bundled, every keystroke paid for unread text: 1.06ms of 2.42ms placement
+ * on a thirty-table document.
  */
 export interface CellSpans {
   colspan: number;
@@ -99,10 +77,8 @@ export function placeCells<T>(
 }
 
 /**
- * The columns of a placed table that hold only figures.
- *
- * Column 0 is never one of them: it is the row label — and the column the
- * styles pin — so a label that happens to be a number is still a label.
+ * The columns of a placed table that hold only figures. Column 0 is never one: it is
+ * the row label (the column the styles pin), so a numeric label is still a label.
  */
 export function findNumericColumns<T>(
   placed: PlacedCell<T>[][],

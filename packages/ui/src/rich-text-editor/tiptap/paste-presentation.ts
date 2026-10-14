@@ -1,17 +1,7 @@
 /**
- * Strip a pasted document's PRESENTATION before ProseMirror parses it, keeping
- * its structure and semantics.
- *
- * Tiptap keeps whatever an extension claims, and this editor registers
- * `TextStyle` (matches ANY `<span style>`) + `Color` (reads
- * `element.style.color` off it), so one `<span style="color:#0000ee">` in a
- * pasted table becomes a real `textStyle` mark and the source's palette
- * outlives the paste — invisible on a dark note when it was picked against
- * white. `Highlight` takes a `<mark>`'s `background-color` the same way, cells
- * read `<colgroup>` widths and `align`, and `Link` keeps the source's `class`.
- *
- * Before the parse, not after: once a mark is in the document it is
- * indistinguishable from one the author applied on purpose.
+ * Strip a pasted document's PRESENTATION before ProseMirror parses it, keeping structure.
+ * `TextStyle` + `Color` turn any `<span style="color:#0000ee">` into a real mark, invisible on
+ * a dark note, and once parsed it is indistinguishable from one the author applied.
  */
 
 /** Attributes that only ever say how the source document looked. */
@@ -52,10 +42,8 @@ function unwrap(element: Element): void {
 }
 
 /**
- * A wrapper that exists only to carry presentation: `<font>`, and Google Docs'
- * `<b style="font-weight:normal">` around the whole fragment — which would turn
- * an entire pasted document BOLD once the style is stripped, since the tag
- * alone is what ProseMirror parses.
+ * A wrapper that only carries presentation: `<font>`, and Google Docs' `<b style="font-weight:
+ * normal">` around the fragment, which turns the whole paste BOLD once the style is stripped.
  */
 function isPresentationWrapper(tag: string, style: string): boolean {
   if (tag === 'font') return true;

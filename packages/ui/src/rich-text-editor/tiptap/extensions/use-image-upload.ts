@@ -4,10 +4,9 @@ interface UseImageUploadProps {
   /** Receives the image's address, and the file it came from. */
   onUpload?: (url: string, file: File) => void;
   /**
-   * The real upload (the ImageExtension's `uploadFn`). Without one the file's
-   * local `blob:` URL is handed to `onUpload`, and the image node's own
-   * auto-upload effect takes it from there: it uploads the file, or removes the
-   * node if it cannot, so the receiver must not revoke that URL.
+   * The real upload (the ImageExtension's `uploadFn`). Without one the `blob:` URL goes to
+   * `onUpload` and the image node's auto-upload effect uploads it (or removes the node), so
+   * the receiver must not revoke it.
    */
   uploadFn?: (file: File) => Promise<string>;
   /**

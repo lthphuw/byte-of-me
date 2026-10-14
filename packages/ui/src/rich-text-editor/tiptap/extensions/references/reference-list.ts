@@ -18,11 +18,8 @@ declare module '@tiptap/core' {
       /** Adds a new entry, or replaces the existing one with the same id. */
       upsertReference: (item: ReferenceItem) => ReturnType;
       /**
-       * Upserts a whole batch — what a BibTeX paste produces — in one step.
-       *
-       * Not a chain of `upsertReference`: each of those is its own transaction,
-       * so importing twelve entries would cost twelve undo steps, and the first
-       * would have to create the list node the other eleven then read back.
+       * Upserts a whole batch (a BibTeX paste) in one step: a chain of `upsertReference`
+       * would cost one undo step per entry, and the first would create the list node.
        */
       importReferences: (items: ReferenceItem[]) => ReturnType;
       /** Deletes an entry along with every marker that points at it. */
@@ -34,17 +31,9 @@ declare module '@tiptap/core' {
 }
 
 /**
- * The document's bibliography node, if it has one.
- *
- * `doc.forEach` over the top-level children, not `doc.descendants`: the node is
- * always a direct child of the doc — every command below inserts it at
- * `doc.content.size` — so a deep walk can only ever confirm what the shallow one
- * already knows. It was one, and it cost: `descendants` treats a falsy return as
- * "no opinion" and recurses anyway, and the previous callback returned `!found`,
- * i.e. `true` for every non-match. So a note with thirty tables walked all 3,738
- * cells (and their paragraphs, and their text nodes) looking for a top-level
- * node, on every `upsertReference` / `removeReference` / `setReferencesTitle`,
- * and on every one of the twelve lookups a BibTeX import used to make.
+ * The document's bibliography node, if any. Top-level `doc.forEach`, not `descendants`: the
+ * node is always a direct child (commands insert it at `doc.content.size`), and a deep walk
+ * covered all 3,738 cells of a thirty-table note on every command.
  */
 function findReferenceList(
   doc: ProseMirrorNode

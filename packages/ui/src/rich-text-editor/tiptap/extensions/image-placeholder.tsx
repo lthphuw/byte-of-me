@@ -116,10 +116,8 @@ function ImagePlaceholderComponent(
 ) {
   const { editor, selected, labels } = props;
 
-  // Whether this editor has a real uploader (read off the live `image`
-  // extension). Without one a picked file would stay a local `blob:` URL that
-  // only this tab can resolve, so the upload tab is not offered: the URL tab
-  // needs no uploader and stays.
+  // Whether this editor has a real uploader (read off the live `image` extension).
+  // Without one a picked file stays a `blob:` URL only this tab resolves: no upload tab.
   const hasUploader = Boolean(imageUploadFn(editor));
 
   const [isExpanded, setIsExpanded] = useState(false);
@@ -152,12 +150,7 @@ function ImagePlaceholderComponent(
     },
   });
 
-  /**
-   * One picker for both shapes: one file becomes an image, several become a
-   * row of images side by side. There is no separate "insert a row" button
-   * because there is no separate decision — the author picks the files they
-   * want next to each other, and the count says the rest.
-   */
+  /** One picker for both shapes: one file becomes an image, several a row side by side. */
   const insertFiles = (files: File[]) => {
     if (files.length === 0) return;
     if (files.length === 1) {
@@ -352,10 +345,8 @@ function ImagePlaceholderComponent(
                 <TabsContent value="url">{urlTabContent}</TabsContent>
               </Tabs>
             ) : (
-              // No uploader configured: the Upload tab is not offered at
-              // all — see `hasUploader` above for why — so there is only one
-              // way in, and a lone tab is not a tab. The URL form renders
-              // directly.
+              // No uploader: the Upload tab is not offered (see `hasUploader`), and a
+              // lone tab is not a tab, so the URL form renders directly.
               urlTabContent
             )}
           </div>

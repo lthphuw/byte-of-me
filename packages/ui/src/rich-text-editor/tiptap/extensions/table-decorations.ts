@@ -3,15 +3,9 @@ import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { type Decoration, DecorationSet } from '@tiptap/pm/view';
 
 /**
- * The machinery both table decoration passes run on — numeric columns
- * (`numeric-columns-plugin.ts`) and header scopes (`header-scopes-plugin.ts`).
- *
- * Both derive an attribute from the SHAPE of a table rather than storing it,
- * both therefore have to stay correct across every edit, and both have exactly
- * one interesting property: they must not walk the document's cells on every
- * keystroke. That property is subtle enough to be worth one implementation
- * rather than two — the second copy is where a mapped-forward decoration
- * quietly stops matching a rebuild.
+ * Machinery shared by the numeric-column and header-scope passes: derive an attribute
+ * from table shape without walking every cell per keystroke. One copy, so a mapped-forward
+ * decoration cannot drift from a rebuild.
  */
 
 interface TableDecorations {
@@ -48,33 +42,9 @@ function tablesIn(doc: ProseMirrorNode) {
 }
 
 /**
- * Wraps a per-table decoration rule in the incremental bookkeeping that keeps
- * it off the keystroke path.
- *
- * Rebuilding the whole set on every `docChanged` measured 9.6ms per keystroke
- * on a thirty-table survey note — over half a frame, and most of it spent in
- * `DecorationSet.create` re-sorting ten thousand decorations that had not
- * moved relative to anything. Mapping the existing set forward costs almost
- * nothing, and an edit touches one table.
- *
- * What makes that safe is that ProseMirror nodes are persistent: a transaction
- * that edits one table leaves every other table in the document as the very
- * same object, so node identity is a sound answer to "did this table change".
- * A table that IS the same object had its decorations carried to the right
- * places by the mapping along with everything else; a table that is not gets
- * its range cleared and rebuilt, which is what makes a rule whose answer
- * depends on position — a header row deleted, so the row beneath it becomes
- * the header row — come out right rather than merely relocated.
- *
- * Two passes therefore mean two `tablesIn` walks per transaction, and that is
- * the cost worth stating rather than assuming. Measured on a synthetic
- * thirty-table, 3,630-cell document — the shape of the survey note that
- * motivated all of this — over 200 keystrokes, three runs (2026-08-22,
- * Bun 1.3.10): 0.010–0.013ms for the numeric pass alone, 0.015–0.017ms for
- * both, and inside a table (where one table is genuinely re-derived)
- * 0.141–0.157ms either way, the second pass lost in the noise of the first.
- * The walk itself is 0.006–0.009ms, because it descends into everything EXCEPT
- * a table's interior — which on this document is 98% of its nodes.
+ * Incremental: map the set forward, rebuild only tables whose node object changed. Measured
+ * (30 tables, 3,630 cells, 200 keys, Bun 1.3.10): full rebuild 9.6ms/key vs 0.015ms, 0.15ms
+ * inside a table; the `tablesIn` walk is 0.006-0.009ms, so two passes cost nothing visible.
  */
 export function incrementalTableDecorations(
   decorationsFor: TableDecorationSource

@@ -68,14 +68,8 @@ export const ImageGroup = ImageGroupBase.extend<ImageGroupOptions>({
   },
 
   /**
-   * Sweeps up rows the author emptied.
-   *
-   * The row's content is `image*` because `image+` makes ProseMirror *repair*
-   * a row whose last image was deleted, by inserting an empty image node — see
-   * `image-base.ts`. So the empty row is allowed, and removed here, one
-   * transaction later. That covers every delete path at once (the node's own
-   * menu, Backspace on a selected image, a drag out of the row) rather than
-   * each one separately.
+   * Sweeps up rows the author emptied (`image*` allows them, see `image-base.ts`),
+   * one transaction later, which covers every delete path at once.
    */
   addProseMirrorPlugins() {
     return [

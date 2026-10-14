@@ -3,15 +3,9 @@ import { mergeAttributes, Node } from '@tiptap/core';
 import { CITATION_NAME } from './types';
 
 /**
- * Schema-and-render half of the citation node: name, attributes, parse rules
- * and the HTML it serializes to. Everything `generateHTML` needs — and nothing
- * it doesn't.
- *
- * Kept free of `ReactNodeViewRenderer`, commands and any import that reaches
- * the package barrel, so server components can render stored documents without
- * registering the editor as a client reference (or tripping the barrel's
- * module-init-order cycle). The editable node in `citation.ts` extends this
- * with its node view and commands.
+ * Schema-and-render half of the citation node: attributes, parse rules, HTML. No node views,
+ * commands or barrel imports, so server components render stored docs without registering the
+ * editor as a client reference or hitting the barrel's init-order cycle. `citation.ts` extends it.
  */
 export const CitationBase = Node.create({
   name: CITATION_NAME,

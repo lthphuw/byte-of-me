@@ -15,18 +15,9 @@ import {
 } from './table-decorations';
 
 /**
- * The editor's half of the numeric-column rule — the same rule the render pass
- * applies to published HTML (`numeric-columns.ts`), so a table is aligned the
- * same way while it is being written as it will be once it is read.
- *
- * Decorations rather than an attribute on the node: the alignment is derived
- * from the content, and storing it would mean a document whose cells disagree
- * with their own attribute the moment one is edited. Nothing here reaches the
- * saved document.
- *
- * The bookkeeping that keeps this off the keystroke path — which tables are
- * still covered, what gets rebuilt, what merely gets mapped forward — lives in
- * `table-decorations.ts`, shared with the header-scope pass.
+ * Editor half of the numeric-column rule (render half: `numeric-columns.ts`). Decorations,
+ * not a node attribute, so nothing derived reaches the saved document; the incremental
+ * bookkeeping lives in `table-decorations.ts`.
  */
 
 const spansOf = (cell: ProseMirrorNode): CellSpans => ({
@@ -52,18 +43,9 @@ interface TableColumns {
 }
 
 /**
- * What the rule makes of this table, cached against the table node.
- *
- * ProseMirror nodes are persistent: a transaction that edits one table leaves
- * every other table in the document as the very same object, so keying on node
- * identity means an edit re-reads one table's text rather than all thirty.
- *
- * The PLACEMENT is cached alongside the columns because the two are one piece
- * of work: detection cannot run without placing the cells first, and the caller
- * needs the placement to know which cell it is decorating. Kept apart, a cache
- * MISS placed every cell twice — `placeCells` over a 3,738-cell document is the
- * ~2.4ms measured in `numeric-columns.ts`, so the miss path was paying it
- * twice for one answer.
+ * Cached against the table node (persistent: an edit re-reads one table, not all thirty).
+ * Placement is cached with the columns, since detection and the caller both need it and
+ * placing a 3,738-cell document is ~2.4ms.
  */
 const columnCache = new WeakMap<ProseMirrorNode, TableColumns>();
 

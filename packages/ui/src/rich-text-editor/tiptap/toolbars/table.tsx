@@ -20,10 +20,8 @@ import { cn } from '../../../lib/utils';
 import { useToolbar } from './toolbar-provider';
 
 /**
- * One button, two modes: outside a table it inserts a 3×3 with a header row;
- * inside a table it opens the row/column/delete menu. Keeps the toolbar to a
- * single slot instead of a strip of table buttons that are disabled 95% of
- * the time.
+ * One button, two modes: outside a table it inserts a 3×3 with a header row; inside one it
+ * opens the row/column/delete menu. One toolbar slot, not table buttons disabled most of the time.
  */
 const TableToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, ...props }, ref) => {

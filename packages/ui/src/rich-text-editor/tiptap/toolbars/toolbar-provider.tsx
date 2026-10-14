@@ -17,11 +17,8 @@ type TextAlignment = 'left' | 'center' | 'right' | 'justify';
 type ToggleState = { active: boolean; can: boolean };
 
 /**
- * What the toolbar controls read, as plain values.
- *
- * The editor host no longer re-renders on every transaction, so a control that
- * asks `editor.isActive()` during render would never learn the selection moved.
- * `ToolbarProvider` subscribes once and hands these down instead.
+ * What the toolbar controls read, as plain values. The editor host does not re-render per
+ * transaction, so `editor.isActive()` in render would go stale; `ToolbarProvider` subscribes once.
  */
 export interface ToolbarState {
   /** Keyed by the mark/node name `isActive` takes. */

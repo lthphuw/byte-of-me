@@ -60,10 +60,8 @@ export function normalizeReferenceItems(value: unknown): ReferenceItem[] {
 }
 
 /**
- * IEEE numbering: entries are numbered by the order their first citation
- * marker appears in the text. Entries that are never cited keep their place in
- * the list and are numbered after every cited one, so an author who adds a
- * reference before citing it still sees a stable number.
+ * IEEE numbering: by the order of each entry's first citation marker. Never-cited entries
+ * keep their list order after every cited one, so a reference added before citing is stable.
  */
 function buildNumbering(
   citedIds: string[],
@@ -114,21 +112,9 @@ function readReferencesFromJSON(doc: JSONContent): CitationNumbering {
 }
 
 /**
- * Memoised on the document node itself.
- *
- * Every citation marker in the document subscribes to this through
- * `useEditorState` (see `citation-view.tsx`), and so does the bibliography
- * preview — and `useEditorState` fires on `transaction`, not just `update`. So
- * one keystroke in a document with N citations ran N + 1 full `descendants`
- * walks over the whole document, and so did every arrow key, click and
- * drag-select, which change no text at all.
- *
- * A ProseMirror document node is immutable and is shared by every subscriber
- * within a transaction, which makes it the exact cache key this wants: N + 1
- * walks collapse to one, and a selection-only transaction — same node — walks
- * nothing. A `WeakMap` because the entry must die with the revision it belongs
- * to; a document with an edit history is thousands of nodes, and nothing here
- * knows when one stops being reachable.
+ * Memoised on the immutable doc node (a WeakMap, so entries die with their revision):
+ * `useEditorState` fires every transaction in N citations + the preview, so N + 1 walks
+ * per keystroke or arrow key collapse to one, and a selection-only transaction walks none.
  */
 const numberingCache = new WeakMap<ProseMirrorNode, CitationNumbering>();
 

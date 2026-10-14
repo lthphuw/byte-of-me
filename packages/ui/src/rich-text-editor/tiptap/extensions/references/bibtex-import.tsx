@@ -69,12 +69,8 @@ function PreviewRow({
 }
 
 /**
- * Paste a `.bib` file, get a bibliography.
- *
- * The parse runs on every keystroke rather than behind an "analyse" button:
- * the preview it produces IS the validation, and an author who pasted the
- * wrong thing should see that before committing, not after. Nothing reaches
- * the document until "Add" — the panel is a staging area.
+ * Paste a `.bib` file, get a bibliography. The parse runs per keystroke because the
+ * preview is the validation; nothing reaches the document until "Add".
  */
 export function BibtexImport({
   editor,
@@ -88,10 +84,8 @@ export function BibtexImport({
 
   const { entries, skipped } = React.useMemo(() => parseBibtex(text), [text]);
 
-  // Read once per render rather than through `useEditorState`: this only
-  // decides which rows show an "update" badge, and a stale badge for one
-  // keystroke costs nothing. Subscribing would re-run the parse on every
-  // transaction in the document instead.
+  // Read once per render, not via `useEditorState`: it only decides the "update"
+  // badges (a stale one costs nothing) and subscribing re-renders on every transaction.
   const existingIds = React.useMemo(() => {
     if (!entries.length) return new Set<string>();
     return new Set(

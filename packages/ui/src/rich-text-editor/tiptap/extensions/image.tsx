@@ -145,10 +145,9 @@ function TiptapImage(props: TiptapImageProps) {
         updateAttributes({ src: await uploadFn(file) });
         URL.revokeObjectURL(src);
       } catch (err) {
-        // A failed upload must not leave the node holding its `blob:` src: that
-        // URL resolves only in the tab that minted it, so the author saves a
-        // document whose readers get a broken image. Removing the node is the
-        // honest outcome, and the message carries the reason ("larger than 3 MB").
+        // A failed upload must not leave the node holding its `blob:` src: it resolves only
+        // in the minting tab, so readers would get a broken image. Delete the node; the
+        // toast carries the reason ("larger than 3 MB").
         toast.error(
           err instanceof Error && err.message ? err.message : uploadFailedText
         );

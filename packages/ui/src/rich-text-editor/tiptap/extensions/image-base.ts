@@ -1,14 +1,6 @@
-// Schema-and-render half of the two image nodes: names, attributes, parse
-// rules and the HTML they serialize to. Everything `generateHTML` needs — and
-// nothing it doesn't.
-//
-// Kept free of `ReactNodeViewRenderer`, commands and any import that reaches
-// the package barrel, so `render-extensions.ts` can register these directly
-// instead of re-declaring them. The attribute set used to be written out twice
-// — once here, once in the render schema — with a comment asking the next
-// reader to keep the copies identical; `image.tsx` and `image-group.tsx` now
-// extend these with their node views, so the published page and the editor
-// cannot drift. Same split as `references/citation-base.ts`.
+// Schema-and-render half of the two image nodes: attributes, parse rules, HTML.
+// No node views, commands or barrel imports, so `render-extensions.ts` registers
+// these directly and `image.tsx` / `image-group.tsx` extend them for the editor.
 import { mergeAttributes, Node } from '@tiptap/core';
 import Image from '@tiptap/extension-image';
 
@@ -41,14 +33,8 @@ function ownCaptionText(element: HTMLElement): string {
 }
 
 /**
- * The image node.
- *
- * `caption` is not new — it has been in the attribute set (unused) since the
- * node was written, so every document already in the database carries
- * `caption: ''` or nothing at all, and both mean "no caption". An image
- * without one still renders as the bare `<img>` it always did; only a
- * captioned image grows the `<figure>` wrapper, which is what makes the
- * caption a real `<figcaption>` rather than a styled div.
+ * The image node. `caption: ''` and no caption both mean "none" and render a bare
+ * `<img>`; only a captioned image grows the `<figure>` with a real `<figcaption>`.
  */
 export const ImageBase = Image.extend({
   addAttributes() {
@@ -116,12 +102,9 @@ export const ImageBase = Image.extend({
   },
 
   /**
-   * Markdown has no figure, so the caption is emitted as the italic line
-   * under the image that a reader would write by hand. Lossy in structure and
-   * deliberately not in text: the alternative is `renderMarkdown` dropping the
-   * attribute, and the notes workspace round-trips the whole document through
-   * markdown every time the author toggles raw mode — a caption that vanished
-   * there would vanish from the saved note too.
+   * Markdown has no figure: the caption becomes the italic line under the image.
+   * Notes round-trip through markdown on every raw-mode toggle, so dropping it
+   * here would drop it from the saved note.
    */
   renderMarkdown: (node) => {
     const attrs = node.attrs ?? {};
@@ -137,22 +120,9 @@ export const ImageBase = Image.extend({
 });
 
 /**
- * Two or more images shown side by side, with one caption for the whole row.
- *
- * A separate node rather than an attribute on `image`, because the row is a
- * container: it owns the caption that describes the set, and it is the element
- * `@media print`'s `figure { break-inside: avoid }` keeps on one page. Stored
- * documents are untouched — nothing existing parses as an `imageGroup`, and a
- * document that has never seen one is byte-identical through this schema.
- *
- * `image*`, not `image+`, and the difference is not cosmetic. Measured against
- * this schema with `image+`: deleting the only image of a row — through
- * `deleteSelection` (Backspace on the selected image) or through a plain
- * `tr.delete` — does not remove it. ProseMirror repairs the row to satisfy
- * `image+` by putting a FRESH EMPTY image node in its place, so the author
- * presses delete and is left with a broken image they cannot get rid of.
- * Allowing the empty row and sweeping it up afterwards (the plugin in
- * `image-group.tsx`) is the only version where every delete path works.
+ * A row of images with one caption. `image*`, not `image+`: measured, `image+` makes
+ * ProseMirror refill a deleted last image with an empty one on every delete path;
+ * the plugin in `image-group.tsx` sweeps the emptied row instead.
  */
 export const ImageGroupBase = Node.create({
   name: IMAGE_GROUP_NAME,
@@ -206,11 +176,8 @@ export const ImageGroupBase = Node.create({
   },
 
   /**
-   * The row flattens to its images, one block each, plus the caption line —
-   * see `ImageBase.renderMarkdown`. Markdown cannot express the layout, so it
-   * keeps every image and every word and loses only the arrangement. Without a
-   * renderer at all `@tiptap/markdown` returns `''` for an unknown node type,
-   * which would silently delete the images.
+   * The row flattens to one image per block plus the caption line. Without a
+   * renderer `@tiptap/markdown` returns `''` for an unknown node and the images vanish.
    */
   renderMarkdown: (node, helpers) => {
     const images = helpers.renderChildren(node.content ?? [], '\n\n');

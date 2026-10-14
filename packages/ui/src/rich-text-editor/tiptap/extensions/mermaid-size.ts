@@ -9,12 +9,9 @@ import {
 } from '../../../mermaid-size';
 
 /**
- * Stores the natural size of each mermaid diagram on its code block, so the public page
- * can reserve the diagram's box before the library draws it. Without it the reader sees
- * the source block swap for a diagram of a different height, and the text below jumps.
- *
- * The size is measured by the editor, once a diagram's text has changed, while the author
- * is in the editor. Old posts gain it the next time their author edits a diagram.
+ * Stores each mermaid diagram's natural size on its code block, so the public page reserves
+ * the box before the library draws it. Measured in the editor on a focused doc change, so
+ * old posts gain it on their author's next edit.
  */
 
 /** Diagram text → its `WxH`. Shared by every editor on the page: one render per text. */

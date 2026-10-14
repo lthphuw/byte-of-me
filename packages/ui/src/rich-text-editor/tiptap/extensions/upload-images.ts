@@ -14,12 +14,8 @@ type ImageExtensionOptions = {
 };
 
 /**
- * The image extension's options, read off the live editor.
- *
- * Read there rather than threaded through props: every insert path (the
- * placeholder node, the row's add button, the phone toolbar) sits in a node
- * view or a toolbar, and none of them is rendered by the component that owns
- * the option.
+ * The image extension's options, read off the live editor: every insert path sits in a
+ * node view or toolbar that the component owning the option does not render.
  */
 function imageExtensionOptions(
   editor: Editor
@@ -46,16 +42,9 @@ export function imageUploadFailedText(editor: Editor): string {
 }
 
 /**
- * Uploads a batch and returns only the files that made it.
- *
- * A failed file is reported and skipped rather than aborting the batch —
- * dropping four screenshots and losing all of them because the second was too
- * large is worse than getting three. The report is the part that used to be
- * missing: `uploadSingleMedia` throws with a message naming the file and the
- * limit, and the drop/paste path swallowed it, so an author whose upload was
- * refused saw nothing at all and an image just failed to appear. A refusal with
- * no message of its own shows `uploadFailedText`, already translated by the
- * caller.
+ * Uploads a batch, returning only the files that made it. A failed file toasts its own
+ * message (`uploadSingleMedia` names the file and limit) or `uploadFailedText`, and is
+ * skipped rather than aborting the rest.
  */
 export async function uploadImages(
   files: File[],
@@ -82,11 +71,8 @@ export async function uploadImages(
 }
 
 /**
- * The attributes to insert for a batch of picked files.
- *
- * With no uploader configured the local `blob:` URL is inserted and the image
- * node's own auto-upload effect converts it — the fallback `useImageUpload`
- * has always taken, kept so every insert path behaves the same way.
+ * The attributes to insert for picked files. With no uploader the local `blob:` URL is
+ * inserted and the image node's auto-upload effect converts it, as in `useImageUpload`.
  */
 export async function resolveImages(
   editor: Editor,
@@ -112,13 +98,8 @@ export function imageFilesFrom(files: FileList | null | undefined): File[] {
 }
 
 /**
- * Uploads dropped or pasted files and inserts each as an `image` node, from `at`
- * (where they were dropped) or the selection, one after another.
- *
- * `at` is a position in the document as it was at the drop: an author who types
- * during the upload can have moved it, so it is clamped to the document that is
- * there now. The editor may also be gone by the time an upload returns, in which
- * case nothing is inserted.
+ * Uploads dropped or pasted files and inserts each as an `image` node, from `at` or the
+ * selection. `at` dates from the drop (typing may have moved it), so it is clamped.
  */
 export async function insertImagesAt(
   view: EditorView,

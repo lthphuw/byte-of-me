@@ -1,16 +1,6 @@
-// Server-safe Tiptap schema for rendering stored documents to HTML.
-//
-// NO 'use client' here, and none in anything this file imports — that is the
-// whole point. `RichText` runs `generateHTML` in server components; if it took
-// its schema from `rich-text-editor.tsx` (a client module), the import would
-// register the entire editor as a client reference and ship it to every page
-// that renders rich text. This file mirrors the editor's schema minus the
-// editor-only parts generateHTML never touches: node views, upload plumbing,
-// placeholder text, search & replace.
-//
-// Invariant: every node/mark type the editor can persist must be represented
-// here with the same name and attributes, or `generateHTML` throws and the
-// content falls back to escaped plain text.
+// Server-safe schema for `generateHTML`. No 'use client' here or in any import: one would
+// register the whole editor as a client reference and ship it to every rich-text page.
+// Every node/mark the editor can persist must exist here with the same name and attributes.
 import { type AnyExtension, mergeAttributes, Node } from '@tiptap/core';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import { Color } from '@tiptap/extension-color';
@@ -39,24 +29,14 @@ import { MermaidSize } from './extensions/mermaid-size';
 import { CitationBase } from './extensions/references/citation-base';
 import { ReferenceListBase } from './extensions/references/reference-list-base';
 
-// `common` registers ~37 languages. This module renders on the server only,
-// so the grammars never reach the client bundle — highlight classes are baked
-// into the HTML. Unknown languages (e.g. mermaid) fall through as plain text
-// with their `language-*` class intact, which the mermaid enhancer keys on.
+// `common` registers ~37 languages; this renders on the server, so no grammar reaches the
+// client bundle. Unknown languages (mermaid) stay plain text with `language-*` intact,
+// which `MermaidBlocks` keys on.
 const lowlight = createLowlight(common);
 
 /**
- * The one attribute `markNumericTableColumns` sets: this cell sits in a column
- * of figures, so the styles should right-align it and stop it wrapping.
- *
- * On the HEADER as well as the body cell, and that is the point of the shared
- * definition — alignment belongs to the column, and a left-aligned `AP₅₀`
- * floating over a right-aligned column of numbers is worse than no alignment
- * at all.
- *
- * Set at render time, never stored — see `numeric-columns.ts` for why. The
- * editor's own schema deliberately does NOT carry it: nothing persists it, so
- * nothing needs to parse it back.
+ * Set by `markNumericTableColumns` at render time, never stored, so the editor schema omits it.
+ * On the header cell too: alignment belongs to the column, or `AP₅₀` floats left over its figures.
  */
 const numericAttribute = {
   numeric: {
@@ -74,28 +54,9 @@ const NumericTableCell = TableCell.extend({
 });
 
 /**
- * Which `scope` each header cell of the table currently being serialized
- * carries. Keyed by node identity, populated by the table (below) and read
- * back by the header cell.
- *
- * A side channel because scope is a fact about POSITION and a cell's
- * `renderHTML` is handed only its own node — Tiptap's serializer walks
- * parent-before-children, so the table is the last place that still knows
- * which row a cell sits in. It is not a stored attribute for the same reason
- * `numeric` is not: it is derived from the shape of the table, so a stored
- * copy goes stale the moment a row is added. A WeakMap keyed on the node
- * (as in `numbering.ts`) means the entries die with the render.
- *
- * Why it matters more than it looks: without `scope`, assistive tech has to
- * guess which header describes a cell, and on a benchmark table that guess IS
- * the meaning of the number being read out. The live survey note had 184
- * `<th>` elements and not one `scope`.
- *
- * The side channel works HERE and only here, because Tiptap's serializer walks
- * parent-before-children in one pass. The editor cannot use it — prosemirror-
- * view renders and re-renders a cell independently of its parent table — so
- * that surface reads the same rule through decorations instead; see
- * `extensions/header-scopes-plugin.ts`.
+ * Header scopes of the table being serialized, keyed by node. A cell's `renderHTML` sees only
+ * itself and the table is the last to know its rows; the editor re-renders cells apart from
+ * the table, so it uses decorations (`header-scopes-plugin.ts`). Live note: 184 `<th>`, 0 scopes.
  */
 const headerScopes = new WeakMap<ProseMirrorNode, HeaderScope>();
 
@@ -113,15 +74,9 @@ const ScopedTable = Table.extend({
   renderHTML(props) {
     assignHeaderScopes(props.node);
 
-    // A table with no rows never reaches upstream's renderer, and that is not
-    // defensive tidiness: it asks `createColGroup` for a `<colgroup>`, which
-    // returns `{}` when there is no first row, and the `undefined` left in
-    // the output spec makes ProseMirror's serializer throw
-    // (`structure.nodeType` of undefined — verified against
-    // @tiptap/extension-table 3.29.2). `renderRichTextHtml` catches that and
-    // falls back to escaping its input, and its input is an OBJECT — so one
-    // empty table costs the reader the ENTIRE document, the same failure the
-    // math nodes above were added for.
+    // A table with no rows skips upstream: its `createColGroup` returns `{}` and the leftover
+    // `undefined` makes the serializer throw (extension-table 3.29.2), blanking the ENTIRE
+    // document (`renderRichTextHtml` escapes an object input to '').
     const rendered = props.node.childCount ? this.parent?.(props) : undefined;
     if (rendered) return rendered;
 
@@ -141,10 +96,8 @@ const NumericTableHeader = TableHeader.extend({
     return { ...this.parent?.(), ...numericAttribute };
   },
 
-  // Upstream's `th` plus the scope the table worked out. Written out rather
-  // than patching the parent's spec, because the parent returns the attribute
-  // object it renders and reaching into it to add a key is the kind of thing
-  // that breaks silently on an upstream refactor.
+  // Upstream's `th` plus the table's scope. Written out, not patched into the parent's spec:
+  // adding a key to the attribute object it returns breaks silently on an upstream refactor.
   renderHTML({ node, HTMLAttributes }) {
     const scope = headerScopes.get(node);
 
@@ -176,12 +129,9 @@ export const CustomHeading = Heading.extend({
   },
 });
 
-// The image nodes come from `extensions/image-base.ts` — the same module the
-// editor's `ImageExtension` and `ImageGroup` extend, minus their node views.
-// This file used to re-declare the image's attribute set and ask the next
-// reader to keep the two copies in step; sharing the definition is what makes
-// "a captioned image renders a <figcaption>, a row renders a <figure>" true on
-// the published page and in the print views, not only inside the editor.
+// The image nodes come from `extensions/image-base.ts`, which the editor's `ImageExtension`
+// and `ImageGroup` extend too, so a captioned image renders a <figcaption> and a row a
+// <figure> on the published page and in print, not only in the editor.
 
 // Schema stub for the editor's upload-in-progress node. It should never be
 // persisted, but if one slips into a stored document the render must not
@@ -198,24 +148,9 @@ const RenderImagePlaceholder = Node.create({
 });
 
 /**
- * The two math nodes the notes editor persists (`@tiptap/extension-mathematics`
- * via `extensions/math.ts`), as render-side schema.
- *
- * They were missing, and the failure mode was not "equations do not show" —
- * `generateHTML` throws on an unknown node type, `renderRichTextHtml` catches
- * that and falls back to escaping the input, and the input there is an
- * OBJECT, so `escapeHtml` returned `''`. A note containing a single `$x$`
- * therefore rendered as a **completely blank document** on every server
- * surface. Measured directly against `renderRichTextHtml` before this
- * existed: `length 0`.
- *
- * The LaTeX is emitted as a `data-latex` attribute rather than as rendered
- * KaTeX. KaTeX's markup is a deep span tree positioned entirely with inline
- * `style`, and `sanitize.ts` drops `style` on purpose — serving KaTeX from
- * here would mean loosening that for every rendered document. The client
- * turns these placeholders into real formulas instead; see
- * `MathRenderer`. Anything that renders this HTML without that pass shows the
- * LaTeX source, which is legible and honest rather than blank.
+ * Math nodes for stored documents that still hold them (the editor no longer registers them).
+ * Without them one `$x$` makes `generateHTML` throw and blanks the document (measured `length 0`).
+ * LaTeX goes out as `data-latex` for `MathRenderer`, not KaTeX: `sanitize.ts` drops inline `style`.
  */
 const RenderInlineMath = Node.create({
   name: 'inlineMath',
@@ -304,16 +239,9 @@ export const renderExtensions: AnyExtension[] = [
   ImageGroupBase,
   RenderImagePlaceholder,
   Typography,
-  // resizable off: column widths are an editing affordance; rendered tables
-  // size themselves from their content.
-  //
-  // `renderWrapper` puts the `div.tableWrapper` the editor's own node view
-  // already creates into the rendered HTML too, so one set of table rules in
-  // `rich-text-html.tsx` and `editor-surface.css` can describe both. That
-  // wrapper is the horizontal scroll container: a survey table with eleven
-  // columns is wider than any reading column, and the alternative — the
-  // `display: block` this replaces — throws away the table layout algorithm,
-  // which is the thing that keeps columns aligned to each other.
+  // `resizable: false`: widths are an editing affordance. `renderWrapper` emits the editor's
+  // `div.tableWrapper` so one set of table rules (`rich-text-html.tsx`, `editor-surface.css`)
+  // covers both and scrolls wide tables sideways; `display: block` loses column alignment.
   TableKit.configure({
     // All three replaced below: the table to derive header scopes from the
     // rows it can still see, the cells to carry the numeric-column attribute.

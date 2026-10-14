@@ -3,17 +3,9 @@ import { SAFE_SCHEMES, schemeOf } from '../../../../lib/url';
 import { createReferenceId, type ReferenceItem } from './types';
 
 /**
- * A BibTeX reader, scoped to exactly what the bibliography can show.
- *
- * Deliberately hand-written rather than a dependency: the five fields a
- * `ReferenceItem` has are a tiny target, the entries authors actually paste
- * come from arXiv, ACM and Google Scholar, and a full BibTeX implementation
- * (string macros, cross-references, `.bst` styles) would be an order of
- * magnitude more code than the thing it feeds.
- *
- * The rule throughout is to salvage rather than reject: a paste with one
- * malformed entry still imports the others, and a truncated final entry still
- * yields whatever fields were complete.
+ * A BibTeX reader scoped to what a `ReferenceItem` shows, hand-written because a full one
+ * (macros, cross-refs, `.bst`) dwarfs the five fields it feeds. It salvages rather than
+ * rejects: one malformed or truncated entry still lets the rest import.
  */
 
 /** An entry that could not become a reference, and why. */
@@ -63,12 +55,8 @@ const ACCENTS: Record<string, string> = {
 };
 
 /**
- * Accents whose letter may follow without braces (`\"o`).
- *
- * The letter-named commands are deliberately excluded from the brace-free
- * form: `\Huge` and `\vspace` start with an accent command's name, and
- * treating them as one would turn them into mojibake. They still work in
- * their braced form, which is how they are written in practice.
+ * Accents whose letter may follow without braces (`\"o`). Letter-named commands are excluded:
+ * `\Huge` and `\vspace` start with an accent's name and would turn into mojibake.
  */
 const BARE_ACCENTS = '`\'^"~=.';
 
@@ -340,11 +328,8 @@ function readEntry(
 }
 
 /**
- * Reads every `@type{key, …}` record in `input`.
- *
- * Entries keep their citation key as the reference id, so a bibliography
- * anchor reads `#ref-faster-rcnn` and re-pasting the same `.bib` updates the
- * entries it already contributed instead of duplicating them.
+ * Reads every `@type{key, …}` record in `input`. Entries keep their citation key as the
+ * id (anchor `#ref-faster-rcnn`), so re-pasting the same `.bib` updates, not duplicates.
  */
 export function parseBibtex(input: string): BibtexParseResult {
   const entries: ReferenceItem[] = [];

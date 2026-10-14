@@ -1,13 +1,7 @@
 /**
- * Every line of text the rich-text editor shows, supplied by the app.
- *
- * This package carries no copy of its own: the app translates each key in
- * `apps/web/messages` and passes the object in, the same way it passes
- * `uploadFailedText`. The comment beside each key is its English text, for the
- * translator.
- *
- * Keys are the list below; `EditorLabels` is derived from it, so a key cannot
- * be added to one and forgotten in the other.
+ * Every line of text the editor shows, supplied by the app (`apps/web/messages`); this package
+ * carries no copy. The comment beside each key is its English text, for the translator.
+ * `EditorLabels` derives from this list, so a key cannot be added to one and not the other.
  */
 const EDITOR_LABEL_KEYS = [
   // Writing surface and its tabs

@@ -4,20 +4,15 @@ import { memo } from 'react';
 import type { JSONContent } from '@tiptap/core';
 
 import { MermaidBlocks } from '../../mermaid-blocks';
-// Importing the server renderer from a client module is deliberate here: the
-// preview must be pixel-identical to the public page, so it goes through the
-// exact same RichText (same schema, same sanitizer, same citation numbering).
-// This file only ever loads inside the dashboard's lazy editor chunk, which
-// already contains the whole schema — visitors still never download it.
+// A client module importing the server renderer is deliberate: the preview matches the
+// public page through the same `RichText` (schema, sanitizer, citation numbering). It loads
+// only in the dashboard's lazy editor chunk, which already holds the schema.
 import { RichText } from '../../rich-text';
 
 /**
- * Read-only render of the current document, exactly as the public site will
- * show it — mermaid diagrams included.
- *
- * Memoised on the snapshot's identity: `RichText` re-runs `generateHTML` and the
- * sanitizer on every render, and the host re-renders for reasons that have
- * nothing to do with the document (outline, raw mode, tab state).
+ * Read-only render of the current document as the public site shows it, mermaid included.
+ * Memoised on the snapshot's identity: `RichText` re-runs `generateHTML` and the sanitizer per
+ * render, and the host re-renders for unrelated reasons (outline, tab state).
  */
 export const EditorPreview = memo(function EditorPreview({
   content,

@@ -13,13 +13,9 @@ interface ClipboardImportOptions {
 }
 
 /**
- * What the writing surface does with a drop or a paste.
- *
- * Presentation is stripped before ProseMirror parses (`paste-presentation.ts`);
- * an image file uploads where it was dropped, or at the caret for a paste; and
- * pasted Markdown source becomes blocks (`paste-markdown.ts`), except inside a
- * code block, where text is literal. Highest priority, so no other plugin's
- * paste handler sees the event first.
+ * What the writing surface does with a drop or paste: strips presentation, uploads image
+ * files (at the drop point or caret), turns pasted Markdown into blocks (not in code blocks).
+ * Highest priority, so no other plugin's paste handler sees the event first.
  */
 export const ClipboardImport = Extension.create<ClipboardImportOptions>({
   name: 'clipboardImport',

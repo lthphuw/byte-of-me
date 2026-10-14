@@ -79,14 +79,9 @@ export const EditorToolbar = ({
     );
   }
 
-  // Compact editors live inside dialogs, whose width can't fit the whole
-  // button row. There the row wraps to a second line, because the alternative
-  // — the ScrollArea below with its hidden scrollbar — leaves the overflowing
-  // buttons (image, colour) with no visible way to reach them. The full
-  // editor keeps the single scrolling row: it owns the page width.
-  // The row scrolls sideways; Preview sits beside that scroller, so it stays in
-  // view, and leads the bar on phones. Buttons are 44px on touch with 8px
-  // between them, and tighter with a pointer.
+  // Compact editors sit in dialogs too narrow for the row, so it wraps: a ScrollArea with a
+  // hidden scrollbar leaves overflowing buttons (image, colour) unreachable. The full editor
+  // owns the page width and scrolls one row. Buttons: 44px on touch, 8px apart; tighter with a pointer.
   const row = (
     <div
       className={cn(

@@ -24,14 +24,9 @@ export interface OutlineEntry {
 }
 
 /**
- * The outline, rebuilt after the author pauses instead of inside the keystroke.
- *
- * The extension rebuilds from `onTransaction`, synchronously, with two
- * `doc.descendants` walks and a per-heading `domAtPos(...).offsetTop` read: a
- * forced layout of the whole document, measured at ~280ms on a 350KB note and
- * asked for roughly 150 times per character typed. So `onTransaction` is
- * emptied and the rebuild is driven from a debounce, through the command the
- * extension already exposes for it.
+ * The outline, rebuilt after a pause instead of per keystroke: the extension's `onTransaction`
+ * forces layout of the whole document (~280ms on a 350KB note, ~150 times per character
+ * typed), so it is emptied and a debounce drives the extension's own rebuild command.
  */
 const DebouncedTableOfContents = TableOfContents.extend({
   onTransaction() {
@@ -68,13 +63,9 @@ function sameOutline(a: OutlineEntry[], b: OutlineEntry[]) {
 }
 
 /**
- * The document's headings. Disabled, it registers nothing and `scheduleRebuild`
- * does nothing, because the rebuild command exists only with the extension.
- *
- * `headingsChanged` is how the active-heading observer learns that the heading
- * elements are not the ones it was watching: the list can stay equal while
- * ProseMirror replaces the DOM node (a text-align change), so the observer must
- * re-point on every rebuild, not when the list changes.
+ * The document's headings; disabled, it registers nothing and `scheduleRebuild` is a no-op.
+ * `headingsChanged` re-points the active-heading observer on every rebuild, since the list
+ * can stay equal while ProseMirror replaces the DOM node (a text-align change).
  */
 export function useOutline(enabled: boolean) {
   const [entries, setEntries] = useState<OutlineEntry[]>([]);
@@ -129,17 +120,9 @@ export function useOutline(enabled: boolean) {
 }
 
 /**
- * The id of the heading the reader is under, or null above the first.
- *
- * The extension works this out in a scroll listener on its `scrollParent`,
- * which here would be the window, and nothing scrolls the window: the column
- * does. Pointing it at the column would hand back the per-scroll document walk
- * that `DebouncedTableOfContents` removes, so an IntersectionObserver answers
- * instead, calling back once per heading crossed. It watches the region ABOVE
- * the column's top edge, so "intersecting" means "this heading has scrolled
- * past the top", and the active one is the last that has. A thin band would
- * look equivalent and is not: one fast flick jumps a heading over it with no
- * callback either side.
+ * The id of the heading the reader is under, or null above the first. An IntersectionObserver
+ * on the region ABOVE the column's top edge, not the extension's per-scroll document walk;
+ * a thin band would miss a heading a fast flick jumps over with no callback either side.
  */
 export function useActiveHeading({
   editor,
