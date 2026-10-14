@@ -671,6 +671,115 @@ describe('RichTextEditor onEditorApi', () => {
 });
 
 /**
+ * Pasted Markdown source becomes blocks.
+ *
+ * ProseMirror read `text/plain` as paragraphs, so `## Title` arrived as those characters; only
+ * `**bold**` and `` `code` `` converted, through their mark paste rules. Found by pasting a
+ * README section into the featured-work details editor in a real browser.
+ *
+ * The event is built by hand, with the clipboard as a plain object, and goes through
+ * ProseMirror's own paste handler; the contract is the document that results.
+ */
+describe('RichTextEditor markdown paste', () => {
+  type Surface = HTMLElement & { editor?: Editor };
+
+  async function mount(): Promise<Editor> {
+    await open(PLAIN_DOC);
+    const editor = (document.querySelector('.ProseMirror') as Surface | null)
+      ?.editor;
+    if (!editor) throw new Error('the editor did not mount');
+    return editor;
+  }
+
+  function paste(editor: Editor, text: string, html = '') {
+    const event = new Event('paste', { bubbles: true, cancelable: true });
+    Object.defineProperty(event, 'clipboardData', {
+      value: {
+        files: [],
+        getData: (type: string) =>
+          type === 'text/plain' ? text : type === 'text/html' ? html : '',
+      },
+    });
+    editor.view.dom.dispatchEvent(event);
+  }
+
+  const blockTypes = (editor: Editor) =>
+    (editor.getJSON().content ?? []).map((node) => node.type);
+
+  test('turns a heading, a list, a table and a fence into blocks, after the caret', async () => {
+    const editor = await mount();
+    editor.commands.focus('end');
+
+    await React.act(async () => {
+      paste(
+        editor,
+        '## Results\n\n- one\n- two\n\n| a | b |\n|---|---|\n| 1 | 2 |\n\n```py\nprint(1)\n```'
+      );
+    });
+
+    expect(blockTypes(editor)).toEqual([
+      'paragraph',
+      'heading',
+      'bulletList',
+      'table',
+      'codeBlock',
+      // The editor keeps a paragraph after a code block, so the caret has somewhere to go.
+      'paragraph',
+    ]);
+    // The paragraph that was there stays first: the blocks land at the caret.
+    expect(editor.state.doc.child(0).textContent).toBe('Body');
+    expect(editor.state.doc.child(1).attrs.level).toBe(2);
+  });
+
+  test('leaves ordinary text as text', async () => {
+    const editor = await mount();
+    editor.commands.focus('end');
+
+    await React.act(async () => {
+      paste(editor, 'Measured on a T4 - twice. See #498.');
+    });
+
+    expect(blockTypes(editor)).toEqual(['paragraph']);
+    expect(editor.getText()).toContain('Measured on a T4 - twice. See #498.');
+  });
+
+  test('keeps the structure of a rendered page instead of parsing its text again', async () => {
+    const editor = await mount();
+    editor.commands.focus('end');
+
+    // The plain text says heading and one item; the HTML says a two-item list. The HTML wins.
+    await React.act(async () => {
+      paste(
+        editor,
+        '## Wrong\n- x',
+        '<ul><li><p>a</p></li><li><p>b</p></li></ul><p>tail</p>'
+      );
+    });
+
+    const types = blockTypes(editor);
+    expect(types).toContain('bulletList');
+    expect(types).not.toContain('heading');
+    expect(editor.getText()).not.toContain('Wrong');
+    expect(editor.getText()).toContain('tail');
+  });
+
+  test('pastes Markdown literally inside a code block', async () => {
+    const editor = await mount();
+    editor.commands.setCodeBlock();
+    // Not `focus('end')`: that lands in the paragraph the editor keeps after the block.
+    editor.commands.setTextSelection(2);
+
+    await React.act(async () => {
+      paste(editor, '## not a heading\n- not a list');
+    });
+
+    expect(blockTypes(editor)).not.toContain('heading');
+    expect(blockTypes(editor)).not.toContain('bulletList');
+    expect(editor.getText()).toContain('## not a heading');
+  });
+});
+
+/**
  * `scope` on the header cells of a table, in the EDITOR's DOM.
  *
  * The published render pipeline has carried it since `ScopedTable`, and

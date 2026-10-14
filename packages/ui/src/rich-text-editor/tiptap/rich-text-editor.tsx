@@ -77,6 +77,7 @@ import {
   readEditorBlock,
   readTextareaLine,
 } from './mode-switch-anchor';
+import { isMarkdownPaste } from './paste-markdown';
 import { stripPastedPresentation } from './paste-presentation';
 // Shared with the server-side render schema so both stay identical.
 import { CustomHeading } from './render-extensions';
@@ -780,17 +781,41 @@ export function RichTextEditor({
         return true;
       },
 
-      /** Same contract for a pasted screenshot, inserted at the caret. */
+      /**
+       * A pasted screenshot uploads and lands at the caret, the same contract as a drop. Pasted
+       * Markdown source becomes blocks (see `paste-markdown.ts`), except inside a code block,
+       * where text is literal.
+       */
       handlePaste(view, event) {
-        if (!uploadImage) return false;
+        const data = (event as ClipboardEvent).clipboardData;
 
-        const files = imageFilesFrom(
-          (event as ClipboardEvent).clipboardData?.files
-        );
-        if (files.length === 0) return false;
+        const files = imageFilesFrom(data?.files);
+        if (uploadImage && files.length > 0) {
+          event.preventDefault();
+          insertUploadedImages(view, files, uploadImage, uploadFailedText);
+          return true;
+        }
+
+        const editor = editorRef.current;
+        if (!editor?.markdown || view.state.selection.$from.parent.type.spec.code) {
+          return false;
+        }
+
+        const text = data?.getData('text/plain') ?? '';
+        if (!isMarkdownPaste(text, data?.getData('text/html') ?? '')) return false;
+
+        // The blocks, not the `doc` wrapper: a doc node cannot be inserted into a doc.
+        // A parse that throws or inserts nothing leaves the paste to ProseMirror, as text.
+        try {
+          const { content } = editor.markdown.parse(text);
+          if (!content?.length || !editor.commands.insertContent(content)) {
+            return false;
+          }
+        } catch {
+          return false;
+        }
 
         event.preventDefault();
-        insertUploadedImages(view, files, uploadImage, uploadFailedText);
         return true;
       },
     }),
