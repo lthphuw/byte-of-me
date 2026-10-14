@@ -64,16 +64,6 @@ export interface TranslationTabsProps<
   /** Per-language fields rendered below the language input. */
   renderFields: (index: number) => ReactNode;
   className?: string;
-  /**
-   * Active tab, as the stringified index of the translation. Optional, and
-   * normally omitted: uncontrolled, the component reveals the erroring tab
-   * itself after a failed submit (see `useRevealOnInvalidSubmit` below).
-   * Passing a value takes that over completely — the escape hatch for a
-   * caller that needs the tab tied to some other state, and the reason the
-   * self-reveal checks for it rather than fighting it.
-   */
-  value?: string;
-  onValueChange?: (value: string) => void;
 }
 
 /**
@@ -120,23 +110,11 @@ export function TranslationTabs({
   newTranslation,
   renderFields,
   className,
-  value,
-  onValueChange,
 }: TranslationTabsProps): ReactElement {
   const t = useTranslations('dashboard.shared');
   const { fields, append, remove } = useFieldArray({ control, name });
-  // Uncontrolled-or-controlled: `value` wins when the caller supplies one.
-  // Always a string: Radix warns when `value` goes from undefined to defined.
-  const [internalTab, setInternalTab] = useState<string>('0');
-  const tab = value ?? internalTab;
-
-  const setTab = useCallback(
-    (next: string) => {
-      setInternalTab(next);
-      onValueChange?.(next);
-    },
-    [onValueChange]
-  );
+  // The active tab, as the stringified index of the translation.
+  const [tab, setTab] = useState('0');
   // Scoped (an unscoped `useWatch` deep-clones the whole form per keystroke)
   // and computed down to the languages: RHF gates a `compute` result with
   // deepEqual, so typing in a field re-renders the tab bodies only for a new label.
@@ -151,7 +129,7 @@ export function TranslationTabs({
     if (!Number.isInteger(current) || current < 0 || current >= fields.length) {
       setTab('0');
     }
-  }, [fields, tab, setTab]);
+  }, [fields, tab]);
 
   // Self-revealing: a translation error otherwise renders inside an unmounted
   // tab and the submit button just looks dead. Done here rather than in each
@@ -163,10 +141,7 @@ export function TranslationTabs({
   // the failed submit, so both effects may fire in one commit; React runs them
   // in declaration order, so this write to the erroring index wins.
   //
-  // Skipped entirely while a caller controls `value`; the tab is theirs then.
-  const isControlled = value !== undefined;
   useRevealOnInvalidSubmit(control, name, (errors) => {
-    if (isControlled) return;
     const index = firstErroredIndex(errors);
     if (index !== null) setTab(String(index));
   });

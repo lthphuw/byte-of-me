@@ -21,11 +21,9 @@ export interface ManagerListStateProps {
   isFetching?: boolean;
   /** The pager. Shown under the content and in the empty state. */
   pagination?: ReactNode;
-  /** Rows in the default loading skeleton. */
-  skeletonRows?: number;
   /**
    * The loading placeholder, with the classes of the content it stands in for
-   * (AGENTS §14). Defaults to a record-list skeleton of `skeletonRows`.
+   * (AGENTS §14). Defaults to a record-list skeleton.
    */
   skeleton?: ReactNode;
   children: ReactNode;
@@ -45,7 +43,6 @@ export function ManagerListState({
   emptyAction,
   isFetching,
   pagination,
-  skeletonRows = 6,
   skeleton,
   children,
 }: ManagerListStateProps) {
@@ -58,7 +55,7 @@ export function ManagerListState({
       isFetching={isFetching}
       isEmpty={isEmpty}
       onRetry={onRetry}
-      skeleton={skeleton ?? <RecordListSkeleton rows={skeletonRows} />}
+      skeleton={skeleton ?? <RecordListSkeleton />}
       errorTitle={t('managerListState.errorTitle')}
       errorDescription={t('managerListState.errorDescription')}
       retryLabel={t('managerListState.retry')}

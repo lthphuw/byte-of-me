@@ -34,9 +34,8 @@ export interface RecordDialogProps {
   isDirty?: boolean;
   /** Disables the default Save, e.g. while the record is still loading. */
   submitDisabled?: boolean;
-  submitLabel?: string;
-  /** `null` renders no footer at all, for a read-only record. */
-  footer?: ReactNode | null;
+  /** No footer at all, for a read-only record. */
+  hideFooter?: boolean;
   children: ReactNode;
 }
 
@@ -60,8 +59,7 @@ export function RecordDialog({
   isPending = false,
   isDirty = false,
   submitDisabled = false,
-  submitLabel,
-  footer,
+  hideFooter = false,
   children,
 }: RecordDialogProps) {
   const t = useTranslations('dashboard.shared.crud');
@@ -112,34 +110,32 @@ export function RecordDialog({
             {children}
           </div>
 
-          {footer === null
-            ? null
-            : footer ?? (
-                <div className="grid shrink-0 grid-cols-2 gap-2 border-t p-4 pb-[max(1rem,env(safe-area-inset-bottom))] md:flex md:justify-end md:pb-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={requestClose}
-                    disabled={isPending}
-                  >
-                    {t('cancel')}
-                  </Button>
-                  <Button
-                    type="submit"
-                    form={formId}
-                    disabled={isPending || submitDisabled}
-                  >
-                    {isPending ? (
-                      <>
-                        <Loader2 className="size-4 animate-spin" />
-                        {t('saving')}
-                      </>
-                    ) : (
-                      submitLabel ?? t('save')
-                    )}
-                  </Button>
-                </div>
-              )}
+          {!hideFooter && (
+            <div className="grid shrink-0 grid-cols-2 gap-2 border-t p-4 pb-[max(1rem,env(safe-area-inset-bottom))] md:flex md:justify-end md:pb-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={requestClose}
+                disabled={isPending}
+              >
+                {t('cancel')}
+              </Button>
+              <Button
+                type="submit"
+                form={formId}
+                disabled={isPending || submitDisabled}
+              >
+                {isPending ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" />
+                    {t('saving')}
+                  </>
+                ) : (
+                  t('save')
+                )}
+              </Button>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
 

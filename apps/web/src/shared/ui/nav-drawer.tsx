@@ -28,8 +28,6 @@ export interface NavDrawerItem {
    * `/dashboard` must opt out of, being a prefix of every route beneath it.
    */
   exact?: boolean;
-  /** Rendered at the end of the row; the "soon" badge is the only user. */
-  badge?: ReactNode;
 }
 
 export interface NavDrawerGroup {
@@ -155,7 +153,6 @@ export function NavDrawerGroups({
                   >
                     <Icon className="size-4 shrink-0" />
                     <span className="truncate">{item.label}</span>
-                    {item.badge}
                   </NavDrawerLink>
                 </li>
               );
@@ -191,7 +188,6 @@ export function NavDrawer({
   brand,
   groups,
   footer,
-  className,
 }: {
   /** Accessible name of the hamburger. */
   triggerLabel: string;
@@ -207,8 +203,6 @@ export function NavDrawer({
    * dismiss this first, and only the drawer knows how.
    */
   footer?: (close: () => void) => ReactNode;
-  /** Applied to the trigger, for the `lg:hidden` each caller passes. */
-  className?: string;
 }) {
   const [open, setOpen] = useState(false);
   const tDialog = useTranslations('components.dialog');
@@ -221,14 +215,9 @@ export function NavDrawer({
           variant="ghost"
           size="icon"
           aria-label={triggerLabel}
-          // `min-h-11 min-w-11`, NOT `size-11`. This is the one control that
-          // opens navigation on a phone and it measured 36px, but `size-11`
-          // did not fix it and the comment here used to claim it had:
-          // `tailwind-merge@1.14` has no rule for `size-*`, so it cannot
-          // cancel the variant's `h-9 w-9` and emits all three — and in the
-          // built stylesheet `.h-9` and `.w-9` are declared AFTER `.size-11`,
-          // so at equal specificity they win. `min-*` has no such contest.
-          className={cn('min-h-11 min-w-11 shrink-0', className)}
+          // `min-h-*`, not `size-11`: tailwind-merge@1.14 has no rule for `size-*`,
+          // so it cannot cancel the variant's `h-9 w-9`, which wins by source order.
+          className="min-h-11 min-w-11 shrink-0"
         >
           <Menu className="size-5" />
         </Button>

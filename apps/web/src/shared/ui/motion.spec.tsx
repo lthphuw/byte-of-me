@@ -5,13 +5,13 @@ import { describe, expect, it } from 'bun:test';
 
 import { RevealItem, RevealSection } from './motion';
 
-// `opacity:0` in the server HTML is what keeps Chrome from counting an element
-// as the LCP candidate until JS has hydrated and played the reveal.
+// A reveal below the fold waits at the faded placeholder (0.2), not at 0: at 0
+// it reads as a hole in the page while it is still off screen.
 describe('RevealSection', () => {
-  it('is hidden in the server HTML by default', () => {
+  it('waits at the faded placeholder in the server HTML by default', () => {
     const html = renderToString(<RevealSection>Hero</RevealSection>);
 
-    expect(html).toContain('opacity:0');
+    expect(html).toContain('opacity:0.2');
   });
 
   it('is visible in the server HTML when immediate', () => {

@@ -11,15 +11,8 @@ import {
 } from '@byte-of-me/ui';
 import { m } from 'framer-motion';
 
-// Small set of allowed polymorphic tags. Keeps semantics correct (e.g. an
-// <ol>/<li> timeline) without opening up every motion element.
-const MOTION_TAGS = {
-  div: m.div,
-  section: m.section,
-  ol: m.ol,
-  ul: m.ul,
-  li: m.li,
-} as const;
+// The tags a reveal can render as: a `div`, or an `li` inside a timeline.
+const MOTION_TAGS = { div: m.div, li: m.li } as const;
 
 type MotionTag = keyof typeof MOTION_TAGS;
 
@@ -40,13 +33,8 @@ function useSkipEntrance(immediate: boolean) {
 
 interface RevealSectionProps {
   children: ReactNode;
-  /** Extra delay before the reveal starts, in seconds. */
-  delay?: number;
   id?: string;
   className?: string;
-  /** Animate only the first time it scrolls into view. */
-  once?: boolean;
-  as?: MotionTag;
   /**
    * Above the fold: the server HTML renders visible instead of `opacity: 0`,
    * which Chrome ignores as an LCP candidate until JS reveals it. A later
@@ -56,33 +44,28 @@ interface RevealSectionProps {
 }
 
 /**
- * Scroll-reveal fade-up for a page section. `immediate` marks the first block of
- * a page and gives it the slightly longer `entranceUp`. A block gets one motion
- * tier: do not nest another animated wrapper inside one.
+ * Scroll-reveal fade-up for a page section, once. `immediate` marks the first
+ * block of a page and gives it the slightly longer `entranceUp`. A block gets one
+ * motion tier: do not nest another animated wrapper inside one.
  */
 export function RevealSection({
   children,
-  delay = 0,
   id,
   className,
-  once = true,
-  as = 'div',
   immediate = false,
 }: RevealSectionProps) {
-  const Comp = MOTION_TAGS[as];
   const skipEntrance = useSkipEntrance(immediate);
   return (
-    <Comp
+    <m.div
       id={id}
       className={className}
-      custom={delay}
       variants={immediate ? entranceUp : fadeUp}
       initial={skipEntrance ? false : 'hidden'}
       whileInView="visible"
-      viewport={{ ...motionViewport, once }}
+      viewport={motionViewport}
     >
       {children}
-    </Comp>
+    </m.div>
   );
 }
 

@@ -151,7 +151,7 @@ export function MediaManager() {
         open={isUploadOpen}
         onOpenChange={setIsUploadOpen}
         title={t('dialog.uploadTitle')}
-        footer={null}
+        hideFooter
         isPending={isUploading}
       >
         <ImageUpload

@@ -192,7 +192,7 @@ export function ContactMessageGallery() {
         description={selectedMessage?.email}
         size="lg"
         isPending={deleteMutation.isPending}
-        footer={null}
+        hideFooter
       >
         {selectedMessage && (
           <div className="space-y-6">

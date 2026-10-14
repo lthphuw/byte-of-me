@@ -19,8 +19,6 @@ interface ExpandableRichTextProps {
    * the collapse behaviour is a client concern.
    */
   children: ReactNode;
-  /** Height the collapsed state clamps to, in px. Rounded down to whole lines. */
-  collapsedHeight?: number;
   className?: string;
 }
 
@@ -92,6 +90,9 @@ function findTextBlock(root: HTMLElement): HTMLElement | null {
   return textBlock;
 }
 
+/** Height the collapsed state clamps to, in px, rounded down to whole lines. */
+const COLLAPSED_HEIGHT = 104;
+
 /**
  * The clamp height, rounded DOWN to a whole number of text lines.
  *
@@ -134,7 +135,6 @@ function snapToLineGrid(element: HTMLElement, collapsedHeight: number): number {
  */
 export function ExpandableRichText({
   children,
-  collapsedHeight = 104,
   className,
 }: ExpandableRichTextProps) {
   const t = useTranslations('components.expandableText');
@@ -142,7 +142,7 @@ export function ExpandableRichText({
   const contentId = useId();
   const [expanded, setExpanded] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
-  const [clampHeight, setClampHeight] = useState(collapsedHeight);
+  const [clampHeight, setClampHeight] = useState(COLLAPSED_HEIGHT);
   const [hasToggled, setHasToggled] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -155,7 +155,7 @@ export function ExpandableRichText({
     // here too: a webfont swap changes the line height, and a clamp snapped to
     // the fallback font's grid would stop being a clean cut once it lands.
     const measure = () => {
-      const snapped = snapToLineGrid(element, collapsedHeight);
+      const snapped = snapToLineGrid(element, COLLAPSED_HEIGHT);
       setClampHeight(snapped);
       setIsOverflowing(element.scrollHeight > snapped + 8);
     };
@@ -166,7 +166,7 @@ export function ExpandableRichText({
     observer.observe(element);
 
     return () => observer.disconnect();
-  }, [children, collapsedHeight]);
+  }, [children]);
 
   const isCollapsed = isOverflowing && !expanded;
 
@@ -232,9 +232,8 @@ export function ExpandableRichText({
             onClick={toggle}
             aria-expanded={expanded}
             aria-controls={contentId}
-            // Underlined at rest, per the design system: the palette is
-            // achromatic, so `text-primary` alone is indistinguishable from body
-            // text and a hover-only underline does not exist on touch at all.
+            // Underlined at rest, per the design system: a hover-only underline
+            // does not exist on touch at all.
             // `items-start` + wrapping, because the Vietnamese labels are longer.
             //
             // `py-3.5` is a touch target, not spacing: the label is a 16px line

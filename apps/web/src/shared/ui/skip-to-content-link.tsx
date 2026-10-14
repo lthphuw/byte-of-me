@@ -3,21 +3,10 @@
 import { useTranslations } from 'next-intl';
 
 /**
- * The first focusable element on a nav-heavy signed-in surface (WCAG 2.4.1,
- * Bypass Blocks). Without one, a keyboard user re-tabs the whole sidebar —
- * fifteen controls on `/dashboard` — on every navigation.
- *
- * A plain fragment href, unlike `PublicHeaderSkipLink`, which resolves the
- * landmark in a click handler because the public `<main>` carries no `id`.
- * The two callers here own their landmark, so they give it the `id` AND
- * `tabindex="-1"`, and the browser's own fragment jump moves focus — which is
- * the part a fragment alone does not do for a non-focusable target, and the
- * part that decides whether the next Tab resumes in the content or back in the
- * navigation the link was supposed to skip.
- *
- * A client component only because of `useTranslations`: `getTranslations`
- * would pull `next-intl/server` into any client component that reaches this
- * link through a widget barrel.
+ * The first focusable element on the dashboard (WCAG 2.4.1, Bypass Blocks):
+ * without it a keyboard user re-tabs the whole sidebar on every navigation.
+ * A plain fragment href: the landmark carries the `id` AND `tabindex="-1"`, so
+ * the browser's own jump moves focus and the next Tab resumes in the content.
  */
 export function SkipToContentLink({ targetId }: { targetId: string }) {
   const t = useTranslations('global.header');

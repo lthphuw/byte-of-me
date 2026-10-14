@@ -83,14 +83,11 @@ const DEFAULTS: Values = {
 };
 
 interface HarnessProps {
-  /** Passed straight through, so the controlled path can be exercised. */
-  value?: string;
-  onValueChange?: (value: string) => void;
   /** Renders the nested tabs inside each translation. */
   nested?: boolean;
 }
 
-function Harness({ value, onValueChange, nested = false }: HarnessProps) {
+function Harness({ nested = false }: HarnessProps) {
   const form = useForm<Values>({
     defaultValues: DEFAULTS,
     resolver: zodResolver(schema),
@@ -103,8 +100,6 @@ function Harness({ value, onValueChange, nested = false }: HarnessProps) {
           <TranslationTabs
             control={form.control}
             name="translations"
-            value={value}
-            onValueChange={onValueChange}
             newTranslation={() => ({ language: '', title: '', tasks: [] })}
             renderFields={(i) => (
               <>
@@ -188,21 +183,6 @@ describe('TranslationTabs selection', () => {
     expect(screen.getByRole('tab', { name: 'FR' })).toBeDefined();
     expect(screen.queryByRole('tab', { name: 'EN' })).toBeNull();
     expect(screen.getByRole('tab', { name: 'VI' })).toBeDefined();
-  });
-
-  test('a caller-supplied value drives it, and a click cannot override it', async () => {
-    const seen: string[] = [];
-    await mount({ value: '1', onValueChange: (next) => seen.push(next) });
-
-    expect(screen.getByLabelText('Title 1')).toBeDefined();
-
-    await clickTab('EN');
-
-    // The caller was told, and nothing moved until the caller says so — the
-    // whole point of the controlled escape hatch.
-    expect(seen).toContain('0');
-    expect(screen.getByLabelText('Title 1')).toBeDefined();
-    expect(screen.queryByLabelText('Title 0')).toBeNull();
   });
 });
 

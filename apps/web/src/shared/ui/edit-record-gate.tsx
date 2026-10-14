@@ -4,15 +4,13 @@ import type { ReactNode } from 'react';
 import { Button } from '@byte-of-me/ui';
 import { useTranslations } from 'next-intl';
 
-import { FormSkeleton } from './manager-page-loading';
-
 interface EditRecordGateProps {
   /** The full record has not arrived: loading, or never requested. */
   isNotReady: boolean;
   hasError: boolean;
   onRetry: () => void;
   /** The form's own skeleton, shown while the record loads. */
-  skeleton?: ReactNode;
+  skeleton: ReactNode;
   /** The form. Rendered only once the record is in hand. */
   children: ReactNode;
 }
@@ -37,21 +35,14 @@ export function EditRecordGate({
         className="flex flex-col items-center justify-center gap-3 py-16 text-center"
       >
         <p className="text-sm text-muted-foreground">{t('errorTitle')}</p>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={onRetry}
-        >
+        <Button type="button" variant="outline" size="sm" onClick={onRetry}>
           {t('retry')}
         </Button>
       </div>
     );
   }
 
-  if (isNotReady) {
-    return skeleton ?? <FormSkeleton label={t('loading')} />;
-  }
+  if (isNotReady) return skeleton;
 
   return children;
 }

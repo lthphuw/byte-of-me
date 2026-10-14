@@ -38,23 +38,4 @@ describe('ManagerListState', () => {
 
     expect(screen.queryByText('Pager on an empty page')).not.toBeNull();
   });
-
-  it('renders one skeleton row for each of skeletonRows', () => {
-    const { container } = render(
-      withIntl(
-        <ManagerListState
-          isLoading
-          isEmpty={false}
-          emptyTitle="Nothing here yet"
-          skeletonRows={3}
-        >
-          <p>row</p>
-        </ManagerListState>
-      )
-    );
-
-    expect(container.querySelector('[aria-busy="true"]')?.children.length).toBe(
-      3
-    );
-  });
 });

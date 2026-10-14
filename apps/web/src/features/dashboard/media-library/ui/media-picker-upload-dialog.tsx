@@ -31,7 +31,7 @@ export function MediaPickerUploadDialog({
       open={open}
       onOpenChange={onOpenChange}
       title={t('picker.uploadAssetsTitle')}
-      footer={null}
+      hideFooter
       isPending={upload.isPending}
     >
       <ImageUpload

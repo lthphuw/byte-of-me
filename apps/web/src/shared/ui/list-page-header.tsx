@@ -4,15 +4,9 @@ import { cn } from '@/shared/lib/utils';
 
 interface ListPageHeaderProps {
   title: string;
-  /**
-   * Optional strapline under the title. Currently passed by nobody: Blogs and
-   * Projects both dropped theirs because the copy restated the page title in
-   * more words. Kept because it is a reasonable thing for a page header to
-   * accept, but if it is still unused next time you are in here, delete it
-   * along with the `·` separator below.
-   */
+  /** Optional strapline under the title (contact). */
   description?: string;
-  /** Result count, e.g. "12 posts". Shown next to the description. */
+  /** Result count, e.g. "12 posts" (blogs, projects). */
   count?: string;
   /** Filter controls, laid out on their own row beneath the heading. */
   children?: ReactNode;
@@ -54,13 +48,7 @@ export function ListPageHeader({
         {hasSubtitle && (
           <p className="flex flex-wrap items-center gap-x-2 text-sm leading-relaxed text-muted-foreground md:text-base">
             {description && <span>{description}</span>}
-            {description && count && (
-              <span aria-hidden className="hidden text-border sm:inline">
-                ·
-              </span>
-            )}
-            {/* Own line on mobile — inline after the dot from sm up. */}
-            {count && <span className="basis-full sm:basis-auto">{count}</span>}
+            {count && <span>{count}</span>}
           </p>
         )}
       </div>

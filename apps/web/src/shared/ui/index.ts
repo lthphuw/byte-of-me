@@ -5,7 +5,6 @@ export * from './expandable-rich-text';
 export * from './filter-search-input';
 export * from './form';
 export * from './go-back-button';
-export * from './json-ld';
 export * from './list-page-header';
 export * from './localized-controls';
 export * from './manager-list-state';
