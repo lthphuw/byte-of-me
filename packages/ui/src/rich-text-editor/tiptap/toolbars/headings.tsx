@@ -79,9 +79,11 @@ export const HeadingsToolbar = React.forwardRef<
   }
 
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <DropdownMenu>
+    // Tooltip trigger INSIDE the menu: `DropdownMenu` renders no element, so a
+    // trigger wrapped around it received nothing and the tooltip never opened.
+    <DropdownMenu>
+      <Tooltip>
+        <TooltipTrigger asChild>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
@@ -99,38 +101,43 @@ export const HeadingsToolbar = React.forwardRef<
               <ChevronDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            <DropdownMenuItem
-              onClick={() => editor?.chain().focus().setParagraph().run()}
-              className={cn(
-                'flex items-center gap-2 h-fit',
-                !state.headingActive && 'bg-accent'
-              )}
-            >
-              {labels.normal}
-            </DropdownMenuItem>
-            {HEADING_LEVELS.map((level) => (
-              <DropdownMenuItem
-                key={level}
-                aria-label={headingName(labels, level)}
-                onClick={() =>
-                  editor?.chain().focus().toggleHeading({ level }).run()
-                }
-                className={cn(
-                  'flex items-center gap-2',
-                  activeLevel === level && 'bg-accent'
-                )}
-              >
-                H{level}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </TooltipTrigger>
-      <TooltipContent>
-        <span>{labels.headings}</span>
-      </TooltipContent>
-    </Tooltip>
+        </TooltipTrigger>
+        <TooltipContent>
+          <span>{labels.headings}</span>
+        </TooltipContent>
+      </Tooltip>
+      {/* The command focuses the editor itself; Radix would hand focus back
+          to the trigger afterwards. */}
+      <DropdownMenuContent
+        align="start"
+        onCloseAutoFocus={(event) => event.preventDefault()}
+      >
+        <DropdownMenuItem
+          onClick={() => editor?.chain().focus().setParagraph().run()}
+          className={cn(
+            'flex h-fit items-center gap-2',
+            !state.headingActive && 'bg-accent'
+          )}
+        >
+          {labels.normal}
+        </DropdownMenuItem>
+        {HEADING_LEVELS.map((level) => (
+          <DropdownMenuItem
+            key={level}
+            aria-label={headingName(labels, level)}
+            onClick={() =>
+              editor?.chain().focus().toggleHeading({ level }).run()
+            }
+            className={cn(
+              'flex items-center gap-2',
+              activeLevel === level && 'bg-accent'
+            )}
+          >
+            H{level}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 });
 

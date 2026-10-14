@@ -202,8 +202,10 @@ function ImageGroupView({
         onChange={(caption) => updateAttributes({ caption })}
       />
 
+      {/* Hidden until hovered or focused only where a mouse can hover; a touch
+          screen has no hover, so there it is always shown. */}
       {editor.isEditable && (
-        <div className="absolute right-2 top-2 flex gap-1 rounded bg-background/80 p-1 opacity-0 transition-opacity group-hover/row:opacity-100">
+        <div className="absolute right-2 top-2 flex gap-1 rounded bg-background/80 p-1 transition-opacity can-hover:opacity-0 can-hover:focus-within:opacity-100 can-hover:group-hover/row:opacity-100">
           <Button
             size="icon"
             variant="ghost"

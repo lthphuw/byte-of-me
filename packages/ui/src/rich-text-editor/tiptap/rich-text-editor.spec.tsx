@@ -23,6 +23,7 @@ import * as React from 'react';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import type { Editor, JSONContent } from '@tiptap/react';
 import { afterEach, describe, expect, spyOn, test } from 'bun:test';
+import { toast } from 'sonner';
 
 import { testEditorLabels } from './editor-labels.test-fixture';
 import { RichTextEditor } from './rich-text-editor';
@@ -733,6 +734,54 @@ describe('RichTextEditor markdown paste', () => {
     expect(blockTypes(editor)).not.toContain('heading');
     expect(blockTypes(editor)).not.toContain('bulletList');
     expect(editor.getText()).toContain('## not a heading');
+  });
+});
+
+/**
+ * A `blob:` image is a file waiting for its upload. With no uploader there is
+ * nothing to ever replace that address, and a document saved holding one is
+ * broken for every reader: the node is removed and the author is told.
+ */
+describe('RichTextEditor image without an uploader', () => {
+  test('removes a blob image and reports it, instead of keeping an address only this tab can read', async () => {
+    const toastError = spyOn(toast, 'error').mockImplementation(() => 'id');
+    try {
+      await React.act(async () => {
+        render(
+          <RichTextEditor
+            uploadFailedText="Upload failed"
+            labels={testEditorLabels}
+            value={{
+              type: 'doc',
+              content: [
+                { type: 'image', attrs: { src: 'blob:http://localhost/abc' } },
+                {
+                  type: 'paragraph',
+                  content: [{ type: 'text', text: 'Body' }],
+                },
+              ],
+            }}
+          />
+        );
+      });
+      await React.act(async () => {
+        const deadline = Date.now() + 3000;
+        while (toastError.mock.calls.length === 0 && Date.now() < deadline) {
+          await new Promise((resolve) => setTimeout(resolve, 20));
+        }
+      });
+
+      const editor = (
+        document.querySelector('.ProseMirror') as HTMLElement & {
+          editor?: Editor;
+        }
+      ).editor;
+
+      expect(toastError).toHaveBeenCalledWith('Upload failed');
+      expect(JSON.stringify(editor?.getJSON())).not.toContain('blob:');
+    } finally {
+      toastError.mockRestore();
+    }
   });
 });
 

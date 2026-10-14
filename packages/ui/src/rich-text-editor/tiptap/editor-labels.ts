@@ -79,6 +79,12 @@ const EDITOR_LABEL_KEYS = [
   'replacePlaceholder', // Replace...
   'matchCase', // Match case
   'replaceAll', // Replace All
+  'previousMatch', // Previous match
+  'nextMatch', // Next match
+  'closeSearch', // Close search
+  'openReplace', // Show replace
+  'backToSearch', // Back to search
+  'imageOptions', // Image options
 
   // Phone toolbar
   'formatting', // Formatting
@@ -107,7 +113,6 @@ const EDITOR_LABEL_KEYS = [
   'horizontalRuleDescription', // Add a horizontal divider
   'quoteDescription', // Capture a quotation
   'codeDescription', // Inline code snippet
-  'blockquoteDescription', // Block quote
   'alignLeftDescription', // Align text to the left
   'alignCenterDescription', // Center align text
   'alignRightDescription', // Align text to the right

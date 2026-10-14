@@ -83,7 +83,14 @@ export function ReferenceForm({
     <div
       className="space-y-2.5"
       onKeyDown={(event) => {
-        if (event.key === 'Enter' && !event.shiftKey) {
+        // Enter in a field submits; on a button it presses that button, and
+        // one that commits an IME composition is neither.
+        if (
+          event.key === 'Enter' &&
+          !event.shiftKey &&
+          !event.nativeEvent.isComposing &&
+          event.target instanceof HTMLInputElement
+        ) {
           event.preventDefault();
           submit();
         }

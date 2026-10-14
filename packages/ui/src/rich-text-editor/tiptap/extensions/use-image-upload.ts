@@ -1,11 +1,13 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 interface UseImageUploadProps {
-  onUpload?: (url: string) => void;
+  /** Receives the image's address, and the file it came from. */
+  onUpload?: (url: string, file: File) => void;
   /**
-   * Real upload implementation (e.g. the ImageExtension's `uploadFn`).
-   * When omitted, the local object URL is handed to `onUpload` and the
-   * ImageExtension's auto-upload effect converts the blob: src afterwards.
+   * The real upload (the ImageExtension's `uploadFn`). Without one the file's
+   * local `blob:` URL is handed to `onUpload`, and the image node's own
+   * auto-upload effect takes it from there: it uploads the file, or removes the
+   * node if it cannot, so the receiver must not revoke that URL.
    */
   uploadFn?: (file: File) => Promise<string>;
   /**
@@ -20,80 +22,52 @@ export function useImageUpload({
   uploadFn,
   uploadFailedText,
 }: UseImageUploadProps) {
-  const previewRef = useRef<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const upload = useCallback(
-    async (file: File, localUrl: string): Promise<string> => {
-      if (!uploadFn) return localUrl;
+  /** Empties the file input, so picking the same file again still reports. */
+  const reset = useCallback(() => {
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    setError(null);
+  }, []);
 
+  const uploadFile = useCallback(
+    async (file: File) => {
+      if (!uploadFn) {
+        onUpload?.(URL.createObjectURL(file), file);
+        return;
+      }
+
+      setUploading(true);
       try {
-        setUploading(true);
-        const uploadedUrl = await uploadFn(file);
+        const url = await uploadFn(file);
         setError(null);
-        return uploadedUrl;
+        onUpload?.(url, file);
       } catch (err) {
         setError(
           err instanceof Error && err.message ? err.message : uploadFailedText
         );
-        // Rethrown as it arrived: the console keeps the uploader's own error.
-        throw err;
       } finally {
         setUploading(false);
       }
     },
-    [uploadFailedText, uploadFn]
+    [onUpload, uploadFailedText, uploadFn]
   );
 
   const handleFileChange = useCallback(
-    async (event: React.ChangeEvent<HTMLInputElement>) => {
+    (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
-      if (file) {
-        const localUrl = URL.createObjectURL(file);
-        setPreviewUrl(localUrl);
-        previewRef.current = localUrl;
-
-        try {
-          const uploadedUrl = await upload(file, localUrl);
-          onUpload?.(uploadedUrl);
-        } catch (err) {
-          URL.revokeObjectURL(localUrl);
-          setPreviewUrl(null);
-          return console.error(err);
-        }
-      }
+      if (file) void uploadFile(file);
     },
-    [onUpload, upload]
+    [uploadFile]
   );
 
-  const handleRemove = useCallback(() => {
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl);
-    }
-    setPreviewUrl(null);
-    previewRef.current = null;
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-    setError(null);
-  }, [previewUrl]);
-
-  useEffect(() => {
-    return () => {
-      if (previewRef.current) {
-        URL.revokeObjectURL(previewRef.current);
-      }
-    };
-  }, []);
-
   return {
-    previewUrl,
     fileInputRef,
+    uploadFile,
     handleFileChange,
-    handleRemove,
+    reset,
     uploading,
     error,
   };

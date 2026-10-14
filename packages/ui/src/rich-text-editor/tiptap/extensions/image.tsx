@@ -121,9 +121,8 @@ function TiptapImage(props: TiptapImageProps) {
 
   const uploadFn = imageUploadFn(editor);
 
-  /**
-   * 🔥 AUTO UPLOAD blob → S3
-   */
+  // A `blob:` src is a picked file waiting for its upload: upload it and swap
+  // the address in, or take the node out if that cannot be done.
   useEffect(() => {
     const src = node.attrs.src;
 
@@ -133,33 +132,23 @@ function TiptapImage(props: TiptapImageProps) {
     lastUploadedSrcRef.current = src;
 
     const upload = async () => {
+      setUploadingBlob(true);
       try {
-        setUploadingBlob(true);
-
-        if (!uploadFn) {
-          console.error('Missing uploadFn');
-          return;
-        }
+        // No uploader means no way to ever replace this address: fail the same
+        // way a refused upload does, instead of leaving the node holding it.
+        if (!uploadFn) throw new Error(uploadFailedText);
 
         const res = await fetch(src);
         const blob = await res.blob();
         const file = new File([blob], 'image', { type: blob.type });
 
-        const uploadedUrl = await uploadFn(file);
-
-        updateAttributes({
-          src: uploadedUrl, // ✅ replace with S3
-        });
+        updateAttributes({ src: await uploadFn(file) });
+        URL.revokeObjectURL(src);
       } catch (err) {
-        // A failed upload must not leave the node holding its `blob:` src.
-        // That URL resolves only in the tab that minted it, so the author goes
-        // on seeing their image, saves the document, and every reader gets a
-        // broken one — the failure surfaces later, somewhere else, as corrupt
-        // content. This used to be a `console.error` and nothing else.
-        //
-        // Removing the node is the honest outcome: the image genuinely is not
-        // there. The message carries the server's reason, so "larger than 3 MB"
-        // reaches the author instead of a silent gap.
+        // A failed upload must not leave the node holding its `blob:` src: that
+        // URL resolves only in the tab that minted it, so the author saves a
+        // document whose readers get a broken image. Removing the node is the
+        // honest outcome, and the message carries the reason ("larger than 3 MB").
         toast.error(
           err instanceof Error && err.message ? err.message : uploadFailedText
         );
@@ -181,16 +170,13 @@ function TiptapImage(props: TiptapImageProps) {
   /**
    * Manual upload (replace image)
    */
-  const { fileInputRef, handleFileChange, handleRemove, uploading, error } =
+  const { fileInputRef, handleFileChange, reset, uploading, error } =
     useImageUpload({
       uploadFn,
       uploadFailedText,
       onUpload: (url) => {
-        updateAttributes({
-          src: url,
-          alt: altText,
-        });
-        handleRemove();
+        updateAttributes({ src: url, alt: altText });
+        reset();
         setOpenedMore(false);
       },
     });
@@ -231,19 +217,20 @@ function TiptapImage(props: TiptapImageProps) {
           className="rounded-lg"
         />
 
-        {/* 🔥 Uploading overlay */}
         {uploadingBlob && (
-          <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/40">
-            <Loader2 className="h-6 w-6 animate-spin text-white" />
+          <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-background/70">
+            <Loader2 className="h-6 w-6 animate-spin" />
           </div>
         )}
 
-        {/* Toolbar */}
+        {/* Hidden until hovered or focused only where a mouse can hover; on a
+            touch screen it is always there, since nothing else reveals it. */}
         {editor.isEditable && (
-          <div className="absolute right-2 top-2 flex gap-1 rounded bg-background/80 p-1 opacity-0 group-hover:opacity-100">
+          <div className="absolute right-2 top-2 flex gap-1 rounded bg-background/80 p-1 can-hover:opacity-0 can-hover:focus-within:opacity-100 can-hover:group-hover:opacity-100">
             <Button
               size="icon"
               variant="ghost"
+              aria-label={labels.alignLeft}
               onClick={() => updateAttributes({ align: 'left' })}
             >
               <AlignLeft className="size-4" />
@@ -251,6 +238,7 @@ function TiptapImage(props: TiptapImageProps) {
             <Button
               size="icon"
               variant="ghost"
+              aria-label={labels.alignCenter}
               onClick={() => updateAttributes({ align: 'center' })}
             >
               <AlignCenter className="size-4" />
@@ -258,6 +246,7 @@ function TiptapImage(props: TiptapImageProps) {
             <Button
               size="icon"
               variant="ghost"
+              aria-label={labels.alignRight}
               onClick={() => updateAttributes({ align: 'right' })}
             >
               <AlignRight className="size-4" />
@@ -267,7 +256,11 @@ function TiptapImage(props: TiptapImageProps) {
 
             <DropdownMenu open={openedMore} onOpenChange={setOpenedMore}>
               <DropdownMenuTrigger asChild>
-                <Button size="icon" variant="ghost">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  aria-label={labels.imageOptions}
+                >
                   <MoreVertical className="size-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -288,14 +281,16 @@ function TiptapImage(props: TiptapImageProps) {
                       hidden
                     />
 
-                    <Button
-                      variant="outline"
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={uploading}
-                    >
-                      {uploading && <Loader2 className="mr-2 animate-spin" />}
-                      {labels.upload}
-                    </Button>
+                    {uploadFn && (
+                      <Button
+                        variant="outline"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={uploading}
+                      >
+                        {uploading && <Loader2 className="animate-spin" />}
+                        {labels.upload}
+                      </Button>
+                    )}
 
                     <Input
                       value={imageUrl}

@@ -1,77 +1,51 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useEditorState } from '@tiptap/react';
+import { useId } from 'react';
 import { ArrowLeftIcon, ArrowRightIcon, Repeat, X } from 'lucide-react';
 
-import { Button , Checkbox , Input , Label , Popover, PopoverContent, PopoverTrigger , Separator , Tooltip, TooltipContent, TooltipTrigger } from '../../../index';
-import { cn } from '../../../lib/utils';
-import { type SearchAndReplaceStorage } from '../extensions/search-and-replace';
+import {
+  Button,
+  Checkbox,
+  Input,
+  Label,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  Separator,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '../../../index';
 
 import { useToolbar } from './toolbar-provider';
+import { useSearchAndReplace } from './use-search-and-replace';
 
 export function SearchAndReplaceToolbar() {
   const { editor, labels } = useToolbar();
+  const bar = useSearchAndReplace(editor);
+  const matchCaseId = useId();
+  const searchId = useId();
+  const replaceId = useId();
 
-  const [open, setOpen] = useState(false);
-  const [replacing, setReplacing] = useState(false);
-  const [searchText, setSearchText] = useState('');
-  const [replaceText, setReplaceText] = useState('');
-  const [checked, setChecked] = useState(false);
-
-  // The counter lives in the extension's storage, which a transaction mutates
-  // without touching React — so it needs its own subscription, not a render read.
-  const { resultCount, selectedResult } = useEditorState({
-    editor,
-    selector: ({ editor: current }) => {
-      const storage: SearchAndReplaceStorage = current.storage.searchAndReplace;
-      return {
-        resultCount: storage.results.length,
-        selectedResult: storage.selectedResult,
-      };
-    },
-  });
-
-  const replace = () => editor?.chain().replace().run();
-  const replaceAll = () => editor?.chain().replaceAll().run();
-  const selectNext = () => editor?.chain().selectNextResult().run();
-  const selectPrevious = () => editor?.chain().selectPreviousResult().run();
-
-  useEffect(() => {
-    editor?.chain().setSearchTerm(searchText).run();
-  }, [searchText, editor]);
-
-  useEffect(() => {
-    editor?.chain().setReplaceTerm(replaceText).run();
-  }, [replaceText, editor]);
-
-  useEffect(() => {
-    editor?.chain().setCaseSensitive(checked).run();
-  }, [checked, editor]);
-
-  useEffect(() => {
-    if (!open) {
-      setReplaceText('');
-      setSearchText('');
-      setReplacing(false);
-    }
-  }, [open]);
+  const counter = (
+    <span aria-live="polite" className="text-xs tabular-nums">
+      {bar.position}/{bar.resultCount}
+    </span>
+  );
 
   return (
-    <Popover open={open}>
+    <Popover open={bar.open}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <PopoverTrigger disabled={!editor} asChild>
+          <PopoverTrigger asChild>
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => {
-                setOpen(!open);
-              }}
-              className={cn('h-8 w-max px-3 font-normal')}
+              onClick={bar.toggle}
+              className="h-8 w-max px-3 font-normal"
             >
-              <Repeat className="mr-2 h-4 w-4" />
-              <p>{labels.searchAndReplace}</p>
+              <Repeat />
+              <span>{labels.searchAndReplace}</span>
             </Button>
           </PopoverTrigger>
         </TooltipTrigger>
@@ -82,84 +56,73 @@ export function SearchAndReplaceToolbar() {
 
       <PopoverContent
         align="end"
-        onCloseAutoFocus={(e) => {
-          e.preventDefault();
-        }}
-        onEscapeKeyDown={() => {
-          setOpen(false);
-        }}
-        className="relative flex w-[400px] px-3 py-2.5"
+        onCloseAutoFocus={(event) => event.preventDefault()}
+        onEscapeKeyDown={bar.close}
+        className="relative flex w-[400px] max-w-[calc(100vw-1rem)] px-3 py-2.5"
       >
-        {!replacing ? (
-          <div className={cn('relative flex gap-1.5 items-center')}>
+        {!bar.replacing ? (
+          <div className="relative flex w-full items-center gap-1.5">
             <Input
-              value={searchText}
-              className=" w-48"
-              onChange={(e) => {
-                setSearchText(e.target.value);
-              }}
+              value={bar.searchText}
+              className="min-w-0 flex-1"
+              aria-label={labels.search}
+              onChange={(event) => bar.changeSearch(event.target.value)}
               placeholder={labels.searchPlaceholder}
             />
-            <span>
-              {resultCount === 0 ? selectedResult : selectedResult + 1}/
-              {resultCount}
-            </span>
+            {counter}
             <Button
-              onClick={selectPrevious}
+              onClick={bar.previous}
               size="icon"
               variant="ghost"
-              className="size-7"
+              aria-label={labels.previousMatch}
             >
-              <ArrowLeftIcon className="size-4" />
+              <ArrowLeftIcon />
             </Button>
             <Button
-              onClick={selectNext}
+              onClick={bar.next}
               size="icon"
-              className="size-7"
               variant="ghost"
+              aria-label={labels.nextMatch}
             >
-              <ArrowRightIcon className="h-4 w-4" />
+              <ArrowRightIcon />
             </Button>
-            <Separator orientation="vertical" className="h-7 mx-0.5" />
+            <Separator orientation="vertical" className="mx-0.5 h-7" />
             <Button
-              onClick={() => {
-                setReplacing(true);
-              }}
+              onClick={() => bar.setReplacing(true)}
               size="icon"
-              className="size-7"
               variant="ghost"
+              aria-label={labels.openReplace}
             >
-              <Repeat className="h-4 w-4" />
+              <Repeat />
             </Button>
             <Button
-              onClick={() => {
-                setOpen(false);
-              }}
+              onClick={bar.close}
               size="icon"
-              className="size-7"
               variant="ghost"
+              aria-label={labels.closeSearch}
             >
-              <X className="h-4 w-4" />
+              <X />
             </Button>
           </div>
         ) : (
-          <div className={cn('relative w-full')}>
-            <X
-              onClick={() => {
-                setOpen(false);
-              }}
-              className="absolute right-3 top-3 h-4 w-4 cursor-pointer"
-            />
+          <div className="relative w-full">
+            <Button
+              onClick={bar.close}
+              size="icon"
+              variant="ghost"
+              aria-label={labels.closeSearch}
+              className="absolute right-0 top-0"
+            >
+              <X />
+            </Button>
             <div className="flex w-full items-center gap-3">
               <Button
                 size="icon"
-                className="size-7 rounded-full"
                 variant="ghost"
-                onClick={() => {
-                  setReplacing(false);
-                }}
+                aria-label={labels.backToSearch}
+                onClick={() => bar.setReplacing(false)}
               >
-                <ArrowLeftIcon className="h-4 w-4" />
+                <ArrowLeftIcon />
               </Button>
               <h2 className="text-sm font-medium">
                 {labels.searchAndReplaceTitle}
@@ -167,84 +130,75 @@ export function SearchAndReplaceToolbar() {
             </div>
 
             <div className="my-2 w-full">
-              <div className="mb-3">
-                <Label className="mb-1 text-xs text-muted-foreground">
+              <div className="mb-3 space-y-2">
+                <Label
+                  htmlFor={searchId}
+                  className="text-xs text-muted-foreground"
+                >
                   {labels.search}
                 </Label>
                 <Input
-                  value={searchText}
-                  onChange={(e) => {
-                    setSearchText(e.target.value);
-                  }}
+                  id={searchId}
+                  value={bar.searchText}
+                  onChange={(event) => bar.changeSearch(event.target.value)}
                   placeholder={labels.searchPlaceholder}
                 />
-                {resultCount === 0 ? selectedResult : selectedResult + 1}/
-                {resultCount}
+                {counter}
               </div>
-              <div className="mb-2">
-                <Label className="mb-1 text-xs text-muted-foreground">
+              <div className="mb-2 space-y-2">
+                <Label
+                  htmlFor={replaceId}
+                  className="text-xs text-muted-foreground"
+                >
                   {labels.replaceWith}
                 </Label>
                 <Input
+                  id={replaceId}
                   className="w-full"
-                  value={replaceText}
-                  onChange={(e) => {
-                    setReplaceText(e.target.value);
-                  }}
+                  value={bar.replaceText}
+                  onChange={(event) => bar.changeReplace(event.target.value)}
                   placeholder={labels.replacePlaceholder}
                 />
               </div>
-              <div className="mt-3 flex items-center space-x-2">
+              <div className="mt-3 flex items-center gap-2">
                 <Checkbox
-                  checked={checked}
-                  onCheckedChange={(checked: boolean) => {
-                    setChecked(checked);
-                  }}
-                  id="match_case"
+                  id={matchCaseId}
+                  checked={bar.matchCase}
+                  onCheckedChange={(checked) =>
+                    bar.changeMatchCase(checked === true)
+                  }
                 />
-                <Label
-                  htmlFor="match_case"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
+                <Label htmlFor={matchCaseId} className="text-sm">
                   {labels.matchCase}
                 </Label>
               </div>
             </div>
 
-            <div className="actions mt-6 flex items-center justify-between">
+            <div className="mt-6 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Button
-                  onClick={selectPrevious}
+                  onClick={bar.previous}
                   size="icon"
-                  className="h-7 w-7"
                   variant="secondary"
+                  aria-label={labels.previousMatch}
                 >
-                  <ArrowLeftIcon className="h-4 w-4" />
+                  <ArrowLeftIcon />
                 </Button>
                 <Button
-                  onClick={selectNext}
+                  onClick={bar.next}
                   size="icon"
-                  className="h-7 w-7"
                   variant="secondary"
+                  aria-label={labels.nextMatch}
                 >
-                  <ArrowRightIcon className="h-4 w-4" />
+                  <ArrowRightIcon />
                 </Button>
               </div>
 
-              <div className="main-actions flex items-center gap-2">
-                <Button
-                  size="sm"
-                  className="h-7 px-3 text-xs"
-                  variant="secondary"
-                  onClick={replaceAll}
-                >
+              <div className="flex items-center gap-2">
+                <Button size="sm" variant="secondary" onClick={bar.replaceAll}>
                   {labels.replaceAll}
                 </Button>
-                <Button
-                  onClick={replace}
-                  size="sm"
-                  className="h-7 px-3 text-xs"
-                >
+                <Button size="sm" onClick={bar.replace}>
                   {labels.replace}
                 </Button>
               </div>

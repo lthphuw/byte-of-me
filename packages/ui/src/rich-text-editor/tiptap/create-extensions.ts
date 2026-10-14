@@ -24,7 +24,7 @@ import { MermaidSize } from './extensions/mermaid-size';
 import { NumericTableColumns } from './extensions/numeric-columns-plugin';
 import { Citation } from './extensions/references/citation';
 import { ReferenceList } from './extensions/references/reference-list';
-import SearchAndReplace from './extensions/search-and-replace';
+import { SearchAndReplace } from './extensions/search-and-replace';
 // Shared with the server-side render schema so both stay identical.
 import { CustomHeading, lowlight } from './render-extensions';
 

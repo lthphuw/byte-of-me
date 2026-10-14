@@ -146,6 +146,23 @@ describe('RichTextEditor toolbar names', () => {
     }
   });
 
+  test('shows the headings tooltip when the control takes focus', async () => {
+    // `DropdownMenu` renders no element, so a tooltip trigger wrapped around it
+    // got nothing and never opened.
+    await mountFullEditor(HEADING_DOC);
+
+    const trigger = screen.getByRole('button', {
+      name: testEditorLabels.heading2,
+    });
+    await React.act(async () => {
+      fireEvent.focus(trigger);
+    });
+
+    expect(
+      (await screen.findAllByText(testEditorLabels.headings)).length
+    ).toBeGreaterThan(0);
+  });
+
   test('names the table menu while the caret is inside a table', async () => {
     const container = await mountFullEditor(TABLE_DOC);
     const editor = (

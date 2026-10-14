@@ -162,7 +162,7 @@ export const ColorHighlightToolbar = () => {
           <TooltipContent>{labels.textColorAndHighlight}</TooltipContent>
         </Tooltip>
 
-        <PopoverContent align="start" className="w-56 p-1 dark:bg-gray-2">
+        <PopoverContent align="start" className="w-56 p-1">
           <ScrollArea className="max-h-80 overflow-y-auto pr-2">
             <div className="mb-2.5 mt-2 px-2 text-xs text-muted-foreground">
               {labels.color}

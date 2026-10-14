@@ -62,19 +62,29 @@ const TableToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     return (
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className={cn('h-8 w-8 bg-accent p-0 sm:h-9 sm:w-9', className)}
-            ref={ref}
-            aria-label={labels.tableOptions}
-            {...props}
-          >
-            <TableIcon className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className={cn('h-8 w-8 bg-accent p-0 sm:h-9 sm:w-9', className)}
+                ref={ref}
+                aria-label={labels.tableOptions}
+                {...props}
+              >
+                <TableIcon className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+          </TooltipTrigger>
+          <TooltipContent>
+            <span>{labels.tableOptions}</span>
+          </TooltipContent>
+        </Tooltip>
+        <DropdownMenuContent
+          align="start"
+          onCloseAutoFocus={(event) => event.preventDefault()}
+        >
           <DropdownMenuItem
             onClick={() => editor?.chain().focus().addRowAfter().run()}
           >

@@ -721,3 +721,15 @@
     max-width: none;
   }
 }
+
+/* Search and replace: every match is tinted; the selected one also carries a ring,
+   so it reads without relying on colour. */
+.ProseMirror .search-result {
+  background-color: hsl(var(--accent));
+  border-radius: 0.125rem;
+}
+
+.ProseMirror .search-result-selected {
+  background-color: hsl(var(--primary) / 0.3);
+  box-shadow: 0 0 0 2px hsl(var(--ring));
+}

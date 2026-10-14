@@ -1,6 +1,12 @@
 'use client';
 
-import { type ChangeEvent, type FormEvent, useState } from 'react';
+import {
+  type ChangeEvent,
+  type FormEvent,
+  useId,
+  useRef,
+  useState,
+} from 'react';
 import {
   type CommandProps,
   mergeAttributes,
@@ -9,7 +15,13 @@ import {
   NodeViewWrapper,
   ReactNodeViewRenderer,
 } from '@tiptap/react';
-import { Image, Link, Loader2, Upload, X } from 'lucide-react';
+import {
+  Image as ImageIcon,
+  Link as LinkIcon,
+  Loader2,
+  Upload,
+  X,
+} from 'lucide-react';
 
 import {
   Button,
@@ -27,6 +39,7 @@ import { cn } from '../../../lib/utils';
 import { type EditorLabels, EMPTY_EDITOR_LABELS } from '../editor-labels';
 
 import {
+  imageFilesFrom,
   imageUploadFailedText,
   imageUploadFn,
   resolveImages,
@@ -103,23 +116,10 @@ function ImagePlaceholderComponent(
 ) {
   const { editor, selected, labels } = props;
 
-  /**
-   * Whether THIS editor was configured with a real uploader (read off the
-   * live `image` extension, same as `TiptapImage`'s own auto-upload effect
-   * and `resolveImages` — see `upload-images.ts`).
-   *
-   * Without one, the device-upload path below cannot work: picking a file
-   * inserts the local `blob:` preview URL as the image's `src` (the
-   * documented fallback in `useImageUpload`), and this component's own
-   * `onUpload` handler immediately calls `handleRemove()`, which revokes that
-   * same URL before the node view for it has even mounted. `TiptapImage`'s
-   * auto-upload effect is the only thing that would otherwise turn that
-   * `blob:` src into something real, and with no `uploadFn` configured it
-   * just `console.error`s — leaving a node whose `src` is a revoked object
-   * URL: broken in every tab, forever, and nothing the author did wrong. So
-   * the tab offering that path is hidden rather than left to fail silently;
-   * the URL tab needs no uploader and stays.
-   */
+  // Whether this editor has a real uploader (read off the live `image`
+  // extension). Without one a picked file would stay a local `blob:` URL that
+  // only this tab can resolve, so the upload tab is not offered: the URL tab
+  // needs no uploader and stays.
   const hasUploader = Boolean(imageUploadFn(editor));
 
   const [isExpanded, setIsExpanded] = useState(false);
@@ -135,25 +135,19 @@ function ImagePlaceholderComponent(
 
   const uploadFailedText = imageUploadFailedText(editor);
 
-  const {
-    previewUrl,
-    fileInputRef,
-    handleFileChange: handleSingleFileChange,
-    handleRemove,
-    uploading,
-    error,
-  } = useImageUpload({
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const inputId = useId();
+
+  // No uploader of its own here: the file's `blob:` URL goes into the image
+  // node, whose auto-upload effect uploads it, or removes the node if it cannot.
+  const { uploadFile } = useImageUpload({
     uploadFailedText,
-    onUpload: (imageUrl) => {
+    onUpload: (src, file) => {
       editor
         .chain()
         .focus()
-        .setImage({
-          src: imageUrl,
-          alt: altText || fileInputRef.current?.files?.[0]?.name,
-        })
+        .setImage({ src, alt: altText || file.name })
         .run();
-      handleRemove();
       setIsExpanded(false);
     },
   });
@@ -164,9 +158,12 @@ function ImagePlaceholderComponent(
    * because there is no separate decision — the author picks the files they
    * want next to each other, and the count says the rest.
    */
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files ?? []);
-    if (files.length < 2) return handleSingleFileChange(e);
+  const insertFiles = (files: File[]) => {
+    if (files.length === 0) return;
+    if (files.length === 1) {
+      void uploadFile(files[0]);
+      return;
+    }
 
     void (async () => {
       setInsertingMany(true);
@@ -182,42 +179,23 @@ function ImagePlaceholderComponent(
     })();
   };
 
-  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragActive(true);
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    insertFiles(Array.from(e.target.files ?? []));
+    // So picking the same file again still reports a change.
+    e.target.value = '';
   };
 
-  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragActive(false);
-  };
-
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+  const swallow = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
   };
 
+  // Every dropped image, not just the first: dropping two here is the same
+  // gesture as picking two in the dialog, and produces the same row.
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
+    swallow(e);
     setIsDragActive(false);
-
-    // Every dropped file, not just the first: dropping two images here is the
-    // same gesture as picking two in the dialog, and produces the same row.
-    const files = Array.from(e.dataTransfer.files);
-    if (files.length > 0) {
-      const input = fileInputRef.current;
-      if (input) {
-        const dataTransfer = new DataTransfer();
-        files.forEach((file) => dataTransfer.items.add(file));
-        input.files = dataTransfer.files;
-        handleFileChange({
-          target: input,
-        } as unknown as ChangeEvent<HTMLInputElement>);
-      }
-    }
+    insertFiles(imageFilesFrom(e.dataTransfer.files));
   };
 
   const handleInsertEmbed = (e: FormEvent) => {
@@ -240,76 +218,46 @@ function ImagePlaceholderComponent(
   // above.
   const uploadTabContent = (
     <div
-      onDragEnter={handleDragEnter}
-      onDragLeave={handleDragLeave}
-      onDragOver={handleDragOver}
+      onDragEnter={(e) => {
+        swallow(e);
+        setIsDragActive(true);
+      }}
+      onDragLeave={(e) => {
+        swallow(e);
+        setIsDragActive(false);
+      }}
+      onDragOver={swallow}
       onDrop={handleDrop}
       className={cn(
         'my-4 rounded-lg border-2 border-dashed p-8 text-center transition-colors',
-        isDragActive && 'border-primary bg-primary/10',
-        error && 'border-destructive bg-destructive/10'
+        isDragActive && 'border-primary bg-primary/10'
       )}
     >
-      {previewUrl ? (
-        <div className="space-y-4">
-          <img
-            src={previewUrl}
-            alt={labels.preview}
-            className="mx-auto max-h-[200px] rounded-lg object-cover"
-          />
-          <div className="space-y-2">
-            <Input
-              value={altText}
-              onChange={(e) => setAltText(e.target.value)}
-              placeholder={labels.altTextOptional}
-            />
-            <div className="flex justify-end gap-2">
-              <Button
-                variant="outline"
-                onClick={handleRemove}
-                disabled={uploading}
-              >
-                {labels.remove}
-              </Button>
-              <Button disabled={uploading}>
-                {uploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {labels.upload}
-              </Button>
-            </div>
-          </div>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        onChange={handleFileChange}
+        className="hidden"
+        id={inputId}
+      />
+      <label
+        htmlFor={inputId}
+        className="flex cursor-pointer flex-col items-center gap-4"
+      >
+        {insertingMany ? (
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        ) : (
+          <Upload className="h-8 w-8 text-muted-foreground" />
+        )}
+        <div>
+          <p className="text-sm font-medium">{labels.clickToUploadOrDrop}</p>
+          <p className="text-xs text-muted-foreground">
+            {labels.imageFormatsPickSeveral}
+          </p>
         </div>
-      ) : (
-        <>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handleFileChange}
-            className="hidden"
-            id="image-upload"
-          />
-          <label
-            htmlFor="image-upload"
-            className="flex cursor-pointer flex-col items-center gap-4"
-          >
-            {insertingMany ? (
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-            ) : (
-              <Upload className="h-8 w-8 text-muted-foreground" />
-            )}
-            <div>
-              <p className="text-sm font-medium">
-                {labels.clickToUploadOrDrop}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {labels.imageFormatsPickSeveral}
-              </p>
-            </div>
-          </label>
-        </>
-      )}
-      {error && <p className="mt-2 text-sm text-destructive-text">{error}</p>}
+      </label>
     </div>
   );
 
@@ -347,27 +295,26 @@ function ImagePlaceholderComponent(
     <NodeViewWrapper className="w-full">
       <div className="relative">
         {!isExpanded ? (
-          <div
+          <button
+            type="button"
             onClick={() => setIsExpanded(true)}
             className={cn(
-              'group relative flex cursor-pointer flex-col items-center gap-4 rounded-lg border-2 border-dashed p-8 transition-all hover:bg-accent',
-              selected && 'border-primary bg-primary/5',
-              isDragActive && 'border-primary bg-primary/5',
-              error && 'border-destructive bg-destructive/5'
+              'group relative flex w-full cursor-pointer flex-col items-center gap-4 rounded-lg border-2 border-dashed p-8 transition-colors hover:bg-accent',
+              selected && 'border-primary bg-primary/5'
             )}
           >
-            <div className="rounded-full bg-background p-4 shadow-sm transition-colors group-hover:bg-accent">
-              <Image className="h-6 w-6" />
-            </div>
-            <div className="text-center">
-              <p className="text-sm font-medium">
+            <span className="rounded-full bg-background p-4 shadow-sm transition-colors group-hover:bg-accent">
+              <ImageIcon className="h-6 w-6" />
+            </span>
+            <span className="text-center">
+              <span className="block text-sm font-medium">
                 {labels.clickToUploadOrDrop}
-              </p>
-              <p className="text-xs text-muted-foreground">
+              </span>
+              <span className="block text-xs text-muted-foreground">
                 {labels.imageFormats}
-              </p>
-            </div>
-          </div>
+              </span>
+            </span>
+          </button>
         ) : (
           <div className="rounded-lg border bg-card p-4 shadow-sm">
             <div className="mb-4 flex items-center justify-between">
@@ -375,6 +322,7 @@ function ImagePlaceholderComponent(
               <Button
                 variant="ghost"
                 size="icon"
+                aria-label={labels.close}
                 onClick={() => setIsExpanded(false)}
               >
                 <X className="h-4 w-4" />
@@ -395,7 +343,7 @@ function ImagePlaceholderComponent(
                     {labels.upload}
                   </TabsTrigger>
                   <TabsTrigger value="url">
-                    <Link className="mr-2 h-4 w-4" />
+                    <LinkIcon className="mr-2 h-4 w-4" />
                     {labels.url}
                   </TabsTrigger>
                 </TabsList>

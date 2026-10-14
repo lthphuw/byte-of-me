@@ -1,6 +1,6 @@
 'use client';
 
-import React, {
+import {
   type ComponentProps,
   memo,
   useCallback,
@@ -12,185 +12,18 @@ import React, {
 import type { Editor } from '@tiptap/core';
 import { PluginKey } from '@tiptap/pm/state';
 import { FloatingMenu } from '@tiptap/react/menus';
-import {
-  AlignCenter,
-  AlignLeft,
-  AlignRight,
-  ChevronRight,
-  Code2,
-  CodeSquare,
-  Heading1,
-  Heading2,
-  Heading3,
-  ImageIcon,
-  List,
-  ListOrdered,
-  Minus,
-  Quote,
-  TextQuote,
-} from 'lucide-react';
 
-import { useDebounce } from '../../../hooks/use-debounce';
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandItem,
   CommandList,
-  ScrollArea,
 } from '../../../index';
 import { cn } from '../../../lib/utils';
 import type { EditorLabels } from '../editor-labels';
 
-interface CommandItemType {
-  title: string;
-  description: string;
-  icon: React.ComponentType<{ className?: string }>;
-  keywords: string;
-  command: (editor: Editor) => void;
-  group: string;
-}
-
-type CommandGroupType = {
-  group: string;
-  items: Omit<CommandItemType, 'group'>[];
-};
-
-/**
- * The slash menu's entries, built from the app's text rather than held as a
- * constant: every group name, title and description is a label (see
- * `EditorLabels`). `keywords` are search aliases that are never drawn, so they
- * stay as written.
- */
-const buildGroups = (labels: EditorLabels): CommandGroupType[] => [
-  {
-    group: labels.basicBlocks,
-    items: [
-      {
-        title: labels.text,
-        description: labels.textDescription,
-        icon: ChevronRight,
-        keywords: 'paragraph text',
-        command: (editor) => editor.chain().focus().clearNodes().run(),
-      },
-      {
-        title: labels.heading1,
-        description: labels.heading1Description,
-        icon: Heading1,
-        keywords: 'h1 title header',
-        command: (editor) =>
-          editor.chain().focus().toggleHeading({ level: 1 }).run(),
-      },
-      {
-        title: labels.heading2,
-        description: labels.heading2Description,
-        icon: Heading2,
-        keywords: 'h2 subtitle',
-        command: (editor) =>
-          editor.chain().focus().toggleHeading({ level: 2 }).run(),
-      },
-      {
-        title: labels.heading3,
-        description: labels.heading3Description,
-        icon: Heading3,
-        keywords: 'h3 subheader',
-        command: (editor) =>
-          editor.chain().focus().toggleHeading({ level: 3 }).run(),
-      },
-      {
-        title: labels.bulletList,
-        description: labels.bulletListDescription,
-        icon: List,
-        keywords: 'unordered ul bullets',
-        command: (editor) => editor.chain().focus().toggleBulletList().run(),
-      },
-      {
-        title: labels.numberedList,
-        description: labels.numberedListDescription,
-        icon: ListOrdered,
-        keywords: 'numbered ol',
-        command: (editor) => editor.chain().focus().toggleOrderedList().run(),
-      },
-      {
-        title: labels.codeBlock,
-        description: labels.codeBlockDescription,
-        icon: Code2,
-        keywords: 'code snippet pre',
-        command: (editor) => editor.chain().focus().toggleCodeBlock().run(),
-      },
-      {
-        title: labels.image,
-        // Picking more than one file in the dialog inserts them as a row, so
-        // the one entry covers both shapes — see `image-placeholder.tsx`.
-        description: labels.imageDescription,
-        icon: ImageIcon,
-        keywords: 'image picture photo row gallery side by side',
-        command: (editor) =>
-          editor.chain().focus().insertImagePlaceholder().run(),
-      },
-      {
-        title: labels.horizontalRule,
-        description: labels.horizontalRuleDescription,
-        icon: Minus,
-        keywords: 'horizontal rule divider',
-        command: (editor) => editor.chain().focus().setHorizontalRule().run(),
-      },
-    ],
-  },
-  {
-    group: labels.inline,
-    items: [
-      {
-        title: labels.quote,
-        description: labels.quoteDescription,
-        icon: Quote,
-        keywords: 'blockquote cite',
-        command: (editor) => editor.chain().focus().toggleBlockquote().run(),
-      },
-      {
-        title: labels.code,
-        description: labels.codeDescription,
-        icon: CodeSquare,
-        keywords: 'code inline',
-        command: (editor) => editor.chain().focus().toggleCode().run(),
-      },
-      {
-        title: labels.blockquote,
-        description: labels.blockquoteDescription,
-        icon: TextQuote,
-        keywords: 'blockquote quote',
-        command: (editor) => editor.chain().focus().toggleBlockquote().run(),
-      },
-    ],
-  },
-  {
-    group: labels.alignment,
-    items: [
-      {
-        title: labels.alignLeft,
-        description: labels.alignLeftDescription,
-        icon: AlignLeft,
-        keywords: 'align left',
-        command: (editor) => editor.chain().focus().setTextAlign('left').run(),
-      },
-      {
-        title: labels.alignCenter,
-        description: labels.alignCenterDescription,
-        icon: AlignCenter,
-        keywords: 'align center',
-        command: (editor) =>
-          editor.chain().focus().setTextAlign('center').run(),
-      },
-      {
-        title: labels.alignRight,
-        description: labels.alignRightDescription,
-        icon: AlignRight,
-        keywords: 'align right',
-        command: (editor) => editor.chain().focus().setTextAlign('right').run(),
-      },
-    ],
-  },
-];
+import { buildGroups, filterGroups } from './slash-menu-items';
 
 type ShouldShowProps = Parameters<
   NonNullable<ComponentProps<typeof FloatingMenu>['shouldShow']>
@@ -211,33 +44,17 @@ export const TipTapFloatingMenu = memo(function TipTapFloatingMenu({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
-  const debouncedSearch = useDebounce(search, 300);
   const commandRef = useRef<HTMLDivElement>(null);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const groups = useMemo(() => buildGroups(labels), [labels]);
 
+  // Filtered by the live query, never a delayed copy: `executeCommand` deletes
+  // exactly what was typed, so Enter has to run the entry the list shows now.
   const filteredGroups = useMemo(
-    () =>
-      groups
-        .map((group) => ({
-          ...group,
-          items: group.items.filter(
-            (item) =>
-              item.title
-                .toLowerCase()
-                .includes(debouncedSearch.toLowerCase()) ||
-              item.description
-                .toLowerCase()
-                .includes(debouncedSearch.toLowerCase()) ||
-              item.keywords
-                .toLowerCase()
-                .includes(debouncedSearch.toLowerCase())
-          ),
-        }))
-        .filter((group) => group.items.length > 0),
-    [groups, debouncedSearch]
+    () => filterGroups(groups, search),
+    [groups, search]
   );
 
   const flatFilteredItems = useMemo(
@@ -263,8 +80,6 @@ export const TipTapFloatingMenu = memo(function TipTapFloatingMenu({
           .run();
 
         commandFn(editor);
-      } catch (error) {
-        console.error('Error executing command:', error);
       } finally {
         setIsOpen(false);
         setSearch('');
@@ -332,7 +147,6 @@ export const TipTapFloatingMenu = memo(function TipTapFloatingMenu({
     };
   }, [handleKeyDown, editor]);
 
-  // Add new effect for resetting selectedIndex
   useEffect(() => {
     setSelectedIndex(-1);
   }, [search]);
@@ -384,79 +198,64 @@ export const TipTapFloatingMenu = memo(function TipTapFloatingMenu({
       // every render) — which looped when each transaction re-rendered the host.
       pluginKey={pluginKey}
       shouldShow={shouldShow}
-      // tippyOptions={{
-      //   placement: "bottom-start",
-      //   interactive: true,
-      //   appendTo: () => document.body,
-      //   onHide: () => {
-      //     setIsOpen(false);
-      //     setSelectedIndex(-1);
-      //   },
-      // }}
     >
       <Command
-        role="listbox"
         ref={commandRef}
         className="z-50 w-72 overflow-hidden rounded-lg border bg-popover shadow-lg"
       >
-        <ScrollArea className="max-h-[330px]">
-          <CommandList>
-            <CommandEmpty className="py-3 text-center text-sm text-muted-foreground">
-              {labels.noResults}
-            </CommandEmpty>
+        <CommandList>
+          <CommandEmpty className="py-3 text-center text-sm text-muted-foreground">
+            {labels.noResults}
+          </CommandEmpty>
 
-            {filteredGroups.map((group, groupIndex) => (
-              <CommandGroup
-                key={`${group.group}-${groupIndex}`}
-                heading={
-                  <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
-                    {group.group}
-                  </div>
-                }
-              >
-                {group.items.map((item, itemIndex) => {
-                  const flatIndex =
-                    filteredGroups
-                      .slice(0, groupIndex)
-                      .reduce((acc, g) => acc + g.items.length, 0) + itemIndex;
+          {filteredGroups.map((group, groupIndex) => (
+            <CommandGroup
+              key={`${group.group}-${groupIndex}`}
+              heading={
+                <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
+                  {group.group}
+                </div>
+              }
+            >
+              {group.items.map((item, itemIndex) => {
+                const flatIndex =
+                  filteredGroups
+                    .slice(0, groupIndex)
+                    .reduce((acc, g) => acc + g.items.length, 0) + itemIndex;
 
-                  return (
-                    <CommandItem
-                      role="option"
-                      key={`${group.group}-${item.title}-${itemIndex}`}
-                      value={`${group.group}-${item.title}`}
-                      onSelect={() => executeCommand(item.command)}
-                      className={cn(
-                        'gap-3 aria-selected:bg-accent/50',
-                        flatIndex === selectedIndex ? 'bg-accent/50' : ''
-                      )}
-                      aria-selected={flatIndex === selectedIndex}
-                      ref={(el) => {
-                        itemRefs.current[flatIndex] = el;
-                      }}
-                      tabIndex={flatIndex === selectedIndex ? 0 : -1}
-                    >
-                      <div className="flex h-9 w-9 items-center justify-center rounded-md border bg-background">
-                        <item.icon className="h-4 w-4" />
-                      </div>
-                      <div className="flex flex-1 flex-col">
-                        <span className="text-sm font-medium">
-                          {item.title}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {item.description}
-                        </span>
-                      </div>
-                      <kbd className="ml-auto flex h-5 items-center rounded bg-muted px-1.5 text-xs text-muted-foreground">
-                        ↵
-                      </kbd>
-                    </CommandItem>
-                  );
-                })}
-              </CommandGroup>
-            ))}
-          </CommandList>
-        </ScrollArea>
+                return (
+                  <CommandItem
+                    key={`${group.group}-${item.title}-${itemIndex}`}
+                    value={`${group.group}-${item.title}`}
+                    onSelect={() => executeCommand(item.command)}
+                    className={cn(
+                      'gap-3 aria-selected:bg-accent/50',
+                      flatIndex === selectedIndex ? 'bg-accent/50' : ''
+                    )}
+                    aria-selected={flatIndex === selectedIndex}
+                    ref={(el) => {
+                      itemRefs.current[flatIndex] = el;
+                    }}
+                    tabIndex={flatIndex === selectedIndex ? 0 : -1}
+                  >
+                    <div className="flex h-9 w-9 items-center justify-center rounded-md border bg-background">
+                      <item.icon className="h-4 w-4" />
+                    </div>
+                    <div className="flex flex-1 flex-col">
+                      <span className="text-sm font-medium">{item.title}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {item.description}
+                      </span>
+                    </div>
+                    <kbd className="ml-auto flex h-5 items-center rounded bg-muted px-1.5 text-xs text-muted-foreground">
+                      ↵
+                    </kbd>
+                  </CommandItem>
+                );
+              })}
+            </CommandGroup>
+          ))}
+        </CommandList>
       </Command>
     </FloatingMenu>
   );

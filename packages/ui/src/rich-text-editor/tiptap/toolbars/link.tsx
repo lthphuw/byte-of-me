@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { PopoverClose } from '@radix-ui/react-popover';
-import { Trash2, X } from 'lucide-react';
+import { Link2, Trash2, X } from 'lucide-react';
 
 import {
   Button,
@@ -16,7 +16,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '../../../index';
-import { getUrlFromString } from '../../../lib/tiptap-utils';
+import { normalizeLinkInput } from '../../../lib/url';
 import { cn } from '../../../lib/utils';
 
 import { useToolbar } from './toolbar-provider';
@@ -26,11 +26,12 @@ const LinkToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const { editor, state, labels } = useToolbar();
     const [open, setOpen] = React.useState(false);
     const [link, setLink] = React.useState('');
+    const inputId = React.useId();
 
     const currentHref = state.link.href;
 
     const apply = () => {
-      const url = getUrlFromString(link);
+      const url = normalizeLinkInput(link);
       if (!url || !editor) return;
 
       const chain = editor.chain().focus();
@@ -87,10 +88,10 @@ const LinkToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
                 ref={ref}
                 {...props}
               >
-                <p className="mr-2 text-base">↗</p>
-                <p className={'decoration-gray-7 underline underline-offset-4'}>
+                <Link2 />
+                <span className="underline underline-offset-4">
                   {labels.link}
-                </p>
+                </span>
               </Button>
             </PopoverTrigger>
           </TooltipTrigger>
@@ -112,21 +113,27 @@ const LinkToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
             a nested form would submit the whole post on every link.
           */}
           <div className="relative">
-            <PopoverClose className="absolute right-3 top-3">
+            <PopoverClose
+              className="absolute right-3 top-3"
+              aria-label={labels.close}
+            >
               <X className="h-4 w-4" />
             </PopoverClose>
             <div>
-              <Label>{labels.link}</Label>
+              <Label htmlFor={inputId}>{labels.link}</Label>
               <p className="text-muted-foreground text-sm">{labels.linkHint}</p>
               <div className="mt-3 flex flex-col items-end justify-end gap-3">
                 <Input
+                  id={inputId}
                   autoFocus
                   value={link}
                   onChange={(e) => {
                     setLink(e.target.value);
                   }}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
+                    // Enter that commits an IME composition (Vietnamese Telex
+                    // among them) is not a request to apply the link.
+                    if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
                       e.preventDefault();
                       apply();
                     }

@@ -1,3 +1,5 @@
+import { SAFE_SCHEMES, schemeOf } from '../../../../lib/url';
+
 import { createReferenceId, type ReferenceItem } from './types';
 
 /**
@@ -36,13 +38,6 @@ const SOURCE_FIELDS = [
   'organization',
   'howpublished',
 ];
-
-/**
- * Schemes a reference URL may carry. The same allowlist `lib/sanitize.ts`
- * enforces at render time — applied here too so an author never saves a field
- * that will silently vanish from the published page.
- */
-const SAFE_SCHEMES = new Set(['http', 'https', 'mailto', 'tel']);
 
 /**
  * LaTeX accent commands, as the combining mark they stand for. Composing the
@@ -287,11 +282,13 @@ function readUrl(fields: Map<string, string>): string | undefined {
 
   if (!candidate) return undefined;
 
-  const scheme = /^([a-z][a-z0-9+.-]*):/i.exec(candidate);
-  // No scheme at all is the common `arxiv.org/abs/…` paste, not an attack.
+  // The sanitizer's allowlist, applied here too so an author never saves a
+  // field that will silently vanish from the published page. No scheme at all
+  // is the common `arxiv.org/abs/…` paste, not an attack.
+  const scheme = schemeOf(candidate);
   if (!scheme) return `https://${candidate}`;
 
-  return SAFE_SCHEMES.has(scheme[1].toLowerCase()) ? candidate : undefined;
+  return SAFE_SCHEMES.has(scheme) ? candidate : undefined;
 }
 
 function readEntry(

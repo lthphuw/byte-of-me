@@ -1,3 +1,5 @@
+import { SAFE_SCHEMES, schemeOf } from './url';
+
 // Tags allowed to survive sanitization. Everything else is dropped (its text
 // content is kept but rendered inert).
 const ALLOWED_TAGS = new Set([
@@ -104,12 +106,6 @@ const PATTERN_ATTRS: Record<string, RegExp> = {
 
 const VOID_TAGS = new Set(['br', 'hr', 'img']);
 
-// Schemes a link or image may use. This is an allowlist rather than a list of
-// known-bad schemes: a denylist has to anticipate every dangerous scheme, while
-// an allowlist fails closed on the ones nobody thought of.
-const SAFE_SCHEMES = new Set(['http', 'https', 'mailto', 'tel']);
-const SCHEME = /^([a-z][a-z0-9+.-]*):/i;
-
 // One tag, with a quoted attribute value read whole so a `>` inside `alt="a -> b"`
 // does not end it (a browser reads it the same way). A `<` that opens no
 // complete tag matches alone and becomes text.
@@ -185,8 +181,8 @@ function isUnsafeUrl(value: string): boolean {
   const controlChars = /[\u0000-\u0020\u00a0]/g;
   const normalized = decodeEntities(value).replace(controlChars, '');
 
-  const scheme = SCHEME.exec(normalized);
-  if (scheme) return !SAFE_SCHEMES.has(scheme[1].toLowerCase());
+  const scheme = schemeOf(normalized);
+  if (scheme) return !SAFE_SCHEMES.has(scheme);
 
   const colon = normalized.indexOf(':');
   if (colon !== -1) {
