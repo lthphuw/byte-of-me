@@ -91,8 +91,7 @@ Relations show the schema's `onDelete` (`cascade`, `setNull`, or `no onDelete`).
 | 3 (Oct 10) | Featured works: base, details, demo media |
 | 1 (Oct 10) | `media.width`, `media.height`: nullable, additive; applied to production 2026-10-10 by `prisma migrate deploy`, 25 existing rows left NULL until backfilled |
 | 1 (Oct 13) | Featured works: drop `is_published` and `featured_work_translations.description`. Destructive, the only migration here that is not additive; applied to production by hand, not by `migrate dev` |
-| 1 (Oct 14) | Featured works: `featured_work_links` (additive) plus a backfill of each non-empty `featured_works.url` to one link at position 0. Step 1 of 2; NOT yet applied to production |
-| 1 (Oct 14) | Featured works: drop `featured_works.url`. Destructive. Step 2 of 2: apply only after the code that reads `featured_work_links` is live. A guard refuses the drop while a stored url has no link row |
+| 1 (Oct 14) | Featured works: `featured_work_links` (up to six proof links per work), backfilled from `featured_works.url`, then `featured_works.url` dropped. Destructive. Apply by hand together with the deploy of the code that reads `featured_work_links`; NOT yet applied to production |
 
 ## Key flows
 

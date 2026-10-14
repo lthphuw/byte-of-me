@@ -1,10 +1,13 @@
--- Homepage "Featured works": several proof links per work (a card can gather PRs from
--- several repos). Step 1 of 2.
+-- Homepage "Featured works": several proof links per work, and the single `url` they
+-- replace. One migration: the backfill and the drop run in the same transaction.
 --
--- Purely additive: CREATE and a backfill INSERT, nothing altered. `featured_works.url`
--- stays until 20261014110000, so code that still reads it keeps working in between.
--- The backfill copies each non-empty url to one link at position 0, and the NOT EXISTS
--- guard makes a re-run add nothing twice. Both foreign keys cascade.
+-- Destructive: drops `featured_works.url`. Apply it together with the deploy of the code
+-- that reads `featured_work_links`. The public homepage reads the old column until that
+-- deploy, so a request in between shows the section's error state.
+--
+-- Creates the table with a CHECK that caps the list at six links, the unique position key
+-- and a cascading foreign key. The backfill copies each non-empty url to one link at
+-- position 0, with a NOT EXISTS guard so a re-run adds nothing twice.
 
 CREATE TABLE IF NOT EXISTS "featured_work_links" (
     "id" TEXT NOT NULL,
@@ -35,3 +38,5 @@ WHERE w."url" IS NOT NULL
   AND NOT EXISTS (
       SELECT 1 FROM "featured_work_links" AS l WHERE l."featured_work_id" = w."id"
   );
+
+ALTER TABLE "featured_works" DROP COLUMN IF EXISTS "url";
