@@ -11,8 +11,8 @@ import {
   useEditor,
 } from '@tiptap/react';
 
-import { useMediaQuery } from '../../hooks/use-media-query';
 import { EditorSkeleton } from '../../editor-skeleton';
+import { useMediaQuery } from '../../hooks/use-media-query';
 import { cn } from '../../lib/utils';
 
 import { createExtensions } from './create-extensions';

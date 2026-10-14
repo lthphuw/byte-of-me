@@ -1,9 +1,9 @@
 import { renderToString } from 'react-dom/server';
 import { describe, expect, it } from 'bun:test';
 
+import { EditorSkeleton } from './editor-skeleton';
 import { testEditorLabels } from './rich-text-editor/tiptap/editor-labels.test-fixture';
 import { RichTextEditor } from './rich-text-editor/tiptap/rich-text-editor';
-import { EditorSkeleton } from './editor-skeleton';
 
 describe('EditorSkeleton', () => {
   it('reserves the body height a compact editor will take', () => {
