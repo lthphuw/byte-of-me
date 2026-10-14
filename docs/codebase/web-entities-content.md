@@ -80,7 +80,7 @@ Action names are files in `apps/web/src/entities/<slice>/api/`. "admin" = `requi
 
 - Public blog list: `apps/web/src/app/[locale]/(public)/blogs/page.tsx:48` prefetches `blogQueries.publicList(1, DEFAULT_BLOG_FILTERS)`, and the client reads the same factory through `usePublicBlogList` (`apps/web/src/widgets/public/blogs-content/ui/blogs-content.tsx:40`). The factory unwraps the envelope, so a refused read throws and nothing is hydrated. `get-paginated-public-blogs.ts` is cached by page, limit and locale (searches, tag filters and pages past 50 are read live); drafts bypass the cache and have their own key.
 - Public post: `apps/web/src/app/[locale]/(public)/blogs/[slug]/page.tsx:32` → `get-public-blog-by-slug.ts` (tags `blog` + slug); prev/next and related are separate cached reads.
-- Editors load the full row by id on open (`get-admin-*-by-id`), never the list row: `apps/web/src/widgets/dashboard/company-manager/ui/company-manager.tsx:73`; blog at `blog-manager.tsx:69`.
+- Editors load the full row by id on open (`get-admin-*-by-id`), never the list row: `apps/web/src/widgets/dashboard/company-manager/ui/company-manager.tsx:70`; blog at `blog-manager.tsx:69`.
 - Dashboard lists are prefetched with `*Keys.adminPage` into `HydrationBoundary`: `apps/web/src/app/[locale]/(protected)/dashboard/{blogs,companies,educations,featured-works}/page.tsx`.
 - Save: `apps/web/src/shared/hooks/use-crud-manager.ts` invalidates `keys.all` (`:133`) and removes the detail key (`:139-141`) in `onSuccess`.
 - Homepage featured works: `apps/web/src/features/public/homepage-featured-works/ui/homepage-featured-works.tsx:8` → `get-public-featured-works.ts` → `lib/load-public-featured-works.ts` (DB rows with their links, position order, six at most) → `lib/get-featured-work-github.ts` (GitHub facts per pull-request link: repo, stars, title, state; 1 h; failure returns `{}`). The homepage link reads only `state` (said to screen readers, not drawn) and the number from the url; stars and title are fetched but not shown.
@@ -138,7 +138,7 @@ cd apps/web && bun test src/entities/featured-work   # one slice, bun path filte
 - `apps/web/src/entities/featured-work/api/reorder-featured-work.ts:14`: `directionSchema` is declared outside `model/featured-work-schema.ts` (§8).
 - `apps/web/src/entities/blog/model/types.ts:3`, `apps/web/src/entities/blog/api/get-paginated-public-blogs.ts:7`: import `@/entities/project/model/types`, another slice's internals (§3 "never sideways").
 - `apps/web/src/entities/featured-work/lib/featured-work-media.ts:4`, `lib/load-public-featured-works.ts:19`, `ui/featured-work-row.tsx:10`: import `@/entities/media/model/upload-constraints` (§3).
-- 73 import lines in 40 files outside these slices reach `api/`, `model/`, `ui/` or `lib/` directly instead of the slice barrel (§3). Example: `apps/web/src/widgets/dashboard/company-manager/ui/company-manager.tsx:15-18`.
+- 73 import lines in 40 files outside these slices reach `api/`, `model/`, `ui/` or `lib/` directly instead of the slice barrel (§3). Example: `apps/web/src/widgets/dashboard/company-manager/ui/company-manager.tsx:10-13`.
 
 ## See also
 

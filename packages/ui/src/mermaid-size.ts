@@ -2,26 +2,11 @@
 // Mermaid draws no wider than the viewBox, so the reader can reserve the exact box before the
 // library loads, and the swap shifts nothing.
 
+import { isPixelSize, type PixelSize } from './lib/pixel-size';
+
 export const MERMAID_SIZE_ATTR = 'data-mermaid-size';
 
-/** Above this a diagram is not a layout hint any more; it is a bad value. */
-const MAX_DIAGRAM_PX = 10_000;
-
-export interface MermaidSize {
-  width: number;
-  height: number;
-}
-
-function isSize({ width, height }: MermaidSize): boolean {
-  return (
-    Number.isInteger(width) &&
-    Number.isInteger(height) &&
-    width > 0 &&
-    height > 0 &&
-    width <= MAX_DIAGRAM_PX &&
-    height <= MAX_DIAGRAM_PX
-  );
-}
+export type MermaidSize = PixelSize;
 
 /** The viewBox of a rendered mermaid SVG, rounded to whole pixels; null without one. */
 export function svgNaturalSize(svg: string): MermaidSize | null {
@@ -35,7 +20,7 @@ export function svgNaturalSize(svg: string): MermaidSize | null {
   if (parts.length !== 4) return null;
 
   const size = { width: Math.round(parts[2]), height: Math.round(parts[3]) };
-  return isSize(size) ? size : null;
+  return isPixelSize(size) ? size : null;
 }
 
 export function formatMermaidSize({ width, height }: MermaidSize): string {
@@ -50,5 +35,5 @@ export function parseMermaidSize(
   if (!match) return null;
 
   const size = { width: Number(match[1]), height: Number(match[2]) };
-  return isSize(size) ? size : null;
+  return isPixelSize(size) ? size : null;
 }

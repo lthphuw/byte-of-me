@@ -1,10 +1,10 @@
 // Server-side only: pulls in `generateHTML` and the full extension schema (tiptap + prosemirror +
 // lowlight ≈ 1 MB). The schema is imported by direct path, never `./rich-text-editor`: that entry
 // is 'use client' and would ship the whole editor (~380 KB) with every page that renders rich text.
-import type { JSONContent } from '@tiptap/core';
 import { generateHTML } from '@tiptap/html';
 
 import { type ImageSizes, withImageRatios } from './lib/image-ratios';
+import { parseRichTextContent } from './lib/rich-text-content';
 import { escapeHtml, sanitizeHtml } from './lib/sanitize';
 import { markNumericTableColumns } from './rich-text-editor/tiptap/extensions/numeric-columns';
 import { applyCitationNumbering } from './rich-text-editor/tiptap/extensions/references/numbering';
@@ -15,13 +15,14 @@ import { renderExtensions } from './rich-text-editor/tiptap/render-extensions';
  * schema cannot draw it. A throw is the only failure signal (unknown node, bad `content`).
  */
 function generateDocumentHtml(content: unknown): string | null {
+  const json = parseRichTextContent(content);
+  if (!json) return null;
+
   try {
-    const json = typeof content === 'string' ? JSON.parse(content) : content;
-    // Citation numbers and numeric table columns are both derived from the
-    // document rather than stored, so both are baked in here, right before the
-    // markup is produced.
+    // Citation numbers and numeric table columns are derived from the document, not stored,
+    // so both are baked in here, right before the markup is produced.
     return generateHTML(
-      markNumericTableColumns(applyCitationNumbering(json as JSONContent)),
+      markNumericTableColumns(applyCitationNumbering(json)),
       renderExtensions
     );
   } catch {

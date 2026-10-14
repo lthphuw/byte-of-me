@@ -1,25 +1,7 @@
-/** A stored image's pixel size. Whole numbers, as the database holds them. */
-interface ImageSize {
-  width: number;
-  height: number;
-}
+import { isPixelSize, type PixelSize } from './pixel-size';
 
-/** Image source URL → its size. Only the sources a document actually uses are looked up. */
-export type ImageSizes = Record<string, ImageSize>;
-
-/** Above this a size is a bad value, not a layout hint. */
-const MAX_PX = 10_000;
-
-function isWholeSize({ width, height }: ImageSize): boolean {
-  return (
-    Number.isInteger(width) &&
-    Number.isInteger(height) &&
-    width > 0 &&
-    height > 0 &&
-    width <= MAX_PX &&
-    height <= MAX_PX
-  );
-}
+/** Image source URL → its stored pixel size. Only the sources a document uses are looked up. */
+export type ImageSizes = Record<string, PixelSize>;
 
 /** The `src` attribute as the sanitizer wrote it, decoded back to the URL it came from. */
 function sourceOf(tag: string): string | undefined {
@@ -47,7 +29,7 @@ export function withImageRatios(
       return tag;
     }
     const size = sizes[src];
-    if (!size || !isWholeSize(size)) return tag;
+    if (!size || !isPixelSize(size)) return tag;
 
     const selfClosing = tag.endsWith('/>');
     const head = tag.slice(0, selfClosing ? -2 : -1).trimEnd();
