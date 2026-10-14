@@ -27,9 +27,11 @@ apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces;
 | file | purpose | main consumers (non-spec, rg) |
 | --- | --- | --- |
 | `apps/web/src/shared/lib/constants.ts` | `CACHE_TAGS` (14 tags), `LAYOUT_CACHE_REVALIDATE_SECONDS` (3600), `PATHNAME_HEADER` (`x-pathname`), `INTERACTION` | 61 files: `apps/web/src/entities/blog/`, `apps/web/src/features/public/`, `apps/web/src/entities/featured-work/` |
-| `apps/web/src/shared/lib/utils.ts` | `cn` (re-export), `getErrorMessage`, `ensureValidUrl`, date and size formatters | 117 files: `apps/web/src/widgets/public/`, `apps/web/src/shared/ui/`, `apps/web/src/widgets/dashboard/` |
+| `apps/web/src/shared/lib/utils.ts` | `cn` (re-export), `getErrorMessage`, `ensureValidUrl` (http(s), `mailto:`, `tel:` pass; a bare host gets `https://`; any other scheme returns `#`), date and size formatters | 117 files: `apps/web/src/widgets/public/`, `apps/web/src/shared/ui/`, `apps/web/src/widgets/dashboard/` |
+| `apps/web/src/shared/lib/safe-http-url.ts` | `isSafeHttpUrl` (http/https only), `safeHttpUrl` (zod: trimmed, message `validation.invalidUrl`), `toSafeHref` (render-time: `null` unless http(s)) | `apps/web/src/entities/project/model/project-schema.ts` (`githubLink`, `liveLink`), `apps/web/src/entities/project/ui/project-timeline-item.tsx`, `apps/web/src/entities/user-profile/model/user-profile-schema.ts` |
 | `apps/web/src/shared/lib/validate-action-input.ts` | `parseInput`, `idSchema`, `INVALID_INPUT_MESSAGE` | 42 files: `apps/web/src/entities/blog/`, `apps/web/src/entities/featured-work/`, `apps/web/src/entities/project/` |
-| `apps/web/src/shared/lib/pagination.ts` | `clampPagination` (defaults: 12 rows, max 50), `buildPaginatedMeta`, `MAX_PAGE` | 15 files: `apps/web/src/entities/tag/`, `apps/web/src/entities/project/`, `apps/web/src/entities/comment/` |
+| `apps/web/src/shared/lib/pagination.ts` | `clampPagination` (defaults: 12 rows, max 50), `buildPaginatedMeta`, `MAX_PAGE`, `MAX_CACHED_PAGE` (deepest page a public list caches) | 15 files: `apps/web/src/entities/tag/`, `apps/web/src/entities/project/`, `apps/web/src/entities/comment/` |
+| `apps/web/src/shared/lib/public-media.ts` | `PUBLIC_MEDIA_SELECT`: the Prisma `select` for a Media relation in a public payload (`PublicMedia` in `shared/types/models/media.ts`: id, url, mimeType, width, height) | 8 files: `apps/web/src/entities/blog/`, `apps/web/src/entities/project/`, `apps/web/src/entities/tech-stack/`, `apps/web/src/entities/education/` |
 | `apps/web/src/shared/lib/public-input-schema.ts` | zod for anonymous ids, slugs, search text | 5 files: `apps/web/src/entities/blog/`, `apps/web/src/features/public/`, `apps/web/src/entities/project/` |
 | `apps/web/src/shared/lib/filter-params.ts` | URL filter parsing; `searchHistoryMode` (push vs replace) | 7 files: `apps/web/src/features/public/`, `apps/web/src/shared/hooks/` |
 | `apps/web/src/shared/lib/i18n-utils.ts` | DB translations: `getTranslationLanguages`, `getTranslatedContent` | 23 files: `apps/web/src/entities/blog/`, `apps/web/src/entities/project/`, `apps/web/src/entities/user-profile/` |
@@ -78,7 +80,7 @@ apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces;
 | file | does | consumers |
 | --- | --- | --- |
 | `session.ts` | `getAuthenticatedUser`, `requireUser` (role USER or ADMIN); `getAuthenticatedAdmin`, `requireAdmin` (role ADMIN **and** owner identity) | barrel: 67 files; `apps/web/src/app/[locale]/(protected)/layout.tsx`, `apps/web/src/app/[locale]/(auth)/layout.tsx` |
-| `auth.ts` | Auth.js (next-auth 5 beta): JWT sessions, Prisma adapter, email, GitHub, Google and `-admin` twins; callbacks `signIn` (:94), `jwt` (:111), `session` (:135); exports `handlers`, `auth`, `signIn`, `signOut` | `apps/web/src/app/api/auth/[...nextauth]/route.ts`, `session.ts`, `apps/web/src/features/auth/lib/` |
+| `auth.ts` | Auth.js (next-auth 5 beta): JWT sessions (7-day `maxAge`, `updateAge` 1 day), Prisma adapter, email, GitHub, Google and `-admin` twins; callbacks `signIn` (:94), `jwt` (:111), `session` (:135); exports `handlers`, `auth`, `signIn`, `signOut` | `apps/web/src/app/api/auth/[...nextauth]/route.ts`, `session.ts`, `apps/web/src/features/auth/lib/` |
 | `sign-in-policy.ts` | pure `evaluateSignIn`: email sign-in owner-only; Google and GitHub need a verified email; `-admin` ids owner-only | `auth.ts` |
 | `site-owner.ts` | `isSiteOwnerEmail`: the one owner-identity check (case-insensitive) | `session.ts`, `auth.ts`, `sign-in-policy.ts`, `apps/web/src/features/auth/lib/log-in-to-dashboard.ts` |
 | `callback-url.ts` | `sanitizeCallbackUrl(from, locale)`: open-redirect and locale guard; falls back to `/{locale}/dashboard` | `apps/web/src/features/auth/lib/` (log-in-to-dashboard, log-in-to-dashboard-with-oauth, log-in-with-github, log-in-with-google) |
@@ -102,7 +104,7 @@ apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces;
 ### Rate limit and revalidate
 
 - `checkRateLimit({ key, limit, windowSec })` returns `{ allowed }`; one atomic upsert on `RateLimitHit` (table `rate_limit_hits`, `packages/db/prisma/schema.prisma:811`).
-- Keys in use: `comment:<userId>` 5/60 s, `contact:<ip>` 3/600 s, `interaction:<userId>` 20/60 s, `view:<ip>` 60/60 s, `reading-time:<logId>` 10/60 s, `magic-link:<ip>` 5/600 s.
+- Keys in use: `comment:<userId>` 5/60 s, `contact:<ip>` 3/600 s, `interaction:<userId>` 20/60 s, `view:<ip>` 60/60 s, `reading-time-ip:<ip>` 240/60 s then `reading-time:<logId>` 10/60 s (neither is written until the signed `viewed_*` cookie checks out), `magic-link:<ip>` 5/600 s.
 - No shared revalidate helper. Mutating actions call `revalidateTag(CACHE_TAGS.X, 'max')` from `next/cache` after the write (AGENTS §8): 37 call sites in `apps/web/src`.
 - `purgeEntireCache()` (admin-gated, `revalidatePath('/', 'layout')`) lives in `apps/web/src/widgets/dashboard/dashboard-sidebar/lib/purge-entire-cache.ts`.
 - Under `bun test`, `revalidateTag` and `revalidatePath` are no-ops (`stub-next-cache`).
@@ -151,7 +153,7 @@ apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces;
 
 - `parseInput` returns `ok`, not `success`: `{ ok: false, errorMsg, errorCode: 'invalid', detail }`; `detail` is for logs only.
 - `checkRateLimit` and `isMagicLinkRequestAllowed` report "allowed" on any database error. This is deliberate fail-open.
-- Owner identity is the owner override, else the contact address; that address defaults to a literal at `apps/web/src/shared/config/env.ts:11`, so set the override in production (see ../environment.md).
+- Owner identity is the owner override, else the contact address; that address defaults to a literal at `apps/web/src/shared/config/env.ts:17`. `OWNER_EMAIL` is required when `NODE_ENV` and `VERCEL_ENV` are both `production` (see ../environment.md).
 - `revalidateTag`'s second argument is `'max'` in all 38 calls; none uses `'default'`.
 - `withPublicActionHandler` appends only `locale` to `unstable_cache` keys; every other input the handler closes over must be in `cacheKey` (AGENTS §8).
 - Measured 2026-10-13 (`next start`): a client-invoked public action (`getPaginatedPublicBlogs`) runs its nine queries on the first call and none on identical replays, with the same body. One key with an empty result; the TTL is not measured. Page GETs never reach the wrapper: those pages are prerendered.
@@ -176,7 +178,7 @@ cd apps/web && bun run build                               # next build; regener
 
 - `apps/web/src/shared/i18n/request.ts:20`: `console.error` in server request config; §8 requires `logger` from `@byte-of-me/logger`.
 - `apps/web/src/shared/config/language.ts:3` and `apps/web/src/shared/types/index.d.ts:7` re-declare the locale set that §4 says is declared once, in `apps/web/src/shared/i18n/routing.ts:5` (§4, §11.3).
-- `apps/web/src/shared/config/env.ts:11,48,55,69` and `apps/web/src/shared/config/site.ts:18`: literal fallback values for environment settings (§11.7).
+- `apps/web/src/shared/config/env.ts:17,56,63,77` and `apps/web/src/shared/config/site.ts:18`: literal fallback values for environment settings (§11.7).
 - `apps/web/next-runtime-stubs.ts:2`: header says "three specifiers"; the file registers five module stubs (§11.11).
 - Comment blocks far longer than three lines (§11.14): `apps/web/next-runtime-stubs.ts:1-91`, `apps/web/bunfig.toml:2-28`, `apps/web/src/shared/lib/auth/site-owner.ts:6-36`.
 

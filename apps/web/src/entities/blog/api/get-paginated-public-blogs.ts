@@ -22,7 +22,12 @@ import {
   getTranslatedContent,
   getTranslationLanguages,
 } from '@/shared/lib/i18n-utils';
-import { buildPaginatedMeta, clampPagination } from '@/shared/lib/pagination';
+import {
+  buildPaginatedMeta,
+  clampPagination,
+  MAX_CACHED_PAGE,
+} from '@/shared/lib/pagination';
+import { PUBLIC_MEDIA_SELECT } from '@/shared/lib/public-media';
 import { parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type {
@@ -96,9 +101,14 @@ export async function getPaginatedPublicBlogs(
                 where: { language: languages },
                 select: { language: true, title: true, description: true },
               },
-              coverImage: true,
+              coverImage: { select: PUBLIC_MEDIA_SELECT },
+              // `isPublished` is read only to gate the mapper below: a post
+              // may link to a draft project, which must not reach a visitor.
               project: {
-                include: {
+                select: {
+                  id: true,
+                  slug: true,
+                  isPublished: true,
                   translations: {
                     where: { language: languages },
                     select: { language: true, title: true, description: true },
@@ -127,7 +137,7 @@ export async function getPaginatedPublicBlogs(
           const translated = getTranslatedContent(blog.translations, locale);
 
           let project: Nullable<Partial<PublicProject>> = null;
-          if (blog.project) {
+          if (blog.project?.isPublished) {
             const projTranslated = getTranslatedContent(
               blog.project.translations,
               locale
@@ -172,9 +182,15 @@ export async function getPaginatedPublicBlogs(
       {
         // The draft-inclusive branch depends on the caller's session, so its
         // result must never be shared: only the anonymous, published-only
-        // branch is cached. The key mirrors every closure argument the query
-        // depends on (locale is appended by the handler).
-        cache: !includeDrafts,
+        // branch is cached. Free-text searches, tag filters and deep pages are
+        // read live: each distinct tuple would otherwise store its own (mostly
+        // empty) entry, and the slugs are caller-chosen. The key mirrors every closure argument the query depends on
+        // (locale is appended by the handler).
+        cache:
+          !includeDrafts &&
+          !search &&
+          tagSlugs.length === 0 &&
+          page <= MAX_CACHED_PAGE,
         cacheKey: [
           'paginated-public-blogs',
           String(page),

@@ -4,6 +4,7 @@
  * throttled caller. `revalidateTag` is spied on the preload's `next/cache` stub.
  */
 import { prisma } from '@byte-of-me/db';
+import { logger } from '@byte-of-me/logger';
 import { beforeEach, describe, expect, it, mock, spyOn } from 'bun:test';
 import * as nextCache from 'next/cache';
 
@@ -107,6 +108,23 @@ describe('toggleBlogInteraction', () => {
 
     expect(res.success).toBe(false);
     expect(blogFindUnique).not.toHaveBeenCalled();
+  });
+
+  it('answers a database failure with a fixed message and logs the detail', async () => {
+    const logError = spyOn(logger, 'error').mockImplementation(() => {});
+    interactionCreate.mockRejectedValue(
+      new Error('connect ECONNREFUSED db.internal.example:5432')
+    );
+
+    const res = await toggleBlogInteraction(BLOG_ID, 'x', INTERACTION.LIKE);
+
+    expect(res.success).toBe(false);
+    if (res.success) throw new Error('unreachable');
+    expect(res.errorMsg).not.toContain('db.internal.example');
+    expect(JSON.stringify(logError.mock.calls)).toContain(
+      'db.internal.example'
+    );
+    logError.mockRestore();
   });
 
   it('refuses a throttled caller before any query', async () => {

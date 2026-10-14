@@ -11,6 +11,7 @@ import type { PublicProject } from '@/entities/project/model/types';
 import { TagClickableBadge } from '@/entities/tag/ui/tag-clickable-badge';
 import { TechStackClickableBadge } from '@/entities/tech-stack/ui/tech-stack-clickable-badge';
 import { Link } from '@/shared/i18n/navigation';
+import { toSafeHref } from '@/shared/lib/safe-http-url';
 import { cn, formatDate } from '@/shared/lib/utils';
 import { ExpandableRichText } from '@/shared/ui';
 
@@ -43,6 +44,9 @@ export function ProjectTimelineItem({
   const start = formatDate(project.startDate, locale);
   const end = isOngoing ? t('present') : formatDate(project.endDate, locale);
   const dateRange = start ? `${start} — ${end}` : end;
+  // The row is not trusted to hold a safe address: a non-http(s) link is not rendered.
+  const liveHref = toSafeHref(project.liveLink);
+  const githubHref = toSafeHref(project.githubLink);
 
   return (
     <>
@@ -97,25 +101,25 @@ export function ProjectTimelineItem({
           </div>
         )}
 
-        {(project.liveLink || project.githubLink) && (
+        {(liveHref || githubHref) && (
           <div className="flex flex-wrap items-center gap-2 pt-1">
-            {project.liveLink && (
+            {liveHref && (
               <Button size="sm" asChild className="h-8 rounded-lg text-xs">
-                <Link href={project.liveLink} target="_blank">
+                <Link href={liveHref} target="_blank">
                   <ExternalLink className="mr-2" size={14} />
                   {t('liveDemo')}
                 </Link>
               </Button>
             )}
 
-            {project.githubLink && (
+            {githubHref && (
               <Button
                 size="sm"
                 variant="secondary"
                 asChild
                 className="h-8 rounded-lg text-xs"
               >
-                <Link href={project.githubLink} target="_blank">
+                <Link href={githubHref} target="_blank">
                   <Code className="mr-2" size={14} />
                   {t('gitHub')}
                 </Link>

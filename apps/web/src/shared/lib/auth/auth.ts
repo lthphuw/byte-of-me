@@ -31,8 +31,12 @@ const allowDangerousEmailAccountLinking = true;
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   trustHost: true,
+  // The role is a sign-in snapshot on the token, so cap how long a stolen
+  // cookie lives (Auth.js defaults to 30 days) and re-issue it daily.
   session: {
     strategy: 'jwt',
+    maxAge: 7 * 24 * 60 * 60,
+    updateAge: 24 * 60 * 60,
   },
 
   pages: {

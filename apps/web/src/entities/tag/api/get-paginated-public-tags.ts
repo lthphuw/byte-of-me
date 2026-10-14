@@ -9,7 +9,11 @@ import {
   getTranslatedContent,
   getTranslationLanguages,
 } from '@/shared/lib/i18n-utils';
-import { buildPaginatedMeta, clampPagination } from '@/shared/lib/pagination';
+import {
+  buildPaginatedMeta,
+  clampPagination,
+  MAX_CACHED_PAGE,
+} from '@/shared/lib/pagination';
 import type { PaginatedData, PaginatedParams } from '@/shared/types/api';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
@@ -60,7 +64,8 @@ export async function getPaginatedPublicTags(
         };
       },
       {
-        cache: true,
+        // A page past the cap is read live: each page is its own cache entry.
+        cache: page <= MAX_CACHED_PAGE,
         cacheKey: [CACHE_TAGS.TAG, String(page), String(limit)],
         cacheTags: [CACHE_TAGS.TAG],
       }

@@ -5,6 +5,7 @@ import { prisma } from '@byte-of-me/db';
 import type { PublicTechStack } from '@/entities/tech-stack/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import { CACHE_TAGS } from '@/shared/lib/constants';
+import { PUBLIC_MEDIA_SELECT } from '@/shared/lib/public-media';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function getAllPublicTechStacks(): Promise<
@@ -18,7 +19,7 @@ export async function getAllPublicTechStacks(): Promise<
       async ({ userId }) => {
         const items = await prisma.techStack.findMany({
           where: { userId },
-          include: { logo: true },
+          include: { logo: { select: PUBLIC_MEDIA_SELECT } },
           orderBy: { sortOrder: 'asc' },
         });
 
@@ -31,7 +32,6 @@ export async function getAllPublicTechStacks(): Promise<
           group: t.group,
           sortOrder: t.sortOrder,
           logo: t.logo,
-          userId: t.userId,
         }));
 
         return { techStacks };

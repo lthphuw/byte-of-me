@@ -4,6 +4,7 @@ import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { z } from 'zod';
 
+import { PUBLIC_ACTION_FAILURE_MESSAGE } from '@/shared/api';
 import { getAuthenticatedUser } from '@/shared/lib/auth';
 import { INTERACTION } from '@/shared/lib/constants';
 import { getErrorMessage } from '@/shared/lib/utils';
@@ -57,8 +58,9 @@ export async function getBlogInteractionsForUser(
 
     return { success: true, data: { isInteracted, count } };
   } catch (error) {
-    const errorMsg = getErrorMessage(error, 'Failed to load interactions');
-    logger.error(`[Blog] getBlogInteractionsForUser: ${errorMsg}`);
-    return { success: false, errorMsg };
+    logger.error(
+      `[Blog] getBlogInteractionsForUser: ${getErrorMessage(error)}`
+    );
+    return { success: false, errorMsg: PUBLIC_ACTION_FAILURE_MESSAGE };
   }
 }

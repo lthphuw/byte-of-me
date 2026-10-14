@@ -13,6 +13,14 @@ import type {
   PaginatedParams,
 } from '@/shared/types/api';
 
+/**
+ * Ceilings on the reply fan-out under one page of roots. A signed-in visitor
+ * can post a deep or wide subtree, and every anonymous page view would load
+ * all of it; past these the thread is cut off, oldest replies first kept.
+ */
+const MAX_REPLIES_PER_LEVEL = 250;
+const MAX_REPLIES_PER_PAGE = 500;
+
 export type GetPaginatedPublicCommentsForBlog = PaginatedParams & {
   blogId: string;
 };
@@ -71,13 +79,16 @@ export async function getPaginatedPublicCommentsForBlog(
         // Replies can nest arbitrarily deep, so walk the thread level by
         // level — but only under this page's roots, never the blog's whole
         // reply table. MAX_DEPTH bounds both the query count and any cycle a
-        // corrupt parentId chain could create.
+        // corrupt parentId chain could create; the two reply ceilings bound
+        // how many rows each query and the whole page may load.
         const MAX_DEPTH = 20;
         const descendants: (typeof roots)[number][] = [];
         let parentIds = rootIds;
         for (
           let depth = 0;
-          depth < MAX_DEPTH && parentIds.length > 0;
+          depth < MAX_DEPTH &&
+          parentIds.length > 0 &&
+          descendants.length < MAX_REPLIES_PER_PAGE;
           depth++
         ) {
           const level = await prisma.comment.findMany({
@@ -87,6 +98,10 @@ export async function getPaginatedPublicCommentsForBlog(
               parentId: { in: parentIds },
             },
             orderBy: { updatedAt: 'asc' },
+            take: Math.min(
+              MAX_REPLIES_PER_LEVEL,
+              MAX_REPLIES_PER_PAGE - descendants.length
+            ),
             select: commentSelect,
           });
           descendants.push(...level);
@@ -153,6 +168,11 @@ export async function getPaginatedPublicCommentsForBlog(
         };
       },
       {
+        // Deliberately uncached. Every comment mutation revalidates COMMENT
+        // with the `'max'` profile (stale-while-revalidate), and the client
+        // refetches this list right after posting or hiding: a cached copy
+        // could answer that refetch without the change and make the new
+        // comment vanish. The reply ceilings above bound the cost instead.
         cache: false,
       }
     );

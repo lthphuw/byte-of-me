@@ -142,6 +142,21 @@ describe('hideComment', () => {
     expect(isHidden()).toBe(false);
   });
 
+  it('answers a database failure with a fixed message and logs the detail', async () => {
+    const original = commentDelegate.updateMany;
+    commentDelegate.updateMany = async () => {
+      throw new Error('connect ECONNREFUSED db.internal.example:5432');
+    };
+
+    const res = await hideComment(COMMENT_ID);
+    commentDelegate.updateMany = original;
+
+    expect(res.success).toBe(false);
+    if (res.success) throw new Error('unreachable');
+    expect(res.errorMsg).not.toContain('db.internal.example');
+    expect(JSON.stringify(logError.mock.calls)).toContain('db.internal.example');
+  });
+
   it('refuses an anonymous caller by rejecting, and writes nothing', async () => {
     setTestUser(null);
 

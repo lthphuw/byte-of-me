@@ -117,6 +117,77 @@ describe('sanitizeHtml', () => {
       );
     });
 
+    it('neutralizes a character reference padded with leading zeros', () => {
+      // HTML allows any number of leading zeros, so these are all `j`.
+      for (const ref of [
+        '&#00000106;',
+        '&#0000000000106;',
+        '&#x0000006a;',
+        '&#x000000000000006A;',
+        '&#00000106',
+      ]) {
+        expect(sanitizeHtml(`<a href="${ref}avascript:alert(1)">x</a>`)).toBe(
+          '<a href="#">x</a>'
+        );
+      }
+    });
+
+    it('neutralizes a character reference without its semicolon', () => {
+      expect(sanitizeHtml('<a href="&#106avascript:alert(1)">x</a>')).toBe(
+        '<a href="#">x</a>'
+      );
+      // Hex digits are greedy, so the next character must not be one (`t`).
+      expect(sanitizeHtml('<a href="javascri&#x70t:alert(1)">x</a>')).toBe(
+        '<a href="#">x</a>'
+      );
+      expect(sanitizeHtml('<a href="javascri&#x0000070t:alert(1)">x</a>')).toBe(
+        '<a href="#">x</a>'
+      );
+    });
+
+    it('neutralizes mixed-case and named-reference schemes', () => {
+      expect(
+        sanitizeHtml('<a href="JaVa&Tab;ScRiPt&colon;alert(1)">x</a>')
+      ).toBe('<a href="#">x</a>');
+      expect(sanitizeHtml('<a href="java&NewLine;script:alert(1)">x</a>')).toBe(
+        '<a href="#">x</a>'
+      );
+      expect(sanitizeHtml('<a href="javascript&#00058;alert(1)">x</a>')).toBe(
+        '<a href="#">x</a>'
+      );
+    });
+
+    it('neutralizes data: behind an entity', () => {
+      expect(sanitizeHtml('<a href="&#00000100;ata:text/html,x">x</a>')).toBe(
+        '<a href="#">x</a>'
+      );
+      expect(sanitizeHtml('<a href="data&colon;text/html,x">x</a>')).toBe(
+        '<a href="#">x</a>'
+      );
+    });
+
+    it('fails closed on a reference it cannot resolve before the colon', () => {
+      // Overlong, out of range, NUL and an unknown name: the scheme cannot be
+      // read, so the link is rewritten rather than trusted as relative.
+      for (const ref of [
+        '&#99999999999999999999;',
+        '&#x110000;',
+        '&#0;',
+        '&bogus;',
+      ]) {
+        expect(sanitizeHtml(`<a href="${ref}avascript:alert(1)">x</a>`)).toBe(
+          '<a href="#">x</a>'
+        );
+      }
+    });
+
+    it('decodes only once, as a browser does', () => {
+      // `&#38;` is a literal `&`, so this stays the relative path `&#106;...`.
+      expect(sanitizeHtml('<a href="/p&#38;#106;avascript/x">x</a>')).toContain(
+        'href="/p&#38;#106;avascript/x"'
+      );
+    });
+
     it('neutralizes a scheme broken up by control characters', () => {
       // Browsers strip tabs/newlines inside the scheme before resolving it.
       expect(sanitizeHtml('<a href="java\tscript:alert(1)">x</a>')).toBe(
@@ -132,8 +203,13 @@ describe('sanitizeHtml', () => {
         'https://a.test/p?q=1',
         'http://a.test',
         'mailto:a@b.test',
+        'tel:+84123456789',
         '/relative/path',
+        'relative/path',
         '#anchor',
+        '/p?a=1&b=2',
+        '/search?q=a:b&c=d',
+        'https://a.test/?x=1&y=2',
       ]) {
         expect(sanitizeHtml(`<a href="${url}">x</a>`)).toBe(
           `<a href="${url}">x</a>`

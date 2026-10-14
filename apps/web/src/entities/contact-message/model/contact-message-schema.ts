@@ -33,7 +33,13 @@ export function createContactMessageSchema(
       .min(2, t('nameTooShort'))
       .max(100, t('nameTooLong')),
 
-    email: z.string().trim().email(t('emailInvalid')),
+    // 254 is the RFC 5321 path limit; an uncapped value reaches nodemailer's
+    // address parser as `replyTo`.
+    email: z
+      .string()
+      .trim()
+      .max(254, t('emailInvalid'))
+      .email(t('emailInvalid')),
 
     subject: z
       .string()

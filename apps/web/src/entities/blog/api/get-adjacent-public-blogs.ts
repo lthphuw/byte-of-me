@@ -1,6 +1,7 @@
 'use server';
 
 import { prisma } from '@byte-of-me/db';
+import { z } from 'zod';
 
 import type { BlogSummary } from '@/entities/blog/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
@@ -9,7 +10,19 @@ import {
   getTranslatedContent,
   getTranslationLanguages,
 } from '@/shared/lib/i18n-utils';
+import { cuidSchema } from '@/shared/lib/public-input-schema';
+import { parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
+
+/**
+ * `currentId` and the date become a cache key, so both are checked first.
+ * `z.coerce.date()` accepts the string form an `unstable_cache` hit hands
+ * back; an unparsable value is refused rather than keyed as `Invalid Date`.
+ */
+const adjacentBlogsParamsSchema = z.object({
+  publishedDate: z.coerce.date().nullable(),
+  currentId: cuidSchema,
+});
 
 export interface AdjacentBlogs {
   /** The next (newer) post, or null if this is the newest. */
@@ -29,7 +42,15 @@ export async function getAdjacentPublicBlogs(
   publishedDate: Maybe<Date | string>,
   currentId: string
 ): Promise<ApiResponse<AdjacentBlogs>> {
-  const publishedAt = publishedDate ? new Date(publishedDate) : null;
+  const parsed = parseInput(
+    adjacentBlogsParamsSchema,
+    { publishedDate: publishedDate ?? null, currentId },
+    'getAdjacentPublicBlogs'
+  );
+  if (!parsed.ok) {
+    return { success: false, errorMsg: parsed.errorMsg };
+  }
+  const { publishedDate: publishedAt, currentId: blogId } = parsed.data;
 
   return handlePublicAction('getAdjacentPublicBlogs', async () => {
     return await withPublicActionHandler(
@@ -50,7 +71,7 @@ export async function getAdjacentPublicBlogs(
           prisma.blog.findFirst({
             where: {
               isPublished: true,
-              id: { not: currentId },
+              id: { not: blogId },
               publishedDate: { gt: publishedAt },
             },
             orderBy: { publishedDate: 'asc' },
@@ -59,7 +80,7 @@ export async function getAdjacentPublicBlogs(
           prisma.blog.findFirst({
             where: {
               isPublished: true,
-              id: { not: currentId },
+              id: { not: blogId },
               publishedDate: { lt: publishedAt },
             },
             orderBy: { publishedDate: 'desc' },
@@ -83,7 +104,7 @@ export async function getAdjacentPublicBlogs(
         cache: true,
         cacheKey: [
           'adjacent-public-blogs',
-          currentId,
+          blogId,
           publishedAt?.toISOString() ?? 'unpublished',
         ],
         cacheTags: [CACHE_TAGS.BLOG],

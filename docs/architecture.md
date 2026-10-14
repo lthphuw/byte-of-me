@@ -242,7 +242,7 @@ flowchart LR
 
 The layout guard protects the *view*. It does not protect the *action* — server actions are addressable endpoints, callable without ever rendering the page. So every admin action and admin query calls `requireAdmin()` itself. The route guard is convenience; the action guard is the security boundary.
 
-Auth.js issues JWT sessions. The role is read from the database on sign-in and carried on the token; providers are email magic link, GitHub, and Google.
+Auth.js issues JWT sessions that expire after 7 days (re-issued daily while in use). The role is read from the database on sign-in and carried on the token; providers are email magic link, GitHub, and Google.
 
 ---
 
@@ -342,7 +342,7 @@ Three layers, each invalidated differently:
 
 `purgeEntireCache()` in `src/widgets/dashboard/dashboard-sidebar/lib/purge-entire-cache.ts` (the dashboard's Clear Cache button) is the blunt escape hatch — `revalidatePath('/', 'layout')`.
 
-Blog view counts deliberately sit outside all of this: `trackBlogView` writes a `BlogStatisticLog` row guarded by a per-post cookie, and live stats are read uncached.
+Blog view counts deliberately sit outside all of this: `trackBlogView` writes a `BlogStatisticLog` row guarded by a per-post cookie signed with `AUTH_SECRET`, and live stats are cached for 300 s under the BLOG tag.
 
 ---
 

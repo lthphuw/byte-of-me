@@ -3,6 +3,13 @@ import { z } from 'zod';
 
 import 'server-only';
 
+// Only the real production deployment must name its owner. `VERCEL_ENV` is set
+// by Vercel itself and separates production from preview, which also run with
+// NODE_ENV=production. A host without it (self-hosted, local) is not enforced.
+const requireOwnerEmail =
+  process.env.NODE_ENV === 'production' &&
+  process.env.VERCEL_ENV === 'production';
+
 export const env = createEnv({
   server: {
     DATABASE_URL: z.string().min(1),
@@ -17,14 +24,16 @@ export const env = createEnv({
     // a profile-lookup fallback — reusing it as the auth identity meant a
     // cosmetic change to the public contact address could silently revoke
     // the owner's own access. Optional, falling back to `EMAIL` when unset,
-    // so a deployment that has never heard of this key behaves exactly as
-    // before; a required key here would fail env validation at boot and
-    // take the site down on deploy for no operational reason.
-    OWNER_EMAIL: z.string().email().optional(),
+    // so preview, CI and development behave as before. In production it is
+    // required: a lost key would otherwise leave the `EMAIL` default quietly
+    // deciding who is admin.
+    OWNER_EMAIL: requireOwnerEmail
+      ? z.string().email()
+      : z.string().email().optional(),
     AUTHOR_ID: z.string(),
 
     AUTH_URL: z.string(),
-    AUTH_SECRET: z.string(),
+    AUTH_SECRET: z.string().min(32),
 
     EMAIL_SERVER_HOST: z.string(),
     EMAIL_SERVER_PORT: z.coerce.number(),

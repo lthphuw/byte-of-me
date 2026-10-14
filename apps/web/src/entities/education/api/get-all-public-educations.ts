@@ -15,6 +15,7 @@ import {
   getTranslatedContent,
   getTranslationLanguages,
 } from '@/shared/lib/i18n-utils';
+import { PUBLIC_MEDIA_SELECT } from '@/shared/lib/public-media';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function getAllPublicEducations(): Promise<
@@ -37,7 +38,7 @@ export async function getAllPublicEducations(): Promise<
               select: { language: true, title: true, description: true },
               orderBy: { language: 'asc' },
             },
-            logo: true,
+            logo: { select: PUBLIC_MEDIA_SELECT },
             achievements: {
               include: {
                 translations: {

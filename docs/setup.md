@@ -44,7 +44,7 @@ bun install --frozen-lockfile
 docker compose up -d
 ```
 
-- PostgreSQL: `localhost:5432`, user `admin`, password `secret`, database `byte_of_me`.
+- PostgreSQL (loopback only): `localhost:5432`, user `admin`, password `secret`, database `byte_of_me`.
 - Mailpit: SMTP on `localhost:1025`, inbox at http://localhost:8025.
 
 ## 5. Create the schema and seed it

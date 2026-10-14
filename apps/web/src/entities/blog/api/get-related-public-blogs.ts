@@ -10,6 +10,7 @@ import {
   getTranslatedContent,
   getTranslationLanguages,
 } from '@/shared/lib/i18n-utils';
+import { PUBLIC_MEDIA_SELECT } from '@/shared/lib/public-media';
 import { parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
@@ -34,6 +35,14 @@ export async function getRelatedPublicBlogs(
   const { blogId, tagSlugs, limit } = parsed.data;
 
   return handlePublicAction('getRelatedPublicBlogs', async () => {
+    // Outside the cached handler on purpose: a made-up id must not store a
+    // cache entry of its own, and an unpublished post gets no related list.
+    const source = await prisma.blog.findFirst({
+      where: { id: blogId, isPublished: true },
+      select: { id: true },
+    });
+    if (!source) return [];
+
     return await withPublicActionHandler(
       'getRelatedPublicBlogs',
       async ({ locale }) => {
@@ -57,7 +66,7 @@ export async function getRelatedPublicBlogs(
               where: { language: languages },
               select: { language: true, title: true, description: true },
             },
-            coverImage: true,
+            coverImage: { select: PUBLIC_MEDIA_SELECT },
             tags: {
               include: {
                 tag: {

@@ -110,24 +110,55 @@ const VOID_TAGS = new Set(['br', 'hr', 'img']);
 const SAFE_SCHEMES = new Set(['http', 'https', 'mailto', 'tel']);
 const SCHEME = /^([a-z][a-z0-9+.-]*):/i;
 
+const REPLACEMENT_CHAR = '\uFFFD';
+
+/**
+ * The code point a browser resolves a numeric character reference to. HTML
+ * allows any number of leading zeros (`&#00000106;` is `j`), so they are
+ * trimmed before the length check rather than counted against it. Zero,
+ * surrogates, out-of-range and overlong values become U+FFFD, as in a browser.
+ */
+function decodeNumericReference(digits: string, radix: 10 | 16): string {
+  const significant = digits.replace(/^0+/, '');
+  // Eight hex digits already exceed 0x10FFFF; checking the length first keeps
+  // an absurdly long run from being parsed to a lossy float.
+  if (significant.length === 0 || significant.length > 8) {
+    return REPLACEMENT_CHAR;
+  }
+
+  const code = Number.parseInt(significant, radix);
+  if (code > 0x10ffff || (code >= 0xd800 && code <= 0xdfff)) {
+    return REPLACEMENT_CHAR;
+  }
+
+  return String.fromCodePoint(code);
+}
+
+// Named references that decode to something a scheme check cares about. Any
+// other name is left as written (a browser leaves unknown names literal too).
+const NAMED_REFERENCES: Record<string, string> = {
+  colon: ':',
+  tab: '\t',
+  newline: '\n',
+};
+
 /**
  * Decode the HTML entities a browser resolves inside an attribute value.
  * Without this, `&#106;avascript:` reads as an ordinary relative URL here but
  * becomes `javascript:` by the time the browser resolves it.
+ *
+ * One pass, so `&#38;#106;` decodes once to the literal `&#106;` — as a
+ * browser does — instead of being decoded a second time.
  */
 function decodeEntities(value: string): string {
-  return value
-    .replace(/&#x([0-9a-f]{1,6});?/gi, (whole, hex: string) => {
-      const code = Number.parseInt(hex, 16);
-      return code > 0 && code <= 0x10ffff ? String.fromCodePoint(code) : whole;
-    })
-    .replace(/&#(\d{1,7});?/g, (whole, dec: string) => {
-      const code = Number.parseInt(dec, 10);
-      return code > 0 && code <= 0x10ffff ? String.fromCodePoint(code) : whole;
-    })
-    .replace(/&colon;/gi, ':')
-    .replace(/&tab;/gi, '\t')
-    .replace(/&newline;/gi, '\n');
+  return value.replace(
+    /&(?:#x([0-9a-f]+)|#([0-9]+)|([a-z][a-z0-9]*));?/gi,
+    (whole, hex?: string, dec?: string, name?: string) => {
+      if (hex !== undefined) return decodeNumericReference(hex, 16);
+      if (dec !== undefined) return decodeNumericReference(dec, 10);
+      return NAMED_REFERENCES[(name ?? '').toLowerCase()] ?? whole;
+    }
+  );
 }
 
 /**
@@ -135,6 +166,11 @@ function decodeEntities(value: string): string {
  * `SAFE_SCHEMES`. Entities are decoded and control characters stripped first,
  * because browsers do both before looking at the scheme — `java&#09;script:`
  * and `java<TAB>script:` are both executable.
+ *
+ * Fails closed: if the text before the first colon still holds an entity this
+ * decoder does not understand (or a replacement character from a malformed
+ * one), the scheme cannot be read reliably, so the URL counts as unsafe. A
+ * colon after a `/`, `?` or `#` is just part of a path and does not trigger it.
  */
 function isUnsafeUrl(value: string): boolean {
   // Strip C0 controls, space and NBSP — all ignored inside a scheme.
@@ -145,10 +181,17 @@ function isUnsafeUrl(value: string): boolean {
   const normalized = decodeEntities(value).replace(controlChars, '');
 
   const scheme = SCHEME.exec(normalized);
-  // No scheme at all means a relative path or a fragment — nothing to abuse.
-  if (!scheme) return false;
+  if (scheme) return !SAFE_SCHEMES.has(scheme[1].toLowerCase());
 
-  return !SAFE_SCHEMES.has(scheme[1].toLowerCase());
+  const colon = normalized.indexOf(':');
+  if (colon !== -1) {
+    const beforeColon = normalized.slice(0, colon);
+    const isPath = /[/?#]/.test(beforeColon);
+    if (!isPath && /[&\uFFFD]/.test(beforeColon)) return true;
+  }
+
+  // No scheme at all means a relative path or a fragment — nothing to abuse.
+  return false;
 }
 
 /**

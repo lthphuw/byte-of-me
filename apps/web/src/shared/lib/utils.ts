@@ -8,10 +8,19 @@ import { enUS, vi } from 'date-fns/locale';
 // used to break the /api/og build with a module-init-order error.
 export { cn } from '@byte-of-me/ui/lib/utils';
 
+/**
+ * Makes a stored address safe to put in an `href`: http(s), `mailto:` and
+ * `tel:` pass through, a bare host gets `https://`, and any other scheme
+ * (`javascript:`, `data:`, `vbscript:`, ...) collapses to `#`.
+ */
 export function ensureValidUrl(url: string): string {
   if (/^https?:\/\//i.test(url)) return url;
 
-  if (/^(mailto:|tel:|javascript:)/i.test(url)) return url;
+  if (/^(mailto:|tel:)/i.test(url)) return url;
+
+  // `example.com:8080/x` is a host and port, not a scheme.
+  const isHostWithPort = /^[^\s:/?#]+:\d+(?:[/?#]|$)/.test(url);
+  if (!isHostWithPort && /^[a-z][a-z0-9+.-]*:/i.test(url)) return '#';
 
   return `https://${url}`;
 }

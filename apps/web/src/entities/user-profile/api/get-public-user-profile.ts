@@ -5,7 +5,10 @@ import { prisma } from '@byte-of-me/db';
 import type { PublicUserProfile } from '@/entities/user-profile/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import { CACHE_TAGS } from '@/shared/lib/constants';
-import { getTranslatedContent } from '@/shared/lib/i18n-utils';
+import {
+  getTranslatedContent,
+  getTranslationLanguages,
+} from '@/shared/lib/i18n-utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function getPublicUserProfile(): Promise<
@@ -21,6 +24,7 @@ export async function getPublicUserProfile(): Promise<
           },
           include: {
             translations: {
+              where: { language: { in: getTranslationLanguages(locale) } },
               select: {
                 language: true,
                 tagLine: true,

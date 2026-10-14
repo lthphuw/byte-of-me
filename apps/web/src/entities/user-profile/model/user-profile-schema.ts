@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { richTextDocSchema } from '@/shared/lib/rich-text-doc-schema';
+import { isSafeHttpUrl } from '@/shared/lib/safe-http-url';
 
 /**
  * The form holds the editor's document, but a row may hold legacy HTML, and the
@@ -24,20 +25,6 @@ const DEFAULT_MESSAGES: Record<UserProfileErrorKey, string> = {
   languageRequired: 'Language is required',
 };
 
-/**
- * A social link is rendered straight into an `href` on the public site, so the
- * scheme is restricted rather than left to `new URL()`, which happily accepts
- * `javascript:`.
- */
-function isWebAddress(value: string): boolean {
-  try {
-    const { protocol } = new URL(value);
-    return protocol === 'https:' || protocol === 'http:';
-  } catch {
-    return false;
-  }
-}
-
 /** The `email` platform stores a bare address — `contact-infos` builds the
  *  `mailto:` itself — so requiring a URL for every row would lock the author
  *  out of saving a profile that already has one. */
@@ -56,7 +43,7 @@ export function createUserProfileSchema(
           .string()
           .trim()
           .refine(
-            (value) => isWebAddress(value) || EMAIL_ADDRESS.test(value),
+            (value) => isSafeHttpUrl(value) || EMAIL_ADDRESS.test(value),
             t('urlInvalid')
           ),
         sortOrder: z.coerce.number().min(0),

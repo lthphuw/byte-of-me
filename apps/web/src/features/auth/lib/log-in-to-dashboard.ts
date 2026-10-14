@@ -11,6 +11,9 @@ import {
 import { getErrorMessage } from '@/shared/lib/utils';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
+/** Every refusal reads the same: a stranger learns nothing about who the owner is. */
+const SIGN_IN_FAILURE_MESSAGE = 'Invalid email, try again later';
+
 export async function logInToDashboard(
   email: string,
   // Widened from `string`: the raw `?from=` is whatever was on the URL, so
@@ -21,7 +24,7 @@ export async function logInToDashboard(
   try {
     // Neither is logged: both come from an anonymous caller (PII, log injection).
     if (!isSiteOwnerEmail(email)) {
-      throw new Error('Invalid email, try again later');
+      return { success: false, errorMsg: SIGN_IN_FAILURE_MESSAGE };
     }
 
     const locale = await getLocale();
@@ -47,14 +50,8 @@ export async function logInToDashboard(
       data: res,
     };
   } catch (error) {
-    const errorMsg = getErrorMessage(
-      error,
-      'An unexpected error occurred during sign in.'
-    );
-    logger.error(`Dashboard email sign-in failed: ${errorMsg}`);
-    return {
-      success: false,
-      errorMsg,
-    };
+    // The detail (SMTP host, Auth.js internals) stays in the log.
+    logger.error(`Dashboard email sign-in failed: ${getErrorMessage(error)}`);
+    return { success: false, errorMsg: SIGN_IN_FAILURE_MESSAGE };
   }
 }

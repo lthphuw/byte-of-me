@@ -10,13 +10,25 @@ import {
   getTranslatedContent,
   getTranslationLanguages,
 } from '@/shared/lib/i18n-utils';
+import { PUBLIC_MEDIA_SELECT } from '@/shared/lib/public-media';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
+
+// The dashboard's slug field has no upper bound, so a title-derived slug can
+// run past the 64 characters the filter chips allow; this only has to keep an
+// absurd value out of the cache key and tag.
+const MAX_BLOG_SLUG_LENGTH = 200;
 
 export async function getPublicBlogBySlug(
   slug: string
 ): Promise<ApiResponse<PublicBlog>> {
-  if (!slug) {
-    return { success: false, errorMsg: 'Slug is required' };
+  // Before the slug becomes a cache key and tag: an oversized (or non-string)
+  // value would otherwise be stored as both. Answered like a missing post.
+  if (
+    typeof slug !== 'string' ||
+    slug.length === 0 ||
+    slug.length > MAX_BLOG_SLUG_LENGTH
+  ) {
+    return { success: false, errorMsg: 'Blog not found' };
   }
 
   return handlePublicAction('getPublicBlogBySlug', async () => {
@@ -30,7 +42,7 @@ export async function getPublicBlogBySlug(
           where: { slug, isPublished: true },
           include: {
             translations: { where: { language: languages } },
-            coverImage: true,
+            coverImage: { select: PUBLIC_MEDIA_SELECT },
             tags: {
               include: {
                 tag: {

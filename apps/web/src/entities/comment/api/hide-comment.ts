@@ -4,6 +4,7 @@ import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
+import { PUBLIC_ACTION_FAILURE_MESSAGE } from '@/shared/api';
 import { getAuthenticatedAdmin, requireUser } from '@/shared/lib/auth';
 import { CACHE_TAGS } from '@/shared/lib/constants';
 import { getErrorMessage } from '@/shared/lib/utils';
@@ -53,8 +54,7 @@ export async function hideComment(
 
     return { success: true, data: null };
   } catch (error) {
-    const errorMsg = getErrorMessage(error, 'Failed to hide comment');
-    logger.error(`[Comment] hide: ${errorMsg}`);
-    return { success: false, errorMsg };
+    logger.error(`[Comment] hide: ${getErrorMessage(error)}`);
+    return { success: false, errorMsg: PUBLIC_ACTION_FAILURE_MESSAGE };
   }
 }

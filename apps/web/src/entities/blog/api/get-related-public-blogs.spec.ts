@@ -11,8 +11,9 @@ import { MAX_RELATED_BLOGS } from '@/entities/blog/model/blog-schema';
 import { MAX_FILTER_SLUGS } from '@/shared/lib/public-input-schema';
 
 const findMany = mock();
+const findFirst = mock();
 Object.defineProperty(prisma, 'blog', {
-  value: { findMany },
+  value: { findMany, findFirst },
   writable: true,
   configurable: true,
 });
@@ -22,6 +23,20 @@ const BLOG_ID = 'cl9ebqhxk00003b600tymydho';
 describe('getRelatedPublicBlogs', () => {
   beforeEach(() => {
     findMany.mockReset().mockResolvedValue([]);
+    findFirst.mockReset().mockResolvedValue({ id: BLOG_ID });
+  });
+
+  it('returns nothing, and reads no posts, for a blog that is not published', async () => {
+    findFirst.mockResolvedValue(null);
+
+    const res = await getRelatedPublicBlogs(BLOG_ID, ['react']);
+
+    expect(res).toEqual({ success: true, data: [] });
+    expect(findFirst).toHaveBeenCalledWith({
+      where: { id: BLOG_ID, isPublished: true },
+      select: { id: true },
+    });
+    expect(findMany).not.toHaveBeenCalled();
   });
 
   it('clamps an oversized limit before it reaches Prisma', async () => {

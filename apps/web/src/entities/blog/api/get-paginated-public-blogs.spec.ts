@@ -161,6 +161,72 @@ describe('getPaginatedPublicBlogs', () => {
     expect(count).toHaveBeenCalledWith({ where: { isPublished: true } });
   });
 
+  it('does not send a draft project to a visitor', async () => {
+    findMany.mockResolvedValue([
+      {
+        ...blogRow,
+        project: {
+          id: 'proj-1',
+          slug: 'secret',
+          isPublished: false,
+          translations: [
+            { language: 'en', title: 'Draft', description: '{"draft":true}' },
+          ],
+        },
+      },
+    ]);
+
+    const res = await getPaginatedPublicBlogs({});
+
+    expect(res.success).toBe(true);
+    if (!res.success) throw new Error('unreachable');
+    expect(res.data.data[0]?.project).toBeNull();
+    expect(JSON.stringify(res.data)).not.toContain('secret');
+  });
+
+  it('keeps a published project on its post', async () => {
+    findMany.mockResolvedValue([
+      {
+        ...blogRow,
+        project: {
+          id: 'proj-1',
+          slug: 'shipped',
+          isPublished: true,
+          translations: [
+            { language: 'en', title: 'Shipped', description: 'Out' },
+          ],
+        },
+      },
+    ]);
+
+    const res = await getPaginatedPublicBlogs({});
+
+    if (!res.success) throw new Error('unreachable');
+    expect(res.data.data[0]?.project).toEqual({
+      id: 'proj-1',
+      slug: 'shipped',
+      title: 'Shipped',
+      description: 'Out',
+    });
+  });
+
+  it('selects only the rendered media columns for the cover image', async () => {
+    await getPaginatedPublicBlogs({});
+
+    const { include } = findMany.mock.calls[0]?.[0] as {
+      include: { coverImage: unknown };
+    };
+    expect(include.coverImage).toEqual({
+      select: {
+        id: true,
+        url: true,
+        width: true,
+        height: true,
+        mimeType: true,
+      },
+    });
+  });
+
   it.each([
     [
       'too many tag slugs',

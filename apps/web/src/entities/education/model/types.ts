@@ -1,6 +1,6 @@
 import type { Prisma } from '@byte-of-me/db/types';
 
-import type { Media } from '@/shared/types/models';
+import type { Media, PublicMedia } from '@/shared/types/models';
 
 /**
  * The editor's full entry. Achievement bodies and images live here only: the
@@ -57,6 +57,6 @@ export interface PublicEducation {
   description: Maybe<string>;
   startDate: Date;
   endDate: Maybe<Date>;
-  logo: Maybe<Media>;
+  logo: Maybe<PublicMedia>;
   achievements: PublicEducationAchievement[];
 }

@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: secret
       POSTGRES_DB: byte_of_me
     ports:
-      - '5432:5432'
+      - '127.0.0.1:5432:5432'
     volumes:
       # New name on purpose: the old postgres_data volume holds a PG16 cluster.
       - postgres17_data:/var/lib/postgresql/data
@@ -26,8 +26,8 @@ services:
     container_name: byteofme_mailpit
     restart: always
     ports:
-      - '1025:1025'
-      - '8025:8025'
+      - '127.0.0.1:1025:1025'
+      - '127.0.0.1:8025:8025'
 
   # Use Prisma Studio instead of Adminer
   # adminer:

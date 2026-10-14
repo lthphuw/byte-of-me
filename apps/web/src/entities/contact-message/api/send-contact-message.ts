@@ -1,6 +1,6 @@
 'use server';
 
-import { type ContactMessage, prisma } from '@byte-of-me/db';
+import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { escapeHtml } from '@byte-of-me/ui/lib/sanitize';
 import { revalidateTag } from 'next/cache';
@@ -26,7 +26,7 @@ import type { ApiResponse } from '@/shared/types/api/api-response.type';
 // not know the codes.
 export async function sendContactMessage(
   values: ContactMessageFormValues
-): Promise<ApiResponse<ContactMessage, ContactMessageFailureCode>> {
+): Promise<ApiResponse<{ id: string }, ContactMessageFailureCode>> {
   const parsed = parseInput(contactMessageSchema, values);
   if (!parsed.ok) {
     return { success: false, errorCode: 'invalid', errorMsg: parsed.errorMsg };
@@ -57,7 +57,8 @@ export async function sendContactMessage(
     });
 
     revalidateTag(CACHE_TAGS.CONTACT, 'max');
-    return { success: true, data: msg };
+    // The submitter gets a receipt, not the stored row back.
+    return { success: true, data: { id: msg.id } };
   } catch (error) {
     logger.error(`Send contact error: ${getErrorMessage(error)}`);
     return {
@@ -100,6 +101,7 @@ async function sendNotificationEmail(data: ContactMessageFormValues) {
 
 async function saveContactToDb(data: ContactMessageFormValues) {
   return await prisma.contactMessage.create({
+    select: { id: true },
     data: {
       name: data.name,
       email: data.email,

@@ -111,6 +111,7 @@
     "fast-uri": "^3.1.6",
     "js-yaml": "^4.3.2",
     "mysql2": "^3.22.0",
+    "nodemailer": "10.1.0",
     "prosemirror-model": "^1.25.12",
     "prosemirror-view": "^1.42.3",
     "source-map-js": "^1.2.2"

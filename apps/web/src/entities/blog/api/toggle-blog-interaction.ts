@@ -5,6 +5,7 @@ import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 import { z } from 'zod';
 
+import { PUBLIC_ACTION_FAILURE_MESSAGE } from '@/shared/api';
 import { requireUser } from '@/shared/lib/auth';
 import { INTERACTION } from '@/shared/lib/constants';
 import { checkRateLimit } from '@/shared/lib/rate-limit';
@@ -85,8 +86,7 @@ export async function toggleBlogInteraction(
 
     return { success: true, data: null };
   } catch (error) {
-    const errorMsg = getErrorMessage(error, 'Failed to update the interaction');
-    logger.error(`[Interaction] toggle: ${errorMsg}`);
-    return { success: false, errorMsg };
+    logger.error(`[Interaction] toggle: ${getErrorMessage(error)}`);
+    return { success: false, errorMsg: PUBLIC_ACTION_FAILURE_MESSAGE };
   }
 }

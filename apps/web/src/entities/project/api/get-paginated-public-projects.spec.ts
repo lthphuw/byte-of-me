@@ -40,6 +40,47 @@ describe('getPaginatedPublicProjects', () => {
     expect(findMany).toHaveBeenCalledTimes(1);
   });
 
+  it('does not return a tech stack owner id', async () => {
+    const NOW = new Date('2026-01-01T00:00:00.000Z');
+    findMany.mockResolvedValue([
+      {
+        id: 'p1',
+        createdAt: NOW,
+        updatedAt: NOW,
+        slug: 'p',
+        githubLink: null,
+        liveLink: null,
+        startDate: NOW,
+        endDate: null,
+        isPublished: true,
+        translations: [{ language: 'en', title: 'P', description: null }],
+        tags: [],
+        techStacks: [
+          {
+            techStack: {
+              id: 'ts-1',
+              createdAt: NOW,
+              updatedAt: NOW,
+              name: 'Bun',
+              slug: 'bun',
+              group: 'runtime',
+              sortOrder: 1,
+              logo: null,
+              userId: 'owner-internal-id',
+            },
+          },
+        ],
+      },
+    ]);
+    count.mockResolvedValue(1);
+
+    const res = await getPaginatedPublicProjects({});
+
+    if (!res.success) throw new Error('unreachable');
+    expect(res.data.data[0]?.techStacks[0]?.name).toBe('Bun');
+    expect(JSON.stringify(res.data)).not.toContain('owner-internal-id');
+  });
+
   it.each([
     ['too many tag slugs', { tagSlugs: slugs(MAX_FILTER_SLUGS + 1) }],
     ['too many tech slugs', { techStackSlugs: slugs(MAX_FILTER_SLUGS + 1) }],

@@ -30,8 +30,12 @@ const postCommentSchema = z.object({
     .trim()
     .min(2, 'Comment is too short')
     .max(5000, 'Comment is too long'),
-  parentId: z.string().min(1).optional(),
+  parentId: idSchema.optional(),
 });
+
+// Replies nest this many levels below a top-level comment, no deeper: every
+// anonymous page view loads the whole subtree.
+const MAX_REPLY_DEPTH = 5;
 
 export async function postComment(
   blogId: string,
@@ -59,6 +63,12 @@ export async function postComment(
   }
 
   try {
+    // Before the insert, so a refused comment never reaches the owner's inbox.
+    const refusal = await findCommentRefusal(blogId, parentId);
+    if (refusal) {
+      return { success: false, errorMsg: refusal };
+    }
+
     const comment = await createCommentInDb(blogId, content, user.id, parentId);
 
     // Deferred: SMTP must not hold the response open, and the serverless
@@ -89,6 +99,41 @@ export async function postComment(
     logger.error(`Failed to post comment: ${getErrorMessage(error)}`);
     return { success: false, errorMsg: 'Failed to post comment' };
   }
+}
+
+/** Why this comment may not be posted, or null when it may. */
+async function findCommentRefusal(
+  blogId: string,
+  parentId?: string
+): Promise<string | null> {
+  const blog = await prisma.blog.findFirst({
+    where: { id: blogId, isPublished: true },
+    select: { id: true },
+  });
+  if (!blog) return 'Blog not found';
+  if (!parentId) return null;
+
+  // Walk up from the parent: it must be a visible comment on this blog, and the
+  // chain above it bounds the new reply's depth.
+  let depth = 0;
+  let cursor: string | null = parentId;
+  while (cursor && depth <= MAX_REPLY_DEPTH) {
+    const node: {
+      blogId: string | null;
+      isDeleted: boolean;
+      parentId: string | null;
+    } | null = await prisma.comment.findUnique({
+      where: { id: cursor },
+      select: { blogId: true, isDeleted: true, parentId: true },
+    });
+    if (!node || (depth === 0 && (node.blogId !== blogId || node.isDeleted))) {
+      return 'Comment not found';
+    }
+    depth += 1;
+    cursor = node.parentId;
+  }
+
+  return depth > MAX_REPLY_DEPTH ? 'This thread is too deep to reply to' : null;
 }
 
 async function createCommentInDb(

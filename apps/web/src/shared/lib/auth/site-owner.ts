@@ -11,8 +11,9 @@ import { normalizeEmail } from '@/shared/lib/auth/normalize-email';
  * publicly rendered contact address, the contact-form and
  * comment-notification destination, and a profile-lookup fallback (see the
  * comment on `OWNER_EMAIL` in `@/shared/config/env.ts`). They coincide today
- * only by history, and `OWNER_EMAIL` is optional specifically so that an
- * unset deployment keeps behaving exactly as before.
+ * only by history, and `OWNER_EMAIL` is optional outside production so that
+ * an unset preview or dev deployment keeps behaving exactly as before.
+ * `env.ts` requires it in production.
  *
  * `getAuthenticatedAdmin()` (in `./session.ts`), `logInToDashboard()` (the
  * sign-in form's own gate, in

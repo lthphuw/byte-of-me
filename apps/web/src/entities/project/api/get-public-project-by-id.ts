@@ -10,11 +10,18 @@ import {
   getTranslatedContent,
   getTranslationLanguages,
 } from '@/shared/lib/i18n-utils';
+import { cuidSchema } from '@/shared/lib/public-input-schema';
+import { PUBLIC_MEDIA_SELECT } from '@/shared/lib/public-media';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function getPublicProjectById(
   id: string
 ): Promise<ApiResponse<Nullable<PublicProject>>> {
+  // Before the id becomes a cache key and tag (and reaches the `where`).
+  if (!cuidSchema.safeParse(id).success) {
+    return { success: false, errorMsg: 'Project not found' };
+  }
+
   return handlePublicAction('getPublicProjectById', async () => {
     return await withPublicActionHandler(
       'getPublicProjectById',
@@ -38,7 +45,7 @@ export async function getPublicProjectById(
               include: {
                 techStack: {
                   include: {
-                    logo: true,
+                    logo: { select: PUBLIC_MEDIA_SELECT },
                   },
                 },
               },
@@ -96,7 +103,6 @@ export async function getPublicProjectById(
             group: techStack.group,
             sortOrder: techStack.sortOrder,
             logo: techStack.logo || null,
-            userId: techStack.userId,
           })),
 
           tags: project.tags.map(({ tag }) => {

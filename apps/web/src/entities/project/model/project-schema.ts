@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { safeHttpUrl } from '@/shared/lib/safe-http-url';
+
 export const projectTranslationSchema = z.object({
   language: z.string(),
   title: z.string(),
@@ -18,16 +20,8 @@ export const projectCoauthorSchema = z.object({
 
 export const projectSchema = z.object({
   slug: z.string().min(1, 'validation.required'),
-  githubLink: z
-    .string()
-    .url('validation.invalidUrl')
-    .optional()
-    .or(z.literal('')),
-  liveLink: z
-    .string()
-    .url('validation.invalidUrl')
-    .optional()
-    .or(z.literal('')),
+  githubLink: safeHttpUrl.optional().or(z.literal('')),
+  liveLink: safeHttpUrl.optional().or(z.literal('')),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
   isPublished: z.boolean(),

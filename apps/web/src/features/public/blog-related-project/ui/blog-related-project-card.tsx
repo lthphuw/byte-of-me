@@ -5,6 +5,7 @@ import { getLocale, getTranslations } from 'next-intl/server';
 
 import { getPublicProjectById } from '@/entities/project';
 import { Routes } from '@/shared/config/global';
+import { toSafeHref } from '@/shared/lib/safe-http-url';
 import { formatDate } from '@/shared/lib/utils';
 
 export async function BlogRelatedProjectCard({
@@ -35,7 +36,10 @@ export async function BlogRelatedProjectCard({
         {label}
       </p>
       <Card className="p-4 transition-colors hover:border-primary/50">
-        <Link href={project.githubLink ?? Routes.Projects} target="_blank">
+        <Link
+          href={toSafeHref(project.githubLink) ?? Routes.Projects}
+          target="_blank"
+        >
           <div className="flex items-center justify-between gap-2 text-primary">
             <div className="flex items-center gap-2 text-primary">
               <FolderCode className="h-4 w-4" />

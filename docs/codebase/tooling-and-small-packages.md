@@ -97,8 +97,10 @@ Not exported from the index: `createS3Client` (`src/s3.factory.ts`, always `forc
 
 | service | image | ports (host:container) |
 | --- | --- | --- |
-| `postgres` | `postgres:17.6` | `5432:5432` |
-| `mailpit` | `axllent/mailpit:v1.31.4` | `1025:1025`, `8025:8025` |
+| `postgres` | `postgres:17.6` | `127.0.0.1:5432:5432` |
+| `mailpit` | `axllent/mailpit:v1.31.4` | `127.0.0.1:1025:1025`, `127.0.0.1:8025:8025` |
+
+Ports bind to loopback only, so a laptop on public Wi-Fi does not expose the database (`admin` / `secret`) or the mail inbox.
 
 ## Key flows
 

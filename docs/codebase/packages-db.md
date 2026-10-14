@@ -126,7 +126,7 @@ Relations show the schema's `onDelete` (`cascade`, `setNull`, or `no onDelete`).
 ## Gotchas
 
 1. Local `db:migrate:*` and `db:push` connect to production: `packages/db/.env` holds production values, and only tests are guarded (AGENTS §2). Override `DATABASE_URL` for the command, or do not run them.
-2. `DIRECT_URL` is validated (`apps/web/src/shared/config/env.ts:9`), but no db code reads it outside the test guard. `prisma.config.ts` uses only `DATABASE_URL`, and the datasource has no `directUrl`. `packages/db/README.md:16` says migrations use it; they do not.
+2. `DIRECT_URL` is validated (`apps/web/src/shared/config/env.ts:15`), but no db code reads it outside the test guard. `prisma.config.ts` uses only `DATABASE_URL`, and the datasource has no `directUrl`. `packages/db/README.md:16` says migrations use it; they do not.
 3. `packages/db/src/generated/prisma/` is tracked in git (49 files). A schema change changes these files, so commit the regenerated output with it. Never hand-edit it. Root `postinstall` runs generate (`package.json:66`), so `bun install` rewrites them too.
 4. Model name is not table name: `BlogStatisticLog` is `prisma.blogStatisticLog` and maps to `blog_view_logs` (`packages/db/prisma/schema.prisma:610`, `:637`). Search the `@@map` value too.
 5. No enums. `User.role` (`packages/db/prisma/schema.prisma:66`) and `Interaction.type` (`:750`) are plain `String`s, and the database accepts any value.

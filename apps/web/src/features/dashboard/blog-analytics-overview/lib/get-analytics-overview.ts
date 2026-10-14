@@ -258,15 +258,16 @@ async function readAnalyticsOverview(
 export async function getAnalyticsOverview(): Promise<
   ApiResponse<AnalyticsOverviewData>
 > {
-  try {
-    // Both of these read request state — the session and the negotiated locale
-    // — so both must happen out here: `unstable_cache` runs its callback with
-    // no cookies, headers or session, and on a hit does not run it at all.
-    // `requireAdmin` also stays inside this function per §5, since a server
-    // action is reachable without the layout that guards the view.
-    const session = await requireAdmin();
-    const locale = await getLocale();
+  // Both of these read request state — the session and the negotiated locale
+  // — so both must happen out here: `unstable_cache` runs its callback with
+  // no cookies, headers or session, and on a hit does not run it at all.
+  // `requireAdmin` also stays inside this function per §5, since a server
+  // action is reachable without the layout that guards the view. It sits
+  // above the `try` so a refusal rejects instead of returning an envelope.
+  const session = await requireAdmin();
+  const locale = await getLocale();
 
+  try {
     // Truncated to UTC midnight, so it only changes once a day — which is what
     // makes it safe to put in the cache key. It is *not* computed inside the
     // callback, because then a cache entry filled at 23:59 would keep drawing

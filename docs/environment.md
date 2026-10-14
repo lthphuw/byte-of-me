@@ -16,9 +16,9 @@ The app validates `env.ts` at startup (`@t3-oss/env-nextjs`). A missing required
 | `DATABASE_URL` | yes | `postgresql://admin:secret@localhost:5432/byte_of_me` | runtime Prisma client |
 | `DIRECT_URL` | yes | same | validated only; no app code reads it |
 | `AUTH_URL` | yes | `http://localhost:3000` | must be the origin you open |
-| `AUTH_SECRET` | yes | output of `openssl rand -base64 32` | Auth.js cookie encryption |
+| `AUTH_SECRET` | yes, at least 32 characters | output of `openssl rand -base64 32` | Auth.js cookie encryption and the blog view-token HMAC; shorter values stop the app at startup |
 | `EMAIL` | yes, valid email | `you@example.com` | the admin's sign-in address and the public contact address |
-| `OWNER_EMAIL` | no; valid email if set | unset | admin identity; falls back to `EMAIL`. Keep it commented out when unused: an empty string fails the email check |
+| `OWNER_EMAIL` | no; valid email if set. Required when `NODE_ENV=production` and `VERCEL_ENV=production` (a real Vercel production deployment) | unset | admin identity; falls back to `EMAIL` outside real production. Keep it commented out when unused: an empty string fails the email check |
 | `AUTHOR_ID` | yes | `cseedauthor0000000000001` | scopes all public content; must match the seed |
 | `EMAIL_SERVER_HOST` | yes | `localhost` | SMTP; Mailpit locally |
 | `EMAIL_SERVER_PORT` | yes | `1025` | |
@@ -52,4 +52,4 @@ Read directly, not validated: `PORT` (dev server port) and `VERCEL_PROJECT_PRODU
 
 ## Known deviation
 
-- `apps/web/src/shared/config/env.ts` defaults `EMAIL` (line 11) and `NEXT_PUBLIC_AUTHOR_EMAIL` (line 69) to the owner's address, and `GITHUB_LOGIN` (line 48) to the owner's login. AGENTS.md §11.7 forbids literals. Set them explicitly. The defaults are not removed here, because an environment that omits them would change behaviour.
+- `apps/web/src/shared/config/env.ts` defaults `EMAIL` (line 17) and `NEXT_PUBLIC_AUTHOR_EMAIL` (line 77) to the owner's address, and `GITHUB_LOGIN` (line 56) to the owner's login. AGENTS.md §11.7 forbids literals. Set them explicitly. The defaults are not removed here, because an environment that omits them would change behaviour; `OWNER_EMAIL` is required in production, so the `EMAIL` default no longer decides who is admin there.

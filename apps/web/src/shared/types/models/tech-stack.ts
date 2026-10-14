@@ -1,4 +1,4 @@
-import type { Media } from '@/shared/types/models';
+import type { PublicMedia } from '@/shared/types/models';
 
 export interface TechStack {
   id: string;
@@ -9,6 +9,5 @@ export interface TechStack {
   slug: string;
   group: string;
   sortOrder: number;
-  logo: Maybe<Media>;
-  userId: string;
+  logo: Maybe<PublicMedia>;
 }

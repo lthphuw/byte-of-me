@@ -12,7 +12,12 @@ import {
   getTranslatedContent,
   getTranslationLanguages,
 } from '@/shared/lib/i18n-utils';
-import { buildPaginatedMeta, clampPagination } from '@/shared/lib/pagination';
+import {
+  buildPaginatedMeta,
+  clampPagination,
+  MAX_CACHED_PAGE,
+} from '@/shared/lib/pagination';
+import { PUBLIC_MEDIA_SELECT } from '@/shared/lib/public-media';
 import { parseInput } from '@/shared/lib/validate-action-input';
 import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type {
@@ -93,7 +98,7 @@ export async function getPaginatedPublicProjects(
                 include: {
                   techStack: {
                     include: {
-                      logo: true,
+                      logo: { select: PUBLIC_MEDIA_SELECT },
                     },
                   },
                 },
@@ -149,7 +154,6 @@ export async function getPaginatedPublicProjects(
               group: techStack.group,
               sortOrder: techStack.sortOrder,
               logo: techStack.logo || null,
-              userId: techStack.userId,
             })),
 
             tags: project.tags.map(({ tag }) => {
@@ -172,10 +176,16 @@ export async function getPaginatedPublicProjects(
         };
       },
       {
-        // Published-only, session-independent list: safe to share. The key
-        // mirrors every closure argument the query depends on (locale is
-        // appended by the handler).
-        cache: true,
+        // Published-only, session-independent list: safe to share. Free-text
+        // searches, tag/tech-stack filters and deep pages are read live (each
+        // distinct tuple would store its own, mostly empty, entry, and the
+        // slugs are caller-chosen). The key mirrors every closure
+        // argument the query depends on (locale is appended by the handler).
+        cache:
+          !search &&
+          tagSlugs.length === 0 &&
+          techStackSlugs.length === 0 &&
+          page <= MAX_CACHED_PAGE,
         cacheKey: [
           'paginated-public-projects',
           String(page),

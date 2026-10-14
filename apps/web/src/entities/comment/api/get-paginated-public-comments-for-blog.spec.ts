@@ -34,6 +34,37 @@ describe('getPaginatedPublicCommentsForBlog', () => {
     );
   });
 
+  it('caps replies per level and stops at the per-page ceiling', async () => {
+    const row = (id: string, parentId: string | null) => ({
+      id,
+      createdAt: new Date(),
+      content: 'hi',
+      blogId: BLOG_ID,
+      parentId,
+      userId: 'u1',
+      user: { name: 'A' },
+    });
+    const level = (prefix: string, n: number, parentId: string) =>
+      Array.from({ length: n }, (_, i) => row(`${prefix}${i}`, parentId));
+    count.mockResolvedValue(1);
+    findMany
+      .mockResolvedValueOnce([row('root', null)])
+      .mockResolvedValueOnce(level('a', 250, 'root'))
+      .mockResolvedValueOnce(level('b', 100, 'a0'))
+      .mockResolvedValueOnce(level('c', 150, 'b0'));
+
+    const res = await getPaginatedPublicCommentsForBlog({ blogId: BLOG_ID });
+
+    expect(res.success).toBe(true);
+    const takes = findMany.mock.calls.map(
+      ([arg]) => (arg as { take?: number }).take
+    );
+    // roots (limit 8), then 250 per level, then what is left of the 500.
+    expect(takes).toEqual([8, 250, 250, 150]);
+    // 250 + 100 + 150 = 500: the ceiling is reached, so no fifth query runs.
+    expect(findMany).toHaveBeenCalledTimes(4);
+  });
+
   it.each([
     ['a Prisma filter object', { not: '' }],
     ['an array', [BLOG_ID]],

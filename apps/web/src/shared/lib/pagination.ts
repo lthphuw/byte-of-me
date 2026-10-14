@@ -14,6 +14,13 @@ import type {
 export const MAX_PAGE = 100_000;
 
 /**
+ * Deepest page a public list stores in the data cache. Every distinct
+ * `page` is another cache entry and nearly all of those past the first few are
+ * empty pages, so a page beyond this is read live instead of cached.
+ */
+export const MAX_CACHED_PAGE = 50;
+
+/**
  * Server actions are public HTTP endpoints: page/limit arrive
  * caller-controlled and must be bounded before they reach a query
  * (`limit: 1_000_000` would otherwise pull the whole table).

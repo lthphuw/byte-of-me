@@ -1,7 +1,7 @@
 import type { Prisma } from '@byte-of-me/db/types';
 
 import type { PublicProject } from '@/entities/project/model/types';
-import type { Media, Tag } from '@/shared/types/models';
+import type { PublicMedia, Tag } from '@/shared/types/models';
 
 /**
  * The editor's full post. `translations[]` keeps `content` — the language tabs
@@ -114,7 +114,7 @@ export interface PublicBlog {
   projectId?: Maybe<string>;
   project?: Maybe<Partial<PublicProject>>;
 
-  coverImage?: Maybe<Media>;
+  coverImage?: Maybe<PublicMedia>;
   tags: Tag[];
 
   author?: Maybe<BlogAuthor>;

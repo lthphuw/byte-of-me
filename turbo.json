@@ -49,6 +49,7 @@
         "GITHUB_TOKEN",
         "GITHUB_LOGIN",
         "PORT",
+        "VERCEL_ENV",
         "VERCEL_PROJECT_PRODUCTION_URL"
       ]
     },
