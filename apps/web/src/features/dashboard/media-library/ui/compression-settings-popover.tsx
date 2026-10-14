@@ -130,10 +130,7 @@ export function CompressionSettingsPopover({
               update({ format: format as ImageCompressionFormat })
             }
           >
-            <SelectTrigger
-              id="compression-format"
-              className="min-h-11 can-hover:min-h-9"
-            >
+            <SelectTrigger id="compression-format">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

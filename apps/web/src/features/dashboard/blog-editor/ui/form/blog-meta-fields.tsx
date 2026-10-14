@@ -74,7 +74,7 @@ export function BlogMetaFields({
                   value={field.value || 'none'}
                 >
                   <FormControl>
-                    <SelectTrigger className="min-h-11 can-hover:min-h-9">
+                    <SelectTrigger>
                       <SelectValue placeholder={t('meta.projectPlaceholder')} />
                     </SelectTrigger>
                   </FormControl>

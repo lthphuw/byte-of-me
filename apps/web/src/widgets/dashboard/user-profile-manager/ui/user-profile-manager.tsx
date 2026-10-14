@@ -83,12 +83,12 @@ export function UserProfileManager({
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="mb-4 h-auto bg-muted/50 p-1">
+            <TabsList className="mb-4 bg-muted/50 p-1">
               {fields.map((field, index) => (
                 <TabsTrigger
                   key={field.id}
                   value={field.id}
-                  className="min-h-11 can-hover:min-h-9"
+                  className="can-hover:min-h-9"
                 >
                   <TranslationTabLabel control={form.control} index={index} />
                 </TabsTrigger>

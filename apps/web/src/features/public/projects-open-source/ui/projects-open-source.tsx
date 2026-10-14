@@ -115,7 +115,7 @@ export function ProjectsOpenSource({ repos }: { repos: OpenSourceRepo[] }) {
         <Select value={repoFilter} onValueChange={changeRepo}>
           <SelectTrigger
             aria-label={t('repoLabel')}
-            className="h-11 sm:h-9 sm:w-64"
+            className="sm:w-64"
           >
             <SelectValue />
           </SelectTrigger>
