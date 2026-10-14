@@ -6,23 +6,25 @@ import { useTranslations } from 'next-intl';
 const VALIDATION_PREFIX = 'validation.';
 
 export interface FieldMessageProps {
-  /** A `validation.<name>` key is translated; any other text is shown as is. */
+  /** Shown in place of the field's own error, e.g. a list-level one. */
   message?: string;
 }
 
 /**
  * The error text under a field, with the id that `FormControl` names in
- * `aria-describedby`. Render it inside a `FormItem`, as `FormMessage` is.
+ * `aria-describedby`. Render it inside a `FormItem`. A `validation.<name>` key
+ * (what the schemas emit) is translated; any other text is shown as is.
  */
 export function FieldMessage({ message }: FieldMessageProps) {
-  const { formMessageId } = useFormField();
+  const { error, formMessageId } = useFormField();
   const t = useTranslations('dashboard.validation');
 
-  if (!message) return null;
+  const raw = message ?? error?.message;
+  if (!raw) return null;
 
-  const text = message.startsWith(VALIDATION_PREFIX)
-    ? t(message.slice(VALIDATION_PREFIX.length) as Parameters<typeof t>[0])
-    : message;
+  const text = raw.startsWith(VALIDATION_PREFIX)
+    ? t(raw.slice(VALIDATION_PREFIX.length) as Parameters<typeof t>[0])
+    : raw;
 
   return (
     <p

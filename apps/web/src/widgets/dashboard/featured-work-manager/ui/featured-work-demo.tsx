@@ -39,8 +39,6 @@ export function toDemoValues(
 interface FeaturedWorkDemoProps {
   /** The `media` field, from the form's `FormField` (it also scopes the error line). */
   field: ControllerRenderProps<FeaturedWorkFormValues, 'media'>;
-  /** The message for the whole pair (a repeated file, too many items), if any. */
-  error?: string;
   /** The stored pair, for the previews of the clips the form opened with. */
   initialMedia?: AdminFeaturedWorkMedia[];
   /** True while a clip is uploading: the form must not be saved until it lands. */
@@ -53,7 +51,6 @@ interface FeaturedWorkDemoProps {
  */
 export function FeaturedWorkDemo({
   field,
-  error,
   initialMedia = [],
   onUploadingChange,
 }: FeaturedWorkDemoProps) {
@@ -326,7 +323,7 @@ export function FeaturedWorkDemo({
         aria-hidden
         onChange={onFileChosen}
       />
-      <FieldMessage message={error} />
+      <FieldMessage />
     </FormItem>
   );
 }

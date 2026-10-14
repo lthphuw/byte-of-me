@@ -11,7 +11,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from '@byte-of-me/ui';
 import { ChevronDown, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -24,6 +23,7 @@ import { cn } from '@/shared/lib/utils';
 import {
   AddButton,
   ConfirmDeleteDialog,
+  FieldMessage,
   LocalizedDatePicker,
   TextField,
   TranslationTabs,
@@ -127,7 +127,7 @@ export function CompanyRoleItemField({
                     onChange={(d) => field.onChange(d || null)}
                   />
                 </FormControl>
-                <FormMessage />
+                <FieldMessage />
               </FormItem>
             )}
           />
@@ -144,7 +144,7 @@ export function CompanyRoleItemField({
                     onChange={(d) => field.onChange(d || null)}
                   />
                 </FormControl>
-                <FormMessage />
+                <FieldMessage />
               </FormItem>
             )}
           />

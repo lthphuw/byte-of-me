@@ -152,7 +152,7 @@ export function CompanyForm({
         <FormField
           control={form.control}
           name="logoId"
-          render={({ field, fieldState }) => (
+          render={({ field }) => (
             <FormItem>
               <FormLabel>{t('dialog.logoLabel')}</FormLabel>
               <FormControl>
@@ -161,7 +161,7 @@ export function CompanyForm({
                   onChange={(media) => field.onChange(media?.id ?? null)}
                 />
               </FormControl>
-              <FieldMessage message={fieldState.error?.message} />
+              <FieldMessage />
             </FormItem>
           )}
         />
@@ -181,7 +181,7 @@ export function CompanyForm({
           <FormField
             control={form.control}
             name="startDate"
-            render={({ field, fieldState }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormLabel>{t('dialog.startDateLabel')}</FormLabel>
                 <FormControl>
@@ -190,7 +190,7 @@ export function CompanyForm({
                     onChange={field.onChange}
                   />
                 </FormControl>
-                <FieldMessage message={fieldState.error?.message} />
+                <FieldMessage />
               </FormItem>
             )}
           />
@@ -198,7 +198,7 @@ export function CompanyForm({
           <FormField
             control={form.control}
             name="endDate"
-            render={({ field, fieldState }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormLabel>{t('dialog.endDateLabel')}</FormLabel>
                 <FormControl>
@@ -207,7 +207,7 @@ export function CompanyForm({
                     onChange={(d) => field.onChange(d || null)}
                   />
                 </FormControl>
-                <FieldMessage message={fieldState.error?.message} />
+                <FieldMessage />
               </FormItem>
             )}
           />
@@ -216,7 +216,7 @@ export function CompanyForm({
         <FormField
           control={form.control}
           name="techStackIds"
-          render={({ field, fieldState }) => (
+          render={({ field }) => (
             <FormItem>
               <FormLabel>{t('dialog.techStackLabel')}</FormLabel>
               {techStacks.isLoading ? (
@@ -246,7 +246,7 @@ export function CompanyForm({
                   </Button>
                 </div>
               )}
-              <FieldMessage message={fieldState.error?.message} />
+              <FieldMessage />
             </FormItem>
           )}
         />

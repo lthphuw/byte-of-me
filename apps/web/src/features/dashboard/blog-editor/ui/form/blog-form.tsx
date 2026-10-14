@@ -9,7 +9,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from '@byte-of-me/ui';
 import { parseRichTextContent } from '@byte-of-me/ui/lib/rich-text-content';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -29,7 +28,7 @@ import {
   type RichTextDoc,
   richTextDocSchema,
 } from '@/shared/lib/rich-text-doc-schema';
-import { TextField, TranslationTabs } from '@/shared/ui';
+import { FieldMessage, TextField, TranslationTabs } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 
 /**
@@ -234,7 +233,7 @@ export function BlogForm({
                           uploadFailedText={tMedia('toast.uploadError')}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FieldMessage />
                     </FormItem>
                   )}
                 />

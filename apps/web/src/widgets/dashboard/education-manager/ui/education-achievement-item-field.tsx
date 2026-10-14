@@ -2,8 +2,26 @@
 
 import { useState } from 'react';
 import { type Control, useWatch } from 'react-hook-form';
-import { Badge, Button, Collapsible, CollapsibleContent, CollapsibleTrigger, FormControl, FormField, FormItem, FormLabel, FormMessage, fromEditorContent, toEditorContent } from '@byte-of-me/ui';
-import { ArrowDown, ArrowUp, ChevronDown, ImageIcon, Trash } from 'lucide-react';
+import {
+  Badge,
+  Button,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  fromEditorContent,
+  toEditorContent,
+} from '@byte-of-me/ui';
+import {
+  ArrowDown,
+  ArrowUp,
+  ChevronDown,
+  ImageIcon,
+  Trash,
+} from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { EducationFormValues } from '@/entities/education/model/education-schema';
@@ -11,7 +29,12 @@ import { useScopedImageUploader } from '@/entities/media/query';
 import { MediaMultiSelect } from '@/features/dashboard/media-library/ui/media-multi-select';
 import { useRevealOnInvalidSubmit } from '@/shared/hooks/use-reveal-on-invalid-submit';
 import { cn } from '@/shared/lib/utils';
-import { ConfirmDeleteDialog, TextField, TranslationTabs } from '@/shared/ui';
+import {
+  ConfirmDeleteDialog,
+  FieldMessage,
+  TextField,
+  TranslationTabs,
+} from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 import { achievementHasContent } from '@/widgets/dashboard/education-manager/lib/achievement-has-content';
 
@@ -175,7 +198,7 @@ export function EducationAchievementItemField({
                       onChange={field.onChange}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FieldMessage />
                 </FormItem>
               )}
             />
@@ -214,7 +237,7 @@ export function EducationAchievementItemField({
                             uploadFailedText={tMedia('toast.uploadError')}
                           />
                         </FormControl>
-                        <FormMessage />
+                        <FieldMessage />
                       </FormItem>
                     )}
                   />

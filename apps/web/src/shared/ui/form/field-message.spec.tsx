@@ -20,7 +20,13 @@ afterEach(() => {
  * through `setError`, so `FormControl` sees the field as invalid, as it does
  * after a real failed submit.
  */
-function Harness({ message }: { message?: string }) {
+function Harness({
+  message,
+  override,
+}: {
+  message?: string;
+  override?: string;
+}) {
   const form = useForm<{ name: string }>({ defaultValues: { name: '' } });
 
   useEffect(() => {
@@ -33,12 +39,12 @@ function Harness({ message }: { message?: string }) {
         <FormField
           control={form.control}
           name="name"
-          render={({ fieldState }) => (
+          render={() => (
             <FormItem>
               <FormControl>
                 <input aria-label="Name" />
               </FormControl>
-              <FieldMessage message={fieldState.error?.message} />
+              <FieldMessage message={override} />
             </FormItem>
           )}
         />
@@ -74,5 +80,12 @@ describe('FieldMessage', () => {
     const described = control.getAttribute('aria-describedby') ?? '';
 
     expect(described.split(' ')).toContain(message.id);
+  });
+
+  it('shows an explicit message in place of the field error', () => {
+    render(<Harness message="validation.required" override="Too many items" />);
+
+    expect(screen.queryByText('Too many items')).not.toBeNull();
+    expect(screen.queryByText('This field is required')).toBeNull();
   });
 });

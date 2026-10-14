@@ -148,7 +148,7 @@ export function FeaturedWorkForm({
               <FormField
                 control={form.control}
                 name={`translations.${index}.details`}
-                render={({ field, fieldState }) => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('detailsLabel')}</FormLabel>
                     <FormControl>
@@ -167,7 +167,7 @@ export function FeaturedWorkForm({
                         uploadFailedText={tMedia('toast.uploadError')}
                       />
                     </FormControl>
-                    <FieldMessage message={fieldState.error?.message} />
+                    <FieldMessage />
                   </FormItem>
                 )}
               />
@@ -178,10 +178,9 @@ export function FeaturedWorkForm({
         <FormField
           control={form.control}
           name="media"
-          render={({ field, fieldState }) => (
+          render={({ field }) => (
             <FeaturedWorkDemo
               field={field}
-              error={fieldState.error?.message}
               initialMedia={initialData?.media}
               onUploadingChange={handleUploadingChange}
             />

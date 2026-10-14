@@ -8,7 +8,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
   type MultiSelectOption,
   Select,
   SelectContent,
@@ -23,7 +22,7 @@ import type { BlogFormValues } from '@/entities/blog/model/blog-schema';
 import type { ProjectOption } from '@/entities/project/api/get-admin-project-options';
 import type { PickerState } from '@/features/dashboard/blog-editor/lib/use-blog-reference-options';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
-import { LocalizedMultiSelect, TextField } from '@/shared/ui';
+import { FieldMessage, LocalizedMultiSelect, TextField } from '@/shared/ui';
 
 interface BlogMetaFieldsProps {
   control: Control<BlogFormValues>;
@@ -90,7 +89,7 @@ export function BlogMetaFields({
                     ))}
                   </SelectContent>
                 </Select>
-                <FormMessage />
+                <FieldMessage />
               </FormItem>
             )
           }
@@ -131,7 +130,7 @@ export function BlogMetaFields({
                   onChange={(media) => field.onChange(media?.id)}
                 />
               </FormControl>
-              <FormMessage />
+              <FieldMessage />
             </FormItem>
           )}
         />
@@ -158,7 +157,7 @@ export function BlogMetaFields({
                     placeholder={t('meta.tagsPlaceholder')}
                   />
                 </FormControl>
-                <FormMessage />
+                <FieldMessage />
               </FormItem>
             )
           }

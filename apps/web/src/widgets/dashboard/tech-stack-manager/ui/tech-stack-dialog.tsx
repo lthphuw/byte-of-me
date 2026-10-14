@@ -77,13 +77,13 @@ export function TechStackDialog({
             <FormField
               control={form.control}
               name="name"
-              render={({ field, fieldState }) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('dialog.nameLabel')}</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-                  <FieldMessage message={fieldState.error?.message} />
+                  <FieldMessage />
                 </FormItem>
               )}
             />
@@ -91,13 +91,13 @@ export function TechStackDialog({
             <FormField
               control={form.control}
               name="slug"
-              render={({ field, fieldState }) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('dialog.slugLabel')}</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-                  <FieldMessage message={fieldState.error?.message} />
+                  <FieldMessage />
                 </FormItem>
               )}
             />
@@ -106,13 +106,13 @@ export function TechStackDialog({
           <FormField
             control={form.control}
             name="group"
-            render={({ field, fieldState }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormLabel>{t('dialog.groupLabel')}</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
-                <FieldMessage message={fieldState.error?.message} />
+                <FieldMessage />
               </FormItem>
             )}
           />
@@ -120,7 +120,7 @@ export function TechStackDialog({
           <FormField
             control={form.control}
             name="logoId"
-            render={({ field, fieldState }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormLabel>{t('dialog.logoLabel')}</FormLabel>
                 <FormControl>
@@ -129,7 +129,7 @@ export function TechStackDialog({
                     onChange={(m) => field.onChange(m?.id ?? null)}
                   />
                 </FormControl>
-                <FieldMessage message={fieldState.error?.message} />
+                <FieldMessage />
               </FormItem>
             )}
           />

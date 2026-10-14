@@ -43,7 +43,7 @@ export function TextField({
     <FormField
       control={control}
       name={name}
-      render={({ field, fieldState }) => (
+      render={({ field }) => (
         <FormItem className={className}>
           <FormLabel>{label}</FormLabel>
           <FormControl>
@@ -62,7 +62,7 @@ export function TextField({
               />
             )}
           </FormControl>
-          <FieldMessage message={fieldState.error?.message} />
+          <FieldMessage />
         </FormItem>
       )}
     />

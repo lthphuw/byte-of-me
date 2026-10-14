@@ -238,7 +238,7 @@ export function ProjectForm({
           <FormField
             control={form.control}
             name="techStackIds"
-            render={({ field, fieldState }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormLabel>{t('dialog.techStackLabel')}</FormLabel>
                 <ProjectPicker
@@ -248,7 +248,7 @@ export function ProjectForm({
                   selected={field.value || []}
                   onChange={field.onChange}
                 />
-                <FieldMessage message={fieldState.error?.message} />
+                <FieldMessage />
               </FormItem>
             )}
           />
@@ -257,7 +257,7 @@ export function ProjectForm({
           <FormField
             control={form.control}
             name="tagIds"
-            render={({ field, fieldState }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormLabel>{t('dialog.tagsLabel')}</FormLabel>
                 <ProjectPicker
@@ -267,7 +267,7 @@ export function ProjectForm({
                   selected={field.value || []}
                   onChange={field.onChange}
                 />
-                <FieldMessage message={fieldState.error?.message} />
+                <FieldMessage />
               </FormItem>
             )}
           />
@@ -298,7 +298,7 @@ export function ProjectForm({
                 <FormField
                   control={form.control}
                   name={`translations.${index}.description`}
-                  render={({ field, fieldState }) => (
+                  render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('dialog.descriptionLabel')}</FormLabel>
                       <FormControl>
@@ -318,7 +318,7 @@ export function ProjectForm({
                           uploadFailedText={tMedia('toast.uploadError')}
                         />
                       </FormControl>
-                      <FieldMessage message={fieldState.error?.message} />
+                      <FieldMessage />
                     </FormItem>
                   )}
                 />

@@ -68,7 +68,7 @@ export function CompanyTaskItemField({
       <FormField
         control={control}
         name={`roles.${roleIndex}.tasks.${index}.sortOrder`}
-        render={({ field, fieldState }) => (
+        render={({ field }) => (
           <FormItem>
             <FormLabel>{t('task.sortLabel')}</FormLabel>
             <FormControl>
@@ -82,7 +82,7 @@ export function CompanyTaskItemField({
                 }
               />
             </FormControl>
-            <FieldMessage message={fieldState.error?.message} />
+            <FieldMessage />
           </FormItem>
         )}
       />

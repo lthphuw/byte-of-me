@@ -9,13 +9,12 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
   Input,
 } from '@byte-of-me/ui';
 import { useTranslations } from 'next-intl';
 
 import type { UserProfileFormValues } from '@/entities/user-profile';
-import { AddButton, ConfirmDeleteDialog } from '@/shared/ui';
+import { AddButton, ConfirmDeleteDialog, FieldMessage } from '@/shared/ui';
 
 interface PendingRemoval {
   index: number;
@@ -109,7 +108,7 @@ export function SocialLinksSection({
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage />
+                    <FieldMessage />
                   </FormItem>
                 )}
               />
@@ -131,7 +130,7 @@ export function SocialLinksSection({
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage />
+                    <FieldMessage />
                   </FormItem>
                 )}
               />

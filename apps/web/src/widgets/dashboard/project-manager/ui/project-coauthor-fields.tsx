@@ -53,7 +53,7 @@ export function ProjectCoauthorFields({ control }: ProjectCoauthorFieldsProps) {
           <FormField
             control={control}
             name={`coauthors.${index}.email`}
-            render={({ field, fieldState }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormLabel>{t('coauthors.emailLabel')}</FormLabel>
                 <FormControl>
@@ -65,7 +65,7 @@ export function ProjectCoauthorFields({ control }: ProjectCoauthorFieldsProps) {
                     value={field.value ?? ''}
                   />
                 </FormControl>
-                <FieldMessage message={fieldState.error?.message} />
+                <FieldMessage />
               </FormItem>
             )}
           />

@@ -8,7 +8,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
   fromEditorContent,
   toEditorContent,
 } from '@byte-of-me/ui';
@@ -148,7 +147,7 @@ export function EducationForm({
                     onChange={(media) => field.onChange(media?.id)}
                   />
                 </FormControl>
-                <FormMessage />
+                <FieldMessage />
               </FormItem>
             )}
           />
@@ -156,7 +155,7 @@ export function EducationForm({
           <FormField
             control={form.control}
             name="startDate"
-            render={({ field, fieldState }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormLabel>{t('dialog.startDateLabel')}</FormLabel>
                 <FormControl>
@@ -165,7 +164,7 @@ export function EducationForm({
                     onChange={field.onChange}
                   />
                 </FormControl>
-                <FieldMessage message={fieldState.error?.message} />
+                <FieldMessage />
               </FormItem>
             )}
           />
@@ -182,7 +181,7 @@ export function EducationForm({
                     onChange={(d) => field.onChange(d || null)}
                   />
                 </FormControl>
-                <FormMessage />
+                <FieldMessage />
               </FormItem>
             )}
           />
@@ -228,7 +227,7 @@ export function EducationForm({
                           uploadFailedText={tMedia('toast.uploadError')}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FieldMessage />
                     </FormItem>
                   )}
                 />

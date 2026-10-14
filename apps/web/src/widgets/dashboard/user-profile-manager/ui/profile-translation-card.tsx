@@ -8,7 +8,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
   Input,
   Separator,
   Textarea,
@@ -17,7 +16,7 @@ import { useTranslations } from 'next-intl';
 
 import { useScopedImageUploader } from '@/entities/media/query';
 import type { UserProfileFormValues } from '@/entities/user-profile';
-import { ConfirmDeleteDialog, TextField } from '@/shared/ui';
+import { ConfirmDeleteDialog, FieldMessage, TextField } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 
 /** The editor's empty document, which is what an untouched "About me" holds. */
@@ -90,7 +89,7 @@ export function ProfileTranslationCard({
                   className="w-32"
                 />
               </FormControl>
-              <FormMessage />
+              <FieldMessage />
             </FormItem>
           )}
         />
@@ -147,7 +146,7 @@ export function ProfileTranslationCard({
                     placeholder={t('content.taglinePlaceholder')}
                   />
                 </FormControl>
-                <FormMessage />
+                <FieldMessage />
               </FormItem>
             )}
           />
@@ -166,7 +165,7 @@ export function ProfileTranslationCard({
                     placeholder={t('content.bioPlaceholder')}
                   />
                 </FormControl>
-                <FormMessage />
+                <FieldMessage />
               </FormItem>
             )}
           />
@@ -190,7 +189,7 @@ export function ProfileTranslationCard({
                     placeholder={t('quote.quotePlaceholder')}
                   />
                 </FormControl>
-                <FormMessage />
+                <FieldMessage />
               </FormItem>
             )}
           />
@@ -217,7 +216,7 @@ export function ProfileTranslationCard({
                   uploadFailedText={tMedia('toast.uploadError')}
                 />
               </FormControl>
-              <FormMessage />
+              <FieldMessage />
             </FormItem>
           )}
         />

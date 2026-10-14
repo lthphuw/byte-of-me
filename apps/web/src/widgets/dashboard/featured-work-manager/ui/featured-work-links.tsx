@@ -36,7 +36,7 @@ export function FeaturedWorkLinks({
     <FormField
       control={control}
       name="links"
-      render={({ fieldState }) => (
+      render={() => (
         <FormItem role="group" aria-labelledby={headingId}>
           <div className="flex items-baseline justify-between gap-3">
             <p id={headingId} className="text-sm font-medium leading-none">
@@ -116,7 +116,7 @@ export function FeaturedWorkLinks({
             className="w-full sm:w-auto"
           />
 
-          <FieldMessage message={listError ?? fieldState.error?.message} />
+          <FieldMessage message={listError} />
         </FormItem>
       )}
     />
