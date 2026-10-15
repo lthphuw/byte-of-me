@@ -29,9 +29,10 @@ const flagVariants = {
 };
 
 // Only two flags exist in the UI: static files under public/flags, not flag-icons.min.css
-// (it drags all 257 flag classes and ~550 SVGs into the build).
+// (it drags all 257 flag classes and ~550 SVGs into the build). The SVGs are 640x480, so
+// the box is 4:3 and a caller sets only its height: a square box drew the border around a gap.
 const flagClass =
-  'inline-block w-[1.333333em] border border-border bg-contain bg-center bg-no-repeat leading-[1em]';
+  'inline-block aspect-[4/3] border border-border bg-cover bg-center bg-no-repeat';
 
 const Flags: Record<
   LocaleType,
@@ -86,7 +87,7 @@ export function I18nToggle({
                 transition={menuTransition}
                 className="absolute inset-0 flex items-center justify-center"
               >
-                <CurrentFlag className="size-full object-cover shadow-sm" />
+                <CurrentFlag className="h-[18px] rounded-[2px]" />
               </m.div>
             </AnimatePresence>
           </div>
@@ -116,7 +117,7 @@ export function I18nToggle({
                     'bg-accent font-medium text-accent-foreground'
                 )}
               >
-                <ItemFlag className="size-5 shrink-0 overflow-hidden rounded-[2px] object-cover" />
+                <ItemFlag className="h-[15px] shrink-0 rounded-[2px]" />
                 <span>{t(languageNames[lang])}</span>
               </Link>
             </DropdownMenuItem>
