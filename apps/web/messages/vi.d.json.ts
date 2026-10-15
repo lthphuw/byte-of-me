@@ -350,7 +350,6 @@ declare const messages: {
     "openSource": {
       "prCount": "{count} PR",
       "summary": "{prs} pull request đã merge trên {repos} dự án",
-      "openRepo": "Mở trên GitHub",
       "searchPlaceholder": "Tìm pull request",
       "clearSearch": "Xoá tìm kiếm",
       "repoLabel": "Lọc theo repo",

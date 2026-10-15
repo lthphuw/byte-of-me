@@ -350,7 +350,6 @@ declare const messages: {
     "openSource": {
       "prCount": "{count, plural, one {# PR} other {# PRs}}",
       "summary": "{prs, plural, one {# merged pull request} other {# merged pull requests}} across {repos, plural, one {# project} other {# projects}}",
-      "openRepo": "Open on GitHub",
       "searchPlaceholder": "Search pull requests",
       "clearSearch": "Clear search",
       "repoLabel": "Filter by repository",

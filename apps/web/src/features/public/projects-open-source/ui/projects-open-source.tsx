@@ -1,20 +1,11 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import {
-  badgeVariants,
-  Button,
-  Pagination,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  useMediaQuery,
-} from '@byte-of-me/ui';
-import { ArrowUpRight, GitPullRequest, Star } from 'lucide-react';
-import Image from 'next/image';
+import { badgeVariants, Pagination, useMediaQuery } from '@byte-of-me/ui';
+import { ArrowUpRight, GitPullRequest } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
+
+import { RepoFilterChips } from './repo-filter-chips';
 
 import {
   filterLedger,
@@ -27,20 +18,17 @@ import type { OpenSourceRepo } from '@/entities/open-source/model/types';
 import { cn } from '@/shared/lib/utils';
 import { FilterSearchInput } from '@/shared/ui';
 
-const ALL_REPOS = '*';
-
 // Hidden for now: the repo picker covers the list today. Set to `true` to show
 // the search again; the filter and its strings stay wired.
 const SEARCH_ENABLED = false;
 
 /**
  * The merged-PR ledger on `/projects`. One flat list, newest first, filtered
- * by a free-text search and a repo picker, and paged by viewport (5 on a
- * phone, 8 from `md` up). Choosing a repo also shows its name, language, stars
- * and a link to it, since the rows alone only carry `owner/name`. Only the
- * `View` badge on a row links to the PR; the row itself does not.
+ * by a free-text search and a row of repo chips, and paged by viewport (5 on a
+ * phone, 8 from `md` up). On a row the repo name links to the repo and the `View`
+ * badge to the PR; the row itself does not link.
  *
- * Client component: the search, the picker and the page are local state. The
+ * Client component: the search, the chips and the page are local state. The
  * first page is still rendered on the server, so the initial HTML is complete.
  * The server has no viewport, so it renders the phone count and a desktop
  * client swaps to the larger page after hydration.
@@ -55,7 +43,7 @@ export function ProjectsOpenSource({ repos }: { repos: OpenSourceRepo[] }) {
     : LEDGER_PAGE_SIZE.mobile;
 
   const [text, setText] = useState('');
-  const [repoFilter, setRepoFilter] = useState(ALL_REPOS);
+  const [repo, setRepo] = useState<string | null>(null);
   const [page, setPage] = useState(1);
 
   // UTC on purpose: the server renders this and the browser hydrates it, and a
@@ -75,18 +63,12 @@ export function ProjectsOpenSource({ repos }: { repos: OpenSourceRepo[] }) {
     [locale]
   );
   const numberFormat = useMemo(() => new Intl.NumberFormat(locale), [locale]);
-  const compactFormat = useMemo(
-    () =>
-      new Intl.NumberFormat(locale, {
-        notation: 'compact',
-        maximumFractionDigits: 1,
-      }),
-    [locale]
-  );
 
   const ledger = useMemo(() => toLedger(repos), [repos]);
-  const repo = repoFilter === ALL_REPOS ? null : repoFilter;
-  const selectedRepo = repos.find((r) => r.nameWithOwner === repo) ?? null;
+  const repoUrls = useMemo(
+    () => new Map(repos.map((r) => [r.nameWithOwner, r.url])),
+    [repos]
+  );
   const filtered = filterLedger(ledger, { text, repo });
   const { items, pagination } = pageLedger(filtered, page, pageSize);
   const months = groupLedgerByMonth(items);
@@ -95,91 +77,31 @@ export function ProjectsOpenSource({ repos }: { repos: OpenSourceRepo[] }) {
     setText(value);
     setPage(1);
   };
-  const changeRepo = (value: string) => {
-    setRepoFilter(value);
+  const changeRepo = (value: string | null) => {
+    setRepo(value);
     setPage(1);
   };
 
   return (
     <div className="space-y-6 md:space-y-8">
-      <div className="flex flex-col gap-3 sm:flex-row">
+      <div className="flex flex-col gap-3">
         {SEARCH_ENABLED && (
           <FilterSearchInput
             value={text}
             onChange={changeText}
             placeholder={t('searchPlaceholder')}
             clearLabel={t('clearSearch')}
-            className="flex-1"
+            className="w-full sm:max-w-xs"
           />
         )}
-        <Select value={repoFilter} onValueChange={changeRepo}>
-          <SelectTrigger
-            aria-label={t('repoLabel')}
-            className="sm:w-64"
-          >
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ALL_REPOS}>
-              {t('allRepos', { count: ledger.length })}
-            </SelectItem>
-            {repos.map((item) => (
-              <SelectItem key={item.nameWithOwner} value={item.nameWithOwner}>
-                {item.nameWithOwner} · {item.prCount}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <RepoFilterChips
+          repos={repos}
+          value={repo}
+          onChange={changeRepo}
+          allLabel={t('allRepos', { count: ledger.length })}
+          groupLabel={t('repoLabel')}
+        />
       </div>
-
-      {selectedRepo && (
-        <div className="flex flex-col gap-4 rounded-xl border bg-card p-4 sm:flex-row sm:items-start md:p-5">
-          <Image
-            src={selectedRepo.avatarUrl}
-            alt=""
-            width={40}
-            height={40}
-            className="size-10 shrink-0 rounded-md border"
-          />
-          <div className="min-w-0 flex-1 space-y-2">
-            <p className="break-all text-base font-semibold">
-              {selectedRepo.nameWithOwner}
-            </p>
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-              {selectedRepo.language && (
-                <span className="inline-flex items-center gap-1.5">
-                  <span
-                    aria-hidden
-                    className="size-2.5 rounded-full border border-border"
-                    style={{
-                      backgroundColor:
-                        selectedRepo.language.color ?? undefined,
-                    }}
-                  />
-                  {selectedRepo.language.name}
-                </span>
-              )}
-              <span className="inline-flex items-center gap-1 tabular-nums">
-                <Star aria-hidden className="size-3.5" />
-                {compactFormat.format(selectedRepo.stars)}
-              </span>
-              <span className="tabular-nums">
-                {t('prCount', { count: selectedRepo.prCount })}
-              </span>
-            </div>
-          </div>
-          <Button asChild variant="outline" size="sm" className="shrink-0">
-            <a
-              href={selectedRepo.url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {t('openRepo')}
-              <ArrowUpRight aria-hidden className="size-3.5" />
-            </a>
-          </Button>
-        </div>
-      )}
 
       {filtered.length === 0 ? (
         <p className="py-12 text-center text-sm text-muted-foreground">
@@ -194,8 +116,6 @@ export function ProjectsOpenSource({ repos }: { repos: OpenSourceRepo[] }) {
               </h3>
               <ul className="divide-y">
                 {month.items.map((item) => {
-                  const [owner, name] = item.repo.split('/');
-
                   return (
                     <li key={item.url} className="flex items-start gap-3 py-4 md:gap-4">
                       <GitPullRequest
@@ -210,33 +130,39 @@ export function ProjectsOpenSource({ repos }: { repos: OpenSourceRepo[] }) {
                             #{item.number}
                           </span>
                         </p>
-                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground md:text-[13px]">
-                          <span className="min-w-0 break-all">
-                            {owner}/
-                            <span className="font-medium text-foreground">
-                              {name}
+                        {/* `View` is its own column, not a flex-wrap sibling: a long repo
+                            name or date wraps inside the left cell and cannot push it down. */}
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground md:text-[13px]">
+                          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-0.5 md:gap-x-2">
+                            <RepoLink name={item.repo} url={repoUrls.get(item.repo)} />
+                            {/* The dots only exist from md: a wrapped line leaves one dangling. */}
+                            <span aria-hidden className="hidden md:inline">
+                              ·
                             </span>
-                          </span>
-                          <span aria-hidden>·</span>
-                          <time dateTime={item.mergedAt}>
-                            {dateFormat.format(new Date(item.mergedAt))}
-                          </time>
-                          <span aria-hidden className="hidden md:inline">
-                            ·
-                          </span>
-                          <span className="hidden tabular-nums md:inline">
-                            <span className="font-medium text-primary">
-                              +{numberFormat.format(item.additions)}
-                            </span>{' '}
-                            −{numberFormat.format(item.deletions)}
-                          </span>
+                            <time
+                              dateTime={item.mergedAt}
+                              className="whitespace-nowrap"
+                            >
+                              {dateFormat.format(new Date(item.mergedAt))}
+                            </time>
+                            <span aria-hidden className="hidden md:inline">
+                              ·
+                            </span>
+                            <span className="hidden tabular-nums md:inline">
+                              <span className="font-medium text-primary">
+                                +{numberFormat.format(item.additions)}
+                              </span>{' '}
+                              −{numberFormat.format(item.deletions)}
+                            </span>
+                          </div>
+                          {/* `before:` is a 44px hit area around the 22px chip; it adds no height. */}
                           <a
                             href={item.url}
                             target="_blank"
                             rel="noopener noreferrer"
                             className={cn(
                               badgeVariants({ variant: 'outline', interactive: true }),
-                              'ml-auto shrink-0 gap-1 text-primary transition-colors hover:bg-primary/10'
+                              'relative shrink-0 gap-1 text-primary transition-colors hover:bg-primary/10 before:absolute before:inset-x-0 before:-inset-y-3'
                             )}
                           >
                             {t('view')}
@@ -266,5 +192,21 @@ export function ProjectsOpenSource({ repos }: { repos: OpenSourceRepo[] }) {
         </div>
       )}
     </div>
+  );
+}
+
+/** The repo on a row, a link to GitHub. `before:` is a 44px hit area around the 16px line. */
+function RepoLink({ name, url }: { name: string; url: string | undefined }) {
+  if (!url) return <span className="min-w-0 [overflow-wrap:anywhere]">{name}</span>;
+
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="relative min-w-0 rounded-sm font-medium text-primary underline underline-offset-4 [overflow-wrap:anywhere] before:absolute before:-inset-y-3.5 before:inset-x-0 hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      {name}
+    </a>
   );
 }
