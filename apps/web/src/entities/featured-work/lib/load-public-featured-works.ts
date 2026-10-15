@@ -118,6 +118,23 @@ function toDetailsHtml(details: string | null): string | null {
   return renderRichTextDocumentHtml(details);
 }
 
+/**
+ * The body for a visitor: the chosen translation's own, else `en`'s, else any other that
+ * has one. The title and the body fall back separately, so a `vi` title with no `vi` body
+ * shows the `en` body rather than none.
+ */
+function pickDetails(
+  translations: Array<{ language: string; details: string | null }>,
+  chosen: { details: string | null }
+): string | null {
+  const candidates = [
+    chosen,
+    ...translations.filter((t) => t.language === 'en'),
+    ...translations,
+  ];
+  return candidates.find((t) => !isRichTextBlank(t.details))?.details ?? null;
+}
+
 /** A work with no usable translation is skipped: one bad row must not blank the section. */
 export function toRows(
   works: Array<{
@@ -143,8 +160,7 @@ export function toRows(
       {
         id: work.id,
         title: translation.title,
-        // Row-level: the body comes from the translation the title came from.
-        detailsHtml: toDetailsHtml(translation.details),
+        detailsHtml: toDetailsHtml(pickDetails(usable, translation)),
         links: toPublicLinks(work.links),
         media: toPublicMedia(work.media),
       },
@@ -206,7 +222,8 @@ async function getPublicFeaturedWorkRows(): Promise<
         // v5: the demo items carry each file's pixel size, which v4 rows lack.
         // v6: no is_published filter any more, so v5 rows would hide the drafts that now show.
         // v7: a work's single `url` became `links`, so v6 rows carry no links at all.
-        cacheKey: ['featured-works-rows-v7'],
+        // v8: a work's body falls back to `en` per field, so v7 rows hold none for a `vi` visitor.
+        cacheKey: ['featured-works-rows-v8'],
         cacheTags: [CACHE_TAGS.FEATURED_WORK],
       }
     );

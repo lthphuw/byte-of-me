@@ -308,14 +308,36 @@ describe('details body', () => {
     expect(result[0]?.detailsHtml).toBeNull();
   });
 
-  it('gives a vi row with no vi body no body, even when en has one', () => {
+  it('keeps the vi title but falls back to the en body when vi has none', () => {
     const [viRow] = toRows(
       work([translation('en', DETAILS_EN), translation('vi', null, 'Tiêu đề')]),
       'vi'
     );
 
     expect(viRow?.title).toBe('Tiêu đề');
-    expect(viRow?.detailsHtml).toBeNull();
+    expect(viRow?.detailsHtml).toBe('<p>How it was done.</p>');
+  });
+
+  it('falls back to the en body when the vi body is an empty document', () => {
+    const [viRow] = toRows(
+      work([
+        translation('en', DETAILS_EN),
+        translation('vi', doc('   '), 'Tiêu đề'),
+      ]),
+      'vi'
+    );
+
+    expect(viRow?.detailsHtml).toBe('<p>How it was done.</p>');
+  });
+
+  it('falls back to the vi body when en has none', () => {
+    const [enRow] = toRows(
+      work([translation('en', null), translation('vi', DETAILS_VI, 'Tiêu đề')]),
+      'en'
+    );
+
+    expect(enRow?.title).toBe('Title en');
+    expect(enRow?.detailsHtml).toBe('<p>Cách làm.</p>');
   });
 
   it("renders the visitor's own language body when it has one", () => {

@@ -106,7 +106,7 @@ Action names are files in `apps/web/src/entities/<slice>/api/`. "admin" = `requi
    1. `apps/web/src/entities/featured-work/model/featured-work-schema.ts:48` (`featuredWorkSchema`) and `model/types.ts`.
    2. Write path: `api/create-featured-work.ts` (`prisma.featuredWork.create`), `api/update-featured-work.ts` (`tx.featuredWork.update`, then the link and media rows).
    3. Read path: `api/get-admin-featured-work-by-id.ts`; public `select` in `lib/load-public-featured-works.ts` (`getPublicFeaturedWorkRows`), mapping in `toRows` (`:86`).
-   4. If the cached public row changes shape, bump `featured-works-rows-v7` in `lib/load-public-featured-works.ts` (precedent: commit `56fc32bd`). The GitHub half is `featured-works-github-v2` in `lib/get-featured-work-github.ts`.
+   4. If the cached public row changes shape, bump `featured-works-rows-v8` in `lib/load-public-featured-works.ts` (precedent: commit `56fc32bd`). The GitHub half is `featured-works-github-v2` in `lib/get-featured-work-github.ts`.
    5. UI: `apps/web/src/widgets/dashboard/featured-work-manager/ui/featured-work-form.tsx`, `apps/web/src/entities/featured-work/ui/featured-work-row.tsx`.
 
 ## Gotchas
@@ -114,7 +114,7 @@ Action names are files in `apps/web/src/entities/<slice>/api/`. "admin" = `requi
 - `requireAdmin()` throws `Error('Unauthorized')` (`apps/web/src/shared/lib/auth/session.ts:65`). Inside `try` it becomes `errorMsg: 'Unauthorized'`; before `try` it escapes as a thrown error.
 - Blog update and delete scope their write by `userId` (`update-blog.ts:37`, `delete-blog.ts:22-25`). Company, education and featured-work updates first run `findFirst({ where: { id, userId } })`. Latent only: `getAuthenticatedAdmin()` admits just the site owner (`apps/web/src/shared/lib/auth/session.ts:43-62`).
 - Revalidate only after commit: `update-company.ts:155-157`, `update-education.ts:141-143`, `update-featured-work.ts:97-99`, `reorder-featured-work.ts:91-93`.
-- Public cache keys are string literals, not factories: `featured-works-rows-v7` (`load-public-featured-works.ts`) and `featured-works-github-v2` (`get-featured-work-github.ts`). Bump the version when the cached shape changes. v7 is the move from one `url` to `links`.
+- Public cache keys are string literals, not factories: `featured-works-rows-v8` (`load-public-featured-works.ts`) and `featured-works-github-v2` (`get-featured-work-github.ts`). Bump the version when the cached shape changes. v7 is the move from one `url` to `links`; v8 is the body falling back to `en` per field (`pickDetails`): the title comes from the visitor's language, the body from the first of that language, `en`, any other that is not blank.
 - Per the comment at `get-adjacent-public-blogs.ts:26-28`, a cache hit returns `Date` fields as strings; callers accept `Date | string`.
 - Education `api/index.ts` exports only the public read; company has no `api/index.ts`. Admin actions are imported by deep path (see deviations).
 - Two blog modules are off the barrel on purpose (`apps/web/src/entities/blog/api/index.ts:1-6`). Import them by path: `apps/web/src/app/sitemap.ts:5`, `apps/web/src/app/feed.xml/route.ts:1`.
