@@ -1,0 +1,53 @@
+{
+  "name": "@byte-of-me/rich-text-editor",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "test": "bun test"
+  },
+  "peerDependencies": {
+    "react": "^19.2.5",
+    "react-dom": "^19.2.0",
+    "sonner": "catalog:"
+  },
+  "dependencies": {
+    "@byte-of-me/rich-text-render": "workspace:*",
+    "@byte-of-me/rich-text-schema": "workspace:*",
+    "@byte-of-me/ui-forms": "workspace:*",
+    "@byte-of-me/ui-hooks": "workspace:*",
+    "@byte-of-me/ui-primitives": "workspace:*",
+    "@byte-of-me/ui-utils": "workspace:*",
+    "@tiptap/core": "catalog:",
+    "@tiptap/extension-image": "catalog:",
+    "@tiptap/extension-placeholder": "catalog:",
+    "@tiptap/extension-table": "catalog:",
+    "@tiptap/extension-table-of-contents": "catalog:",
+    "@tiptap/extension-typography": "catalog:",
+    "@tiptap/markdown": "catalog:",
+    "@tiptap/pm": "catalog:",
+    "@tiptap/react": "catalog:",
+    "lucide-react": "catalog:",
+    "mermaid": "catalog:",
+    "vaul": "catalog:"
+  },
+  "devDependencies": {
+    "@tiptap/html": "catalog:",
+    "@tiptap/starter-kit": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "eslint": "catalog:",
+    "react-hook-form": "catalog:",
+    "sonner": "catalog:",
+    "typescript": "catalog:"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ]
+}

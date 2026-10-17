@@ -6,10 +6,6 @@ import {
   readReferencesFromDoc,
   type ReferenceItem,
 } from '@byte-of-me/rich-text-schema';
-import { cn } from '@byte-of-me/ui-utils';
-import { useEditorState } from '@tiptap/react';
-import { Plus, Quote } from 'lucide-react';
-
 import {
   Button,
   type ButtonProps,
@@ -19,7 +15,11 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '../../../index';
+} from '@byte-of-me/ui-primitives';
+import { cn } from '@byte-of-me/ui-utils';
+import { useEditorState } from '@tiptap/react';
+import { Plus, Quote } from 'lucide-react';
+
 import { ReferenceForm } from '../extensions/references/reference-form';
 
 import { useToolbar } from './toolbar-provider';

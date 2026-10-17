@@ -1,8 +1,6 @@
 'use client';
 
 import { useId } from 'react';
-import { ArrowLeftIcon, ArrowRightIcon, Repeat, X } from 'lucide-react';
-
 import {
   Button,
   Checkbox,
@@ -15,7 +13,8 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '../../../index';
+} from '@byte-of-me/ui-primitives';
+import { ArrowLeftIcon, ArrowRightIcon, Repeat, X } from 'lucide-react';
 
 import { useToolbar } from './toolbar-provider';
 import { useSearchAndReplace } from './use-search-and-replace';

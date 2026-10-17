@@ -9,18 +9,18 @@ import {
   useRef,
   useState,
 } from 'react';
-import { cn } from '@byte-of-me/ui-utils';
-import type { Editor } from '@tiptap/core';
-import { PluginKey } from '@tiptap/pm/state';
-import { FloatingMenu } from '@tiptap/react/menus';
-
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandItem,
   CommandList,
-} from '../../../index';
+} from '@byte-of-me/ui-forms';
+import { cn } from '@byte-of-me/ui-utils';
+import type { Editor } from '@tiptap/core';
+import { PluginKey } from '@tiptap/pm/state';
+import { FloatingMenu } from '@tiptap/react/menus';
+
 import type { EditorLabels } from '../editor-labels';
 
 import { buildGroups, filterGroups } from './slash-menu-items';

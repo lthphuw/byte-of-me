@@ -2,58 +2,26 @@
   "name": "@byte-of-me/ui",
   "version": "1.0.0",
   "private": true,
-  "description": "Rich-text editor and renderer, forms, and a facade over the leaf UI packages, for byte-of-me apps.",
+  "description": "Facade that re-exports the TipTap-free UI packages for byte-of-me apps.",
   "exports": {
-    ".": "./src/index.ts",
-    "./rich-text-editor": "./src/rich-text-editor/index.ts",
-    "./*": "./src/*.tsx"
+    ".": "./src/index.ts"
   },
   "scripts": {
     "check-types": "tsc --noEmit",
     "lint": "eslint src",
-    "lint:fix": "eslint src --fix",
-    "test": "bun test"
-  },
-  "peerDependencies": {
-    "react": "^19.2.5",
-    "react-dom": "^19.2.0"
+    "lint:fix": "eslint src --fix"
   },
   "dependencies": {
-    "@byte-of-me/rich-text-render": "workspace:*",
-    "@byte-of-me/rich-text-schema": "workspace:*",
     "@byte-of-me/ui-carousel": "workspace:*",
     "@byte-of-me/ui-forms": "workspace:*",
     "@byte-of-me/ui-hooks": "workspace:*",
     "@byte-of-me/ui-motion": "workspace:*",
     "@byte-of-me/ui-primitives": "workspace:*",
-    "@byte-of-me/ui-toast": "workspace:*",
-    "@byte-of-me/ui-utils": "workspace:*",
-    "@radix-ui/react-popover": "catalog:",
-    "@tiptap/core": "catalog:",
-    "@tiptap/extension-image": "catalog:",
-    "@tiptap/extension-placeholder": "catalog:",
-    "@tiptap/extension-table": "catalog:",
-    "@tiptap/extension-table-of-contents": "catalog:",
-    "@tiptap/extension-typography": "catalog:",
-    "@tiptap/markdown": "catalog:",
-    "@tiptap/pm": "catalog:",
-    "@tiptap/react": "catalog:",
-    "highlight.js": "catalog:",
-    "lucide-react": "catalog:",
-    "mermaid": "catalog:",
-    "sonner": "catalog:",
-    "vaul": "catalog:"
+    "@byte-of-me/ui-toast": "workspace:*"
   },
   "devDependencies": {
-    "@tiptap/html": "catalog:",
-    "@tiptap/starter-kit": "catalog:",
-    "@types/react": "catalog:",
-    "@types/react-dom": "catalog:",
     "eslint": "catalog:",
-    "react-hook-form": "catalog:",
     "typescript": "catalog:"
   },
-  "sideEffects": [
-    "**/*.css"
-  ]
+  "sideEffects": false
 }

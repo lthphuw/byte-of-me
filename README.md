@@ -110,9 +110,10 @@ byte-of-me/
 │           │                     # tech-stack, user-profile, workspace-settings
 │           └── shared/           # api · config · hooks · i18n · lib · types · ui
 ├── packages/
-│   ├── ui/                       # Rich-text editor, drawer, and the facade over the UI packages (@byte-of-me/ui)
+│   ├── ui/                       # The facade over the TipTap-free UI packages (@byte-of-me/ui)
 │   ├── rich-text-schema/         # TipTap render schema shared by editor and renderer, sanitize, content codec (@byte-of-me/rich-text-schema)
 │   ├── rich-text-render/         # Server-side renderer of stored rich text, mermaid and math leaves (@byte-of-me/rich-text-render)
+│   ├── rich-text-editor/         # The TipTap editor and the drawer it uses (@byte-of-me/rich-text-editor)
 │   ├── ui-utils/                 # cn, link and scroll helpers (@byte-of-me/ui-utils)
 │   ├── ui-hooks/                 # React hooks (@byte-of-me/ui-hooks)
 │   ├── ui-motion/                # MotionProvider, motion tokens and variants (@byte-of-me/ui-motion)
@@ -238,8 +239,8 @@ The generated client is committed to `packages/db/src/generated/prisma` and re-e
   numeric-column rule (no DOM)
 - `packages/rich-text-render` — the render entry points, the render pipeline (schema, sanitizer and
   renderer together) and the mermaid size codec (no DOM)
-- `packages/ui/` — the schema-parity checks, and component rendering via `happy-dom` +
-  `@testing-library/react`
+- `packages/rich-text-editor` — the editor, its toolbars and extensions, the schema-parity
+  checks and the form-control contract, rendered via `happy-dom` + `@testing-library/react`
 - `packages/ui-utils` · `packages/ui-hooks` · `packages/ui-motion` · `packages/ui-primitives` ·
   `packages/ui-forms` · `packages/ui-carousel` — `cn` and link helpers, the hooks (`happy-dom`),
   motion variants, the primitives, the form controls and the carousel (`happy-dom`)
@@ -273,7 +274,7 @@ Start with [docs/README.md](docs/README.md) for the docs index. [docs/architectu
 
 The short version: respect the FSD boundaries, never mix the two translation systems, no `any` and no `@ts-ignore`, prefer Server Components, search before adding a utility, and don't add dependencies that aren't needed. Commits follow Conventional Commits, enforced by commitlint.
 
-Per-package notes: [`packages/db`](packages/db/README.md) · [`packages/ui`](packages/ui/README.md) · [`ui-utils`](packages/ui-utils/README.md) · [`ui-hooks`](packages/ui-hooks/README.md) · [`ui-motion`](packages/ui-motion/README.md) · [`ui-primitives`](packages/ui-primitives/README.md) · [`ui-toast`](packages/ui-toast/README.md) · [`ui-forms`](packages/ui-forms/README.md) · [`ui-carousel`](packages/ui-carousel/README.md) · [`rich-text-schema`](packages/rich-text-schema/README.md) · [`rich-text-render`](packages/rich-text-render/README.md) · [`packages/storage`](packages/storage/README.md) · [`packages/logger`](packages/logger/README.md) · [`packages/config`](packages/config/README.md)
+Per-package notes: [`packages/db`](packages/db/README.md) · [`packages/ui`](packages/ui/README.md) · [`ui-utils`](packages/ui-utils/README.md) · [`ui-hooks`](packages/ui-hooks/README.md) · [`ui-motion`](packages/ui-motion/README.md) · [`ui-primitives`](packages/ui-primitives/README.md) · [`ui-toast`](packages/ui-toast/README.md) · [`ui-forms`](packages/ui-forms/README.md) · [`ui-carousel`](packages/ui-carousel/README.md) · [`rich-text-schema`](packages/rich-text-schema/README.md) · [`rich-text-render`](packages/rich-text-render/README.md) · [`rich-text-editor`](packages/rich-text-editor/README.md) · [`packages/storage`](packages/storage/README.md) · [`packages/logger`](packages/logger/README.md) · [`packages/config`](packages/config/README.md)
 
 ---
 

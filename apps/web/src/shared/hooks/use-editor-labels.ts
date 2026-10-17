@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import type { EditorLabels } from '@byte-of-me/ui/rich-text-editor';
+import type { EditorLabels } from '@byte-of-me/rich-text-editor';
 import { useTranslations } from 'next-intl';
 
 /**

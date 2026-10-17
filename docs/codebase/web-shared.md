@@ -123,7 +123,7 @@ apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces;
 | `apps/web/server-only-stub.ts` | `server-only` becomes an empty module; must load before `env.ts` |
 | `apps/web/next-runtime-stubs.ts` | `Bun.plugin` stubs: `next-intl/server`, `next/cache` (no-op revalidate), `@/shared/lib/auth/auth` (fake `auth()`), `@/shared/lib/auth` (identity: default ADMIN owner, id `admin-1`), `@/shared/i18n/navigation` (records pushes) |
 | `packages/config/test/db-guard.ts` | DB guard (below); shared with `packages/db` |
-| `packages/config/test/happydom.ts` | happy-dom `Window` on `globalThis` for `*.spec.tsx`, and `IS_REACT_ACT_ENVIRONMENT = true` so React's `act` runs without a warning per call; shared with `packages/ui`, `packages/ui-hooks`, `packages/ui-primitives`, `packages/ui-forms` and `packages/ui-carousel` |
+| `packages/config/test/happydom.ts` | happy-dom `Window` on `globalThis` for `*.spec.tsx`, and `IS_REACT_ACT_ENVIRONMENT = true` so React's `act` runs without a warning per call; shared with `packages/rich-text-editor`, `packages/ui-hooks`, `packages/ui-primitives`, `packages/ui-forms` and `packages/ui-carousel` |
 | `apps/web/src/shared/ui/lazy-rich-text-editor.test-stub.ts` | replaces the TipTap editor for every spec |
 
 - DB guard: `db-guard.ts` sets the two database URL env vars to a local, unreachable placeholder unconditionally, then throws if either is non-local. Bun loads `apps/web/.env` before preloads, so a `??=` default would keep production (AGENTS §10).

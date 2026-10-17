@@ -3,7 +3,7 @@
     ["logger", "storage", "ui-hooks", "ui-motion", "ui-utils"],
     ["db", "rich-text-schema", "ui-primitives", "ui-toast"],
     ["rich-text-render", "ui-carousel", "ui-forms"],
-    [],
+    ["rich-text-editor"],
     ["ui"]
   ],
   "dbTypesOnly": [],

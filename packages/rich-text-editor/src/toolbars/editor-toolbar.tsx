@@ -1,14 +1,14 @@
-import { cn } from '@byte-of-me/ui-utils';
-import type { Editor } from '@tiptap/core';
-import { Eye, Pencil } from 'lucide-react';
-
 import {
   Button,
   ScrollArea,
   ScrollBar,
   Separator,
   TooltipProvider,
-} from '../../../index';
+} from '@byte-of-me/ui-primitives';
+import { cn } from '@byte-of-me/ui-utils';
+import type { Editor } from '@tiptap/core';
+import { Eye, Pencil } from 'lucide-react';
+
 import type { EditorLabels } from '../editor-labels';
 
 import { AlignmentTooolbar } from './alignment';

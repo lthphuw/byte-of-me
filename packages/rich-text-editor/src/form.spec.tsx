@@ -28,8 +28,8 @@ import {
 import { cleanup, fireEvent, render } from '@testing-library/react';
 import { afterEach, describe, expect, test } from 'bun:test';
 
-import { testEditorLabels } from './rich-text-editor/tiptap/editor-labels.test-fixture';
-import { RichTextEditor } from './rich-text-editor/tiptap/rich-text-editor';
+import { testEditorLabels } from './editor-labels.test-fixture';
+import { RichTextEditor } from './rich-text-editor';
 
 // `@testing-library/react` only auto-registers cleanup for a Jest/Vitest-shaped
 // global, which `bun:test` is not — and these cases reach their control through

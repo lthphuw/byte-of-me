@@ -2,15 +2,6 @@
 
 import { useMediaQuery } from '@byte-of-me/ui-hooks';
 import {
-  AlignCenter,
-  AlignJustify,
-  AlignLeft,
-  AlignRight,
-  Check,
-  ChevronDown,
-} from 'lucide-react';
-
-import {
   Button,
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +11,15 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '../../../index';
+} from '@byte-of-me/ui-primitives';
+import {
+  AlignCenter,
+  AlignJustify,
+  AlignLeft,
+  AlignRight,
+  Check,
+  ChevronDown,
+} from 'lucide-react';
 
 import { MobileToolbarGroup, MobileToolbarItem } from './mobile-toolbar-group';
 import { useToolbar } from './toolbar-provider';

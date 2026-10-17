@@ -2,6 +2,19 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { ImageBase, type ImageUploadFn } from '@byte-of-me/rich-text-schema';
+import {
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+  Input,
+  Separator,
+} from '@byte-of-me/ui-primitives';
 import { cn } from '@byte-of-me/ui-utils';
 import type { ImageOptions } from '@tiptap/extension-image';
 import {
@@ -20,19 +33,6 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-import {
-  Button,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-  Input,
-  Separator,
-} from '../../../index';
 import { type EditorLabels, EMPTY_EDITOR_LABELS } from '../editor-labels';
 
 import { ImageCaption } from './image-caption';

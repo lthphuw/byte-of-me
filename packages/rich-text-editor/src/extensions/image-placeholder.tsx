@@ -7,6 +7,14 @@ import {
   useRef,
   useState,
 } from 'react';
+import {
+  Button,
+  Input,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@byte-of-me/ui-primitives';
 import { cn } from '@byte-of-me/ui-utils';
 import {
   type CommandProps,
@@ -24,14 +32,6 @@ import {
   X,
 } from 'lucide-react';
 
-import {
-  Button,
-  Input,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '../../../index';
 import { type EditorLabels, EMPTY_EDITOR_LABELS } from '../editor-labels';
 
 import {

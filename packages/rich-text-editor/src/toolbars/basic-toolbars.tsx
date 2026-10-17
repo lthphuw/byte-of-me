@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import type { ButtonProps } from '@byte-of-me/ui-primitives';
 import type { ChainedCommands } from '@tiptap/core';
 import {
   BoldIcon,
@@ -18,7 +19,6 @@ import {
   Undo2,
 } from 'lucide-react';
 
-import type { ButtonProps } from '../../../index';
 import type { EditorLabels } from '../editor-labels';
 
 import { ToolbarButton } from './toolbar-button';

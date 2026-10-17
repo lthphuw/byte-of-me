@@ -1,9 +1,6 @@
 'use client';
 
 import { useMediaQuery } from '@byte-of-me/ui-hooks';
-import { cn } from '@byte-of-me/ui-utils';
-import { CheckIcon, ChevronDownIcon } from 'lucide-react';
-
 import {
   Button,
   Popover,
@@ -14,7 +11,10 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '../../../index';
+} from '@byte-of-me/ui-primitives';
+import { cn } from '@byte-of-me/ui-utils';
+import { CheckIcon, ChevronDownIcon } from 'lucide-react';
+
 import type { EditorLabels } from '../editor-labels';
 
 import { MobileToolbarGroup, MobileToolbarItem } from './mobile-toolbar-group';

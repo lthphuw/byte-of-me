@@ -18,7 +18,7 @@ function LoadingEditor() {
 
 const Editor = dynamic(
   () =>
-    import('@byte-of-me/ui/rich-text-editor').then((mod) => mod.RichTextEditor),
+    import('@byte-of-me/rich-text-editor').then((mod) => mod.RichTextEditor),
   { ssr: false, loading: LoadingEditor }
 );
 

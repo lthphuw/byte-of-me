@@ -8,7 +8,7 @@ The shadcn-style components that wrap only Radix, `class-variance-authority` or
 `ui-utils`. All of them come from the root (`src/index.ts`):
 
 - Radix wrappers: `alert-dialog`, `avatar`, `checkbox`, `collapsible`, `dialog`,
-  `dropdown-menu`, `label`, `popover`, `scroll-area`, `select`, `separator`, `sheet`,
+  `dropdown-menu`, `label`, `popover` (with `PopoverClose`), `scroll-area`, `select`, `separator`, `sheet`,
   `switch`, `tabs`, `tooltip`.
 - Plain elements: `badge`, `button`, `card`, `empty`, `input`, `loading`, `skeleton`,
   `textarea`.
