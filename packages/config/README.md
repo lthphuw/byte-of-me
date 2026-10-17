@@ -44,7 +44,7 @@ Referenced by relative path from a workspace's `bunfig.toml`:
 
 | File | Registers | Used by |
 | --- | --- | --- |
-| `happydom.ts` | happy-dom on `globalThis`, `IS_REACT_ACT_ENVIRONMENT` | `apps/web`, `packages/ui`, `packages/ui-hooks`, `packages/ui-primitives`, any package made with `new-package --dom` |
+| `happydom.ts` | happy-dom on `globalThis`, `IS_REACT_ACT_ENVIRONMENT` | `apps/web`, `packages/ui`, `packages/ui-hooks`, `packages/ui-primitives`, `packages/ui-forms`, `packages/ui-carousel`, any package made with `new-package --dom` |
 | `db-guard.ts` | a local, unreachable `DATABASE_URL` and `DIRECT_URL`; throws on a non-local host | `apps/web`, `packages/db` |
 
 ESLint is configured once at the repository root (`eslint.config.mjs`,

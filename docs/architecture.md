@@ -106,6 +106,8 @@ flowchart TB
     MOTION["@byte-of-me/ui-motion<br/>MotionProvider · tokens · variants"]
     PRIMS["@byte-of-me/ui-primitives<br/>Radix wrappers · composites"]
     TOAST["@byte-of-me/ui-toast<br/>sonner Toaster"]
+    FORMS["@byte-of-me/ui-forms<br/>form · calendar · date-picker · command · multi-select"]
+    CAROUSEL["@byte-of-me/ui-carousel<br/>carousel · useEmblaState"]
     DB["@byte-of-me/db<br/>Prisma schema · client · seed"]
     ST["@byte-of-me/storage<br/>S3-compatible client"]
     LOG["@byte-of-me/logger<br/>structured logging"]
@@ -124,6 +126,12 @@ flowchart TB
     UI --> MOTION
     UI --> PRIMS
     UI --> TOAST
+    UI --> FORMS
+    UI --> CAROUSEL
+    FORMS --> PRIMS
+    FORMS --> UTILS
+    CAROUSEL --> PRIMS
+    CAROUSEL --> UTILS
     PRIMS --> UTILS
     PRIMS --> HOOKS
     PRIMS --> MOTION
@@ -138,18 +146,18 @@ flowchart TB
     classDef pkg fill:#0f766e,stroke:#5eead4,color:#f0fdfa
 
     class WEB app
-    class UI,UTILS,HOOKS,MOTION,PRIMS,TOAST,DB,ST,LOG,CFG pkg
+    class UI,UTILS,HOOKS,MOTION,PRIMS,TOAST,FORMS,CAROUSEL,DB,ST,LOG,CFG pkg
 ```
 
 Solid arrows are runtime dependencies; dashed arrows are build-time only — `@byte-of-me/config` ships no application code: `tsconfig` presets that each workspace extends by relative path, `boundaries.json` (below), and the `bun test` preloads in `test/`.
 
 Every package is consumed as **TypeScript source** via `transpilePackages`, so there is no build step before `bun run dev`. `next.config.js` derives that list from the root `workspaces` (every directory under `packages/`), so a new package is never added by hand. No package has a `build` script or a `dist/`; `turbo run build` builds only the web app.
 
-`@byte-of-me/ui` uses **subpath exports** rather than one barrel — `./rich-text-editor`, `./rich-text`, `./lib/sanitize`. That is deliberate: importing the barrel from a public-site client component would drag all of TipTap into the visitor's bundle. The class-name helper, the hooks, the motion tokens, the Radix wrappers and the toaster are separate packages (`ui-utils`, `ui-hooks`, `ui-motion`, `ui-primitives`, `ui-toast`); `apps/web/src/shared/lib/utils.ts` takes `cn` from `ui-utils` because the `ui` barrel breaks `/api/og`, and the `ui` root re-exports hooks, motion, primitives and toast, so the root-barrel imports in `apps/web` did not move.
+`@byte-of-me/ui` uses **subpath exports** rather than one barrel — `./rich-text-editor`, `./rich-text`, `./lib/sanitize`. That is deliberate: importing the barrel from a public-site client component would drag all of TipTap into the visitor's bundle. The class-name helper, the hooks, the motion tokens, the Radix wrappers, the toaster, the form controls and the carousel are separate packages (`ui-utils`, `ui-hooks`, `ui-motion`, `ui-primitives`, `ui-toast`, `ui-forms`, `ui-carousel`); `apps/web/src/shared/lib/utils.ts` takes `cn` from `ui-utils` because the `ui` barrel breaks `/api/og`, and the `ui` root re-exports hooks, motion, primitives, toast, forms and carousel, so the root-barrel imports in `apps/web` did not move.
 
 ### Package layers
 
-A package imports only packages in a lower layer, and `apps/web` sits above them all. The layers are declared in `packages/config/boundaries.json`; layers 2 and 3 are empty until packages are extracted into them.
+A package imports only packages in a lower layer, and `apps/web` sits above them all. The layers are declared in `packages/config/boundaries.json`; layer 3 is empty until the editor is extracted into it.
 
 ```mermaid
 flowchart TB
@@ -158,6 +166,10 @@ flowchart TB
     end
     subgraph L4["L4"]
         UI["ui"]
+    end
+    subgraph L2["L2"]
+        FORMS["ui-forms"]
+        CAROUSEL["ui-carousel"]
     end
     subgraph L1["L1"]
         DB["db"]
@@ -185,6 +197,12 @@ flowchart TB
     UI --> MOTION
     UI --> PRIMS
     UI --> TOAST
+    UI --> FORMS
+    UI --> CAROUSEL
+    FORMS --> PRIMS
+    FORMS --> UTILS
+    CAROUSEL --> PRIMS
+    CAROUSEL --> UTILS
     PRIMS --> UTILS
     PRIMS --> HOOKS
     PRIMS --> MOTION
@@ -432,7 +450,7 @@ Blog view counts deliberately sit outside all of this: `trackBlogView` writes a 
 | Add a UI string | `apps/web/messages/en.json` **and** `vi.json` (types regenerate on build; `i18n-parity.spec.ts` fails if you touch only one) |
 | Add a dashboard editor | A **separate by-id read** for the form — never reuse the list row. See below |
 | Add a translatable content field | `packages/db/prisma/schema.prisma` → the `*Translation` model → migration |
-| Add a shared component | a Radix wrapper or plain element: `packages/ui-primitives/src/` + a line in its `src/index.ts`; a control that needs react-hook-form, cmdk, embla or TipTap: `packages/ui/src/`; an app-only piece: `apps/web/src/shared/ui/` |
+| Add a shared component | a Radix wrapper or plain element: `packages/ui-primitives/src/` + a line in its `src/index.ts`; a control that needs react-hook-form, cmdk or react-day-picker: `packages/ui-forms/src/`; one that needs embla: `packages/ui-carousel/src/`; one that needs TipTap: `packages/ui/src/`; an app-only piece: `apps/web/src/shared/ui/` |
 | Add a client read or write | `entities/<slice>/query/` (a `<slice>-queries.ts` factory and a `use-*.ts` hook); writes through `useServerMutation` (`shared/hooks/use-server-mutation.ts`) |
 | Change cache behaviour | `next.config.js` `headers()` for edge, `CACHE_TAGS` for data |
 | Change who can do something | `src/shared/lib/auth/session.ts` |

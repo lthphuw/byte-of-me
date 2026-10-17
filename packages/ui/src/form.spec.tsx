@@ -14,11 +14,8 @@
  */
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
-import { cleanup, fireEvent, render } from '@testing-library/react';
-import { afterEach, describe, expect, test } from 'bun:test';
-
-import { DatePicker } from './date-picker';
 import {
+  DatePicker,
   Form,
   FormControl,
   FormDescription,
@@ -26,8 +23,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from './form';
-import { MultiSelect } from './multi-select';
+  MultiSelect,
+} from '@byte-of-me/ui-forms';
+import { cleanup, fireEvent, render } from '@testing-library/react';
+import { afterEach, describe, expect, test } from 'bun:test';
+
 import { testEditorLabels } from './rich-text-editor/tiptap/editor-labels.test-fixture';
 import { RichTextEditor } from './rich-text-editor/tiptap/rich-text-editor';
 

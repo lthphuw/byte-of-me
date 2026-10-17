@@ -8,7 +8,7 @@ import useEmblaCarousel, {
 } from 'embla-carousel-react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 
-import { useEmblaState } from './hooks/use-embla-state';
+import { useEmblaState } from './use-embla-state';
 
 type CarouselApi = UseEmblaCarouselType[1];
 

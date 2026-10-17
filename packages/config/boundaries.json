@@ -2,7 +2,7 @@
   "layers": [
     ["logger", "storage", "ui-hooks", "ui-motion", "ui-utils"],
     ["db", "ui-primitives", "ui-toast"],
-    [],
+    ["ui-carousel", "ui-forms"],
     [],
     ["ui"]
   ],

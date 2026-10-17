@@ -1,0 +1,32 @@
+{
+  "name": "@byte-of-me/ui-carousel",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "test": "bun test"
+  },
+  "peerDependencies": {
+    "react": "^19.2.5",
+    "react-dom": "^19.2.0"
+  },
+  "dependencies": {
+    "@byte-of-me/ui-primitives": "workspace:*",
+    "@byte-of-me/ui-utils": "workspace:*",
+    "embla-carousel-react": "catalog:",
+    "lucide-react": "catalog:"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:"
+  },
+  "sideEffects": false
+}

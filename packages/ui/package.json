@@ -25,14 +25,14 @@
     "react-dom": "^19.2.0"
   },
   "dependencies": {
+    "@byte-of-me/ui-carousel": "workspace:*",
+    "@byte-of-me/ui-forms": "workspace:*",
     "@byte-of-me/ui-hooks": "workspace:*",
     "@byte-of-me/ui-motion": "workspace:*",
     "@byte-of-me/ui-primitives": "workspace:*",
     "@byte-of-me/ui-toast": "workspace:*",
     "@byte-of-me/ui-utils": "workspace:*",
-    "@radix-ui/react-label": "catalog:",
     "@radix-ui/react-popover": "catalog:",
-    "@radix-ui/react-slot": "catalog:",
     "@tiptap/core": "catalog:",
     "@tiptap/extension-code-block-lowlight": "catalog:",
     "@tiptap/extension-color": "catalog:",
@@ -54,15 +54,11 @@
     "@tiptap/pm": "catalog:",
     "@tiptap/react": "catalog:",
     "@tiptap/starter-kit": "catalog:",
-    "cmdk": "catalog:",
-    "embla-carousel-react": "catalog:",
     "highlight.js": "catalog:",
     "katex": "catalog:",
     "lowlight": "catalog:",
     "lucide-react": "catalog:",
     "mermaid": "catalog:",
-    "react-day-picker": "catalog:",
-    "react-hook-form": "catalog:",
     "sonner": "catalog:",
     "vaul": "catalog:"
   },
@@ -71,6 +67,7 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "eslint": "catalog:",
+    "react-hook-form": "catalog:",
     "typescript": "catalog:"
   },
   "sideEffects": [

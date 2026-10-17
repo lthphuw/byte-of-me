@@ -110,12 +110,14 @@ byte-of-me/
 │           │                     # tech-stack, user-profile, workspace-settings
 │           └── shared/           # api · config · hooks · i18n · lib · types · ui
 ├── packages/
-│   ├── ui/                       # Rich-text editor, forms and the facade over the UI packages (@byte-of-me/ui)
+│   ├── ui/                       # Rich-text editor and the facade over the UI packages (@byte-of-me/ui)
 │   ├── ui-utils/                 # cn, link and scroll helpers (@byte-of-me/ui-utils)
 │   ├── ui-hooks/                 # React hooks (@byte-of-me/ui-hooks)
 │   ├── ui-motion/                # MotionProvider, motion tokens and variants (@byte-of-me/ui-motion)
 │   ├── ui-primitives/            # Radix wrappers and composites (@byte-of-me/ui-primitives)
 │   ├── ui-toast/                 # The sonner Toaster (@byte-of-me/ui-toast)
+│   ├── ui-forms/                 # Form, calendar, date picker, command, multi-select (@byte-of-me/ui-forms)
+│   ├── ui-carousel/              # Embla carousel and useEmblaState (@byte-of-me/ui-carousel)
 │   ├── db/                       # Prisma schema, migrations, seed, client (@byte-of-me/db)
 │   ├── storage/                  # S3-compatible storage client (@byte-of-me/storage)
 │   ├── logger/                   # Structured logging (@byte-of-me/logger)
@@ -232,8 +234,9 @@ The generated client is committed to `packages/db/src/generated/prisma` and re-e
   `vi.json` disagree on any key)
 - `packages/ui/` — `sanitize`, `rich-text-content`, the render pipeline, and component
   rendering via `happy-dom` + `@testing-library/react`
-- `packages/ui-utils` · `packages/ui-hooks` · `packages/ui-motion` · `packages/ui-primitives` — `cn` and
-  link helpers, the hooks (`happy-dom`), motion variants, the primitives (`happy-dom`)
+- `packages/ui-utils` · `packages/ui-hooks` · `packages/ui-motion` · `packages/ui-primitives` ·
+  `packages/ui-forms` · `packages/ui-carousel` — `cn` and link helpers, the hooks (`happy-dom`),
+  motion variants, the primitives, the form controls and the carousel (`happy-dom`)
 - `packages/db` · `packages/storage` · `packages/logger` — client wiring
 
 ```bash
@@ -264,7 +267,7 @@ Start with [docs/README.md](docs/README.md) for the docs index. [docs/architectu
 
 The short version: respect the FSD boundaries, never mix the two translation systems, no `any` and no `@ts-ignore`, prefer Server Components, search before adding a utility, and don't add dependencies that aren't needed. Commits follow Conventional Commits, enforced by commitlint.
 
-Per-package notes: [`packages/db`](packages/db/README.md) · [`packages/ui`](packages/ui/README.md) · [`ui-utils`](packages/ui-utils/README.md) · [`ui-hooks`](packages/ui-hooks/README.md) · [`ui-motion`](packages/ui-motion/README.md) · [`ui-primitives`](packages/ui-primitives/README.md) · [`ui-toast`](packages/ui-toast/README.md) · [`packages/storage`](packages/storage/README.md) · [`packages/logger`](packages/logger/README.md) · [`packages/config`](packages/config/README.md)
+Per-package notes: [`packages/db`](packages/db/README.md) · [`packages/ui`](packages/ui/README.md) · [`ui-utils`](packages/ui-utils/README.md) · [`ui-hooks`](packages/ui-hooks/README.md) · [`ui-motion`](packages/ui-motion/README.md) · [`ui-primitives`](packages/ui-primitives/README.md) · [`ui-toast`](packages/ui-toast/README.md) · [`ui-forms`](packages/ui-forms/README.md) · [`ui-carousel`](packages/ui-carousel/README.md) · [`packages/storage`](packages/storage/README.md) · [`packages/logger`](packages/logger/README.md) · [`packages/config`](packages/config/README.md)
 
 ---
 
