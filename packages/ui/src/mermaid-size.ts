@@ -2,7 +2,7 @@
 // Mermaid draws no wider than the viewBox, so the reader can reserve the exact box before the
 // library loads, and the swap shifts nothing.
 
-import { isPixelSize, type PixelSize } from './lib/pixel-size';
+import { isPixelSize, type PixelSize } from '@byte-of-me/ui-utils';
 
 export const MERMAID_SIZE_ATTR = 'data-mermaid-size';
 

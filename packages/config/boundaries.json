@@ -1,11 +1,11 @@
 {
   "layers": [
-    ["logger", "storage"],
+    ["logger", "storage", "ui-hooks", "ui-motion", "ui-utils"],
     ["db"],
     [],
     [],
     ["ui"]
   ],
   "dbTypesOnly": [],
-  "noReact": ["logger", "storage"]
+  "noReact": ["logger", "storage", "ui-utils"]
 }

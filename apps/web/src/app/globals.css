@@ -293,7 +293,7 @@ html {
    It does NOT cover a call that passes `behavior: 'smooth'` explicitly — CSS
    only decides the behavior when the caller says `'auto'` or stays silent. Those
    call sites go through `scrollIntoViewBehavior()` in
-   `@byte-of-me/ui/lib/prefers-reduced-motion` instead. Both halves are needed;
+   `@byte-of-me/ui-utils` instead. Both halves are needed;
    neither one covers the other. */
 @media (prefers-reduced-motion: reduce) {
   html {

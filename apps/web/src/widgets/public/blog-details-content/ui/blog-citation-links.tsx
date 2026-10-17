@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { scrollIntoViewBehavior } from '@byte-of-me/ui/lib/prefers-reduced-motion';
+import { scrollIntoViewBehavior } from '@byte-of-me/ui-utils';
 
 const FLASH_CLASS = 'is-flash';
 const FLASH_MS = 1600;

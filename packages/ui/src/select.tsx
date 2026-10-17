@@ -1,11 +1,11 @@
 'use client';
 
 import * as React from 'react';
+import { cn } from '@byte-of-me/ui-utils';
 import * as SelectPrimitive from '@radix-ui/react-select';
 import { Check, ChevronDown, ChevronUp } from 'lucide-react';
 
 import { MENU_ITEM, POPUP_MOTION, POPUP_PANEL } from './lib/surface-classes';
-import { cn } from './lib/utils';
 
 const Select = SelectPrimitive.Root;
 

@@ -43,6 +43,9 @@
         "@byte-of-me/logger": "workspace:*",
         "@byte-of-me/storage": "workspace:*",
         "@byte-of-me/ui": "workspace:*",
+        "@byte-of-me/ui-hooks": "workspace:*",
+        "@byte-of-me/ui-motion": "workspace:*",
+        "@byte-of-me/ui-utils": "workspace:*",
         "@hookform/resolvers": "^5.2.2",
         "@next/third-parties": "^16.3.8",
         "@t3-oss/env-nextjs": "^0.2.2",
@@ -141,6 +144,9 @@
       "name": "@byte-of-me/ui",
       "version": "1.0.0",
       "dependencies": {
+        "@byte-of-me/ui-hooks": "workspace:*",
+        "@byte-of-me/ui-motion": "workspace:*",
+        "@byte-of-me/ui-utils": "workspace:*",
         "@radix-ui/react-alert-dialog": "catalog:",
         "@radix-ui/react-avatar": "catalog:",
         "@radix-ui/react-checkbox": "catalog:",
@@ -178,7 +184,6 @@
         "@tiptap/react": "catalog:",
         "@tiptap/starter-kit": "catalog:",
         "class-variance-authority": "catalog:",
-        "clsx": "catalog:",
         "cmdk": "catalog:",
         "embla-carousel-react": "catalog:",
         "framer-motion": "catalog:",
@@ -191,7 +196,6 @@
         "react-day-picker": "catalog:",
         "react-hook-form": "catalog:",
         "sonner": "catalog:",
-        "tailwind-merge": "catalog:",
         "vaul": "catalog:",
       },
       "devDependencies": {
@@ -204,6 +208,46 @@
       "peerDependencies": {
         "react": "^19.2.5",
         "react-dom": "^19.2.0",
+      },
+    },
+    "packages/ui-hooks": {
+      "name": "@byte-of-me/ui-hooks",
+      "version": "1.0.0",
+      "devDependencies": {
+        "@types/react": "catalog:",
+        "@types/react-dom": "catalog:",
+        "eslint": "catalog:",
+        "typescript": "catalog:",
+      },
+      "peerDependencies": {
+        "react": "^19.2.5",
+        "react-dom": "^19.2.0",
+      },
+    },
+    "packages/ui-motion": {
+      "name": "@byte-of-me/ui-motion",
+      "version": "1.0.0",
+      "devDependencies": {
+        "@types/react": "catalog:",
+        "eslint": "catalog:",
+        "framer-motion": "catalog:",
+        "typescript": "catalog:",
+      },
+      "peerDependencies": {
+        "framer-motion": "catalog:",
+        "react": "^19.2.5",
+      },
+    },
+    "packages/ui-utils": {
+      "name": "@byte-of-me/ui-utils",
+      "version": "1.0.0",
+      "dependencies": {
+        "clsx": "catalog:",
+        "tailwind-merge": "catalog:",
+      },
+      "devDependencies": {
+        "eslint": "catalog:",
+        "typescript": "catalog:",
       },
     },
   },
@@ -372,6 +416,12 @@
     "@byte-of-me/storage": ["@byte-of-me/storage@workspace:packages/storage"],
 
     "@byte-of-me/ui": ["@byte-of-me/ui@workspace:packages/ui"],
+
+    "@byte-of-me/ui-hooks": ["@byte-of-me/ui-hooks@workspace:packages/ui-hooks"],
+
+    "@byte-of-me/ui-motion": ["@byte-of-me/ui-motion@workspace:packages/ui-motion"],
+
+    "@byte-of-me/ui-utils": ["@byte-of-me/ui-utils@workspace:packages/ui-utils"],
 
     "@chevrotain/types": ["@chevrotain/types@11.1.2", "", {}, "sha512-U+HFai5+zmJCkK86QsaJtoITlboZHBqrVketcO2ROv865xfCMSFpELQoz1GkX5GzME8pTa+3kbKrZHQtI0gdbw=="],
 

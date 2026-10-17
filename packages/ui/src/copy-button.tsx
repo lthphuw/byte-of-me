@@ -1,14 +1,11 @@
 'use client';
 
+import { useClipboard } from '@byte-of-me/ui-hooks';
+import { iconSwitchVariants, menuTransition } from '@byte-of-me/ui-motion';
 import { AnimatePresence, m } from 'framer-motion';
 
 import { Button } from './button';
-import { useClipboard } from './hooks/use-clipboard';
 import { Icons } from './icons';
-// Straight at the token modules, not `./motion` — its barrel pulls in
-// MotionProvider and framer-motion's full feature set.
-import { menuTransition } from './motion/transitions';
-import { iconSwitchVariants } from './motion/variants';
 
 export function CopyButton({
   content,

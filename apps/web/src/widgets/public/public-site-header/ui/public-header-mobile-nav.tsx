@@ -2,10 +2,8 @@
 
 import * as React from 'react';
 import { createPortal } from 'react-dom';
-// Subpath, not the package barrel: this widget renders in the header of every
-// public page, and the barrel reaches the rich text editor.
-import { useLockBody } from '@byte-of-me/ui/hooks/use-lock-body';
-import { staggerItem, staggerStep } from '@byte-of-me/ui/motion';
+import { useLockBody } from '@byte-of-me/ui-hooks';
+import { staggerItem, staggerStep } from '@byte-of-me/ui-motion';
 import { AnimatePresence, m, stagger, type Variants } from 'framer-motion';
 import { useSelectedLayoutSegment } from 'next/navigation';
 import { useTranslations } from 'next-intl';

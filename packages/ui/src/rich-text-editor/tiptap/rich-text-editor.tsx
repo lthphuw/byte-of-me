@@ -2,6 +2,8 @@
 
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useMediaQuery } from '@byte-of-me/ui-hooks';
+import { cn } from '@byte-of-me/ui-utils';
 import type { EditorProps } from '@tiptap/pm/view';
 import {
   type Content,
@@ -12,8 +14,6 @@ import {
 } from '@tiptap/react';
 
 import { EditorSkeleton } from '../../editor-skeleton';
-import { useMediaQuery } from '../../hooks/use-media-query';
-import { cn } from '../../lib/utils';
 
 import { createExtensions } from './create-extensions';
 import type { EditorLabels } from './editor-labels';

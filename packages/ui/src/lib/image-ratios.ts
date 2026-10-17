@@ -1,4 +1,4 @@
-import { isPixelSize, type PixelSize } from './pixel-size';
+import { isPixelSize, type PixelSize } from '@byte-of-me/ui-utils';
 
 /** Image source URL → its stored pixel size. Only the sources a document uses are looked up. */
 export type ImageSizes = Record<string, PixelSize>;

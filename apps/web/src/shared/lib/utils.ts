@@ -1,12 +1,10 @@
 import { formatDistanceToNow, isAfter, isSameDay } from 'date-fns';
 import { enUS, vi } from 'date-fns/locale';
 
-// Imported by its direct subpath, NOT from the package root. 96 files import
-// this module and 45 of them only want `cn`; re-exporting it from the barrel
-// made every one of them — including routes with no UI at all, such as
-// /api/og — pull in the whole component library, tiptap included. That is what
-// used to break the /api/og build with a module-init-order error.
-export { cn } from '@byte-of-me/ui/lib/utils';
+// From `@byte-of-me/ui-utils`, never the `@byte-of-me/ui` barrel: the barrel
+// pulls the component library into routes with no UI, and /api/og then fails
+// its build with a module-init-order error.
+export { cn } from '@byte-of-me/ui-utils';
 
 /**
  * Makes a stored address safe to put in an `href`: http(s), `mailto:` and

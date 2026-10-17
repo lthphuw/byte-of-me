@@ -1,4 +1,4 @@
-import { SAFE_SCHEMES, schemeOf } from './url';
+import { SAFE_SCHEMES, schemeOf } from '@byte-of-me/ui-utils';
 
 // Tags allowed to survive sanitization. Everything else is dropped (its text
 // content is kept but rendered inert).

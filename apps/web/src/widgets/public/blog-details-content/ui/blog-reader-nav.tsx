@@ -11,7 +11,7 @@ import {
   TabsList,
   TabsTrigger,
 } from '@byte-of-me/ui';
-import { scrollIntoViewBehavior } from '@byte-of-me/ui/lib/prefers-reduced-motion';
+import { scrollIntoViewBehavior } from '@byte-of-me/ui-utils';
 import { List } from 'lucide-react';
 
 import { cn } from '@/shared/lib/utils';

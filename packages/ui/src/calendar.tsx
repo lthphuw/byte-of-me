@@ -6,10 +6,10 @@ import {
   DayPicker,
   getDefaultClassNames,
 } from 'react-day-picker';
+import { cn } from '@byte-of-me/ui-utils';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 
 import { Button, buttonVariants } from './button';
-import { cn } from './lib/utils';
 
 // 44px cells on touch, 32px with a pointer. Seven of them plus `p-3` is 332px,
 // which fits a 375px phone.

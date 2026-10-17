@@ -1,11 +1,11 @@
 'use client';
 
 import * as React from 'react';
+import { cn } from '@byte-of-me/ui-utils';
 import * as SheetPrimitive from '@radix-ui/react-dialog';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 import { MODAL_TITLE, SCRIM } from './lib/surface-classes';
-import { cn } from './lib/utils';
 import { ModalClose } from './modal-close';
 
 const Sheet = SheetPrimitive.Root;

@@ -1,5 +1,6 @@
 'use client';
 
+import { useMediaQuery } from '@byte-of-me/ui-hooks';
 import {
   AlignCenter,
   AlignJustify,
@@ -9,7 +10,6 @@ import {
   ChevronDown,
 } from 'lucide-react';
 
-import { useMediaQuery } from '../../../hooks/use-media-query';
 import {
   Button,
   DropdownMenu,

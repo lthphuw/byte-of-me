@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { cn } from '@byte-of-me/ui-utils';
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
 } from 'embla-carousel-react';
@@ -8,7 +9,6 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 import { Button } from './button';
 import { useEmblaState } from './hooks/use-embla-state';
-import { cn } from './lib/utils';
 
 type CarouselApi = UseEmblaCarouselType[1];
 

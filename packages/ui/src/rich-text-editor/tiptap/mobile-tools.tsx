@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import { cn } from '@byte-of-me/ui-utils';
 import { type Editor, useEditorState } from '@tiptap/react';
 import {
   Bold,
@@ -16,8 +17,6 @@ import {
   Quote,
   X,
 } from 'lucide-react';
-
-import { cn } from '../../lib/utils';
 
 import type { EditorLabelKey, EditorLabels } from './editor-labels';
 import type { ImageUploadFn } from './extensions/image';

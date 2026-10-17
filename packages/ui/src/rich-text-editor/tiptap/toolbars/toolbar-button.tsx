@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { cn } from '@byte-of-me/ui-utils';
 import type { LucideIcon } from 'lucide-react';
 
 import {
@@ -10,7 +11,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '../../../index';
-import { cn } from '../../../lib/utils';
 
 const isMac = () =>
   typeof navigator !== 'undefined' &&

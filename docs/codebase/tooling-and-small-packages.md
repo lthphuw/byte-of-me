@@ -25,6 +25,9 @@
 ├── docker-compose.yml    local services (table below)
 └── packages/
     ├── config/           typescript/ presets, boundaries.json (package layers), test/ preloads
+    ├── ui-utils/         layer 0: cn, link and scroll helpers (packages-ui.md)
+    ├── ui-hooks/         layer 0: React hooks (packages-ui.md)
+    ├── ui-motion/        layer 0: MotionProvider, tokens, variants (packages-ui.md)
     ├── storage/src       index.ts -> storage.ts, storage.interface.ts, s3.factory.ts
     └── logger/src        index.ts (Logger class + logger singleton)
 ```
@@ -68,9 +71,9 @@
 - `typescript/base.json`: `strict`, `esModuleInterop`, `skipLibCheck`, `resolveJsonModule`. Extended by the presets below; `packages/db` extends it directly.
 - `typescript/nextjs.json` (extends base): ESNext modules, `moduleResolution: node`, ES2023, `jsx: preserve`, `noEmit`, `isolatedModules`, Next plugin. Used by `apps/web`, `packages/ui`.
 - `typescript/node-library.json` (extends base): `module: commonjs`, ES2019. Used by `packages/storage`, `packages/logger`.
-- `typescript/library.json` (extends base): ESNext modules, `moduleResolution: bundler`, ES2023, DOM libs, `jsx: react-jsx`, `noEmit`, `isolatedModules`; no `incremental`, no Next plugin. The preset `new-package` gives every new package.
+- `typescript/library.json` (extends base): ESNext modules, `moduleResolution: bundler`, ES2023, DOM libs, `jsx: react-jsx`, `noEmit`, `isolatedModules`; no `incremental`, no Next plugin. The preset `new-package` gives every new package; used by `packages/ui-utils`, `packages/ui-hooks`, `packages/ui-motion`.
 - `boundaries.json`: `layers` (package names per layer, index = layer), `dbTypesOnly`, `noReact`. Read by `check-boundaries.ts` and rewritten by `new-package.ts`. Rules: [../architecture.md](../architecture.md) ("Package layers").
-- `test/happydom.ts`: registers happy-dom on `globalThis` and sets `IS_REACT_ACT_ENVIRONMENT`. Preloaded by `apps/web` and `packages/ui`.
+- `test/happydom.ts`: registers happy-dom on `globalThis` and sets `IS_REACT_ACT_ENVIRONMENT`. Preloaded by `apps/web`, `packages/ui` and `packages/ui-hooks`.
 - `test/db-guard.ts`: forces `DATABASE_URL` and `DIRECT_URL` to `postgres://test:test@127.0.0.1:1/test`, then throws if either is non-local. Preloaded by `apps/web` and `packages/db`; details in [packages-db.md](packages-db.md).
 - The package has its own `check-types` (the preloads and `scripts/tsconfig.json`) and `lint` (the preloads and the two scripts), so they run in `turbo run check-types lint` and the pre-commit hook.
 

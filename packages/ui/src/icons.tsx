@@ -1,3 +1,4 @@
+import { cn } from '@byte-of-me/ui-utils';
 import {
   AlertTriangle,
   ArrowRight,
@@ -27,8 +28,6 @@ import {
   Tags,
   UserCircle,
 } from 'lucide-react';
-
-import { cn } from './lib/utils';
 
 interface RemoteSVGProps extends Pick<LucideProps, 'size' | 'className'> {
   src: string;

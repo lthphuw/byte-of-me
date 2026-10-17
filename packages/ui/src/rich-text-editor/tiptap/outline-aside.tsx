@@ -1,11 +1,10 @@
 'use client';
 
 import type { MutableRefObject, RefObject } from 'react';
+import { cn, scrollIntoViewBehavior } from '@byte-of-me/ui-utils';
 import type { Editor } from '@tiptap/react';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../index';
-import { scrollIntoViewBehavior } from '../../lib/prefers-reduced-motion';
-import { cn } from '../../lib/utils';
 
 import type { EditorLabels } from './editor-labels';
 import { ReferencePanel } from './extensions/references/reference-panel';

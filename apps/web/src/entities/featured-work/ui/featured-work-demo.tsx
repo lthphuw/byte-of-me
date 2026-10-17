@@ -9,8 +9,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useIntersection } from '@byte-of-me/ui/hooks/use-intersection';
-import { useMediaQuery } from '@byte-of-me/ui/hooks/use-media-query';
+import { useIntersection, useMediaQuery } from '@byte-of-me/ui-hooks';
 import { Maximize, Minimize, Play, ZoomIn, ZoomOut } from 'lucide-react';
 
 import { useDemoZoom, ZOOM_MAX, ZOOM_MIN } from './use-demo-zoom';

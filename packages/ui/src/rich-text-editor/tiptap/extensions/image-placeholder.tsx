@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { cn } from '@byte-of-me/ui-utils';
 import {
   type CommandProps,
   mergeAttributes,
@@ -35,7 +36,6 @@ import {
   isValidUrl,
   NODE_HANDLES_SELECTED_STYLE_CLASSNAME,
 } from '../../../lib/tiptap-utils';
-import { cn } from '../../../lib/utils';
 import { type EditorLabels, EMPTY_EDITOR_LABELS } from '../editor-labels';
 
 import {

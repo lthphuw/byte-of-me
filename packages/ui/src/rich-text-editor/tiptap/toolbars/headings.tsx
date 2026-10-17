@@ -1,9 +1,10 @@
 'use client';
 
 import React from 'react';
+import { useMediaQuery } from '@byte-of-me/ui-hooks';
+import { cn } from '@byte-of-me/ui-utils';
 import { ChevronDown } from 'lucide-react';
 
-import { useMediaQuery } from '../../../hooks/use-media-query';
 import {
   Button,
   DropdownMenu,
@@ -14,7 +15,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '../../../index';
-import { cn } from '../../../lib/utils';
 import type { EditorLabels } from '../editor-labels';
 
 import { MobileToolbarGroup, MobileToolbarItem } from './mobile-toolbar-group';

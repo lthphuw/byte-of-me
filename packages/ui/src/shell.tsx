@@ -1,6 +1,5 @@
 import * as React from 'react';
-
-import { cn } from './lib/utils';
+import { cn } from '@byte-of-me/ui-utils';
 
 export type ShellProps = React.HTMLAttributes<HTMLDivElement>;
 

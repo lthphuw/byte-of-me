@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { motionDuration, motionEase } from '@byte-of-me/ui/motion';
+import { motionDuration, motionEase } from '@byte-of-me/ui-motion';
 import { AnimatePresence, m } from 'framer-motion';
 
 import { siteConfig } from '@/shared/config/site';

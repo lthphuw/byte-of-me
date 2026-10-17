@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { cn } from '@byte-of-me/ui-utils';
 import * as AlertDialogPrimitive from '@radix-ui/react-alert-dialog';
 import { type VariantProps } from 'class-variance-authority';
 
@@ -12,7 +13,6 @@ import {
   MODAL_TITLE,
   SCRIM,
 } from './lib/surface-classes';
-import { cn } from './lib/utils';
 
 const AlertDialog = AlertDialogPrimitive.Root;
 

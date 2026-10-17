@@ -1,4 +1,4 @@
-import { SAFE_SCHEMES, schemeOf } from '../../../../lib/url';
+import { SAFE_SCHEMES, schemeOf } from '@byte-of-me/ui-utils';
 
 import { createReferenceId, type ReferenceItem } from './types';
 

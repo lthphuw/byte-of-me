@@ -14,7 +14,7 @@ Start with **[setup.md](setup.md)** to run the project. Code guides are in [code
 | [codebase/web-entities-supporting.md](codebase/web-entities-supporting.md) | Entities: comment, contact, media, open source, project, social links, tags, tech stack, profile, settings |
 | [codebase/web-shared.md](codebase/web-shared.md) | Shared layer: helpers, i18n, auth, test wiring |
 | [codebase/packages-db.md](codebase/packages-db.md) | Database: schema, migrations, client |
-| [codebase/packages-ui.md](codebase/packages-ui.md) | UI package: exports, components, editor |
+| [codebase/packages-ui.md](codebase/packages-ui.md) | UI package and its leaf packages `ui-utils`, `ui-hooks`, `ui-motion`: exports, components, editor |
 | [codebase/tooling-and-small-packages.md](codebase/tooling-and-small-packages.md) | Scripts, git hooks, Turborepo, Docker, config, storage and logger packages |
 
 Overview and command list: [../README.md](../README.md).
@@ -39,7 +39,7 @@ rg -n '<symbol, path or route>' docs README.md apps/web/README.md
 | `apps/web/src/shared/ui/query-state.tsx` (`QueryState`: skeleton, error and empty states) | [codebase/web-shared.md](codebase/web-shared.md) |
 | `apps/web/src/shared/**` (helpers, i18n, auth, metadata, test wiring) | [codebase/web-shared.md](codebase/web-shared.md) |
 | `packages/db/**` (schema, migrations, seed) | [codebase/packages-db.md](codebase/packages-db.md) |
-| `packages/ui/**` | [codebase/packages-ui.md](codebase/packages-ui.md) |
+| `packages/ui/**`, `packages/ui-utils/**` (`cn`, link and scroll helpers), `packages/ui-hooks/**`, `packages/ui-motion/**` (`MotionProvider`, tokens, variants) | [codebase/packages-ui.md](codebase/packages-ui.md); a changed export also in the package's own `README.md` |
 | `packages/storage`, `packages/logger`, root `package.json` scripts, `turbo.json`, git hooks, Docker | [codebase/tooling-and-small-packages.md](codebase/tooling-and-small-packages.md) |
 | `packages/config/**` (tsconfig presets, `boundaries.json`, `test/` preloads) | [codebase/tooling-and-small-packages.md](codebase/tooling-and-small-packages.md); the layer model also in [architecture.md](architecture.md) |
 | `scripts/**` (`check.sh`, `check-boundaries.ts`, `new-package.ts`, `gen-icons.ts`) | [codebase/tooling-and-small-packages.md](codebase/tooling-and-small-packages.md), [../README.md](../README.md) for the script table |

@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { cn } from '@byte-of-me/ui-utils';
 import { Check, ChevronsUpDown, X } from 'lucide-react';
 
 import { Badge } from './badge';
@@ -12,7 +13,6 @@ import {
   CommandItem,
   CommandList,
 } from './command';
-import { cn } from './lib/utils';
 import {
   Popover,
   PopoverAnchor,

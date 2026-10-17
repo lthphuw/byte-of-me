@@ -1,9 +1,8 @@
+import { scrollIntoViewBehavior } from '@byte-of-me/ui-utils';
 import { type Editor, Extension, type Range } from '@tiptap/core';
 import type { Node as PMNode } from '@tiptap/pm/model';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { Decoration, DecorationSet, type EditorView } from '@tiptap/pm/view';
-
-import { scrollIntoViewBehavior } from '../../../lib/prefers-reduced-motion';
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {

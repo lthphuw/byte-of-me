@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { cn } from '@byte-of-me/ui-utils';
 import { Table as TableIcon } from 'lucide-react';
 
 import {
@@ -15,7 +16,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '../../../index';
-import { cn } from '../../../lib/utils';
 
 import { useToolbar } from './toolbar-provider';
 

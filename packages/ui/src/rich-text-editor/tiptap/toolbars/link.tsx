@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { cn, normalizeLinkInput } from '@byte-of-me/ui-utils';
 import { PopoverClose } from '@radix-ui/react-popover';
 import { Link2, Trash2, X } from 'lucide-react';
 
@@ -16,8 +17,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '../../../index';
-import { normalizeLinkInput } from '../../../lib/url';
-import { cn } from '../../../lib/utils';
 
 import { useToolbar } from './toolbar-provider';
 

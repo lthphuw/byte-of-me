@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { cn } from '@byte-of-me/ui-utils';
 import {
   NodeViewWrapper,
   type ReactNodeViewProps,
@@ -8,7 +9,6 @@ import {
   useEditorState,
 } from '@tiptap/react';
 
-import { cn } from '../../../../lib/utils';
 import type { EditorLabels } from '../../editor-labels';
 
 import { readReferencesFromDoc } from './numbering';

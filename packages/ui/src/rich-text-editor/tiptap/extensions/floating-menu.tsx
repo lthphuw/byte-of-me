@@ -9,6 +9,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { cn } from '@byte-of-me/ui-utils';
 import type { Editor } from '@tiptap/core';
 import { PluginKey } from '@tiptap/pm/state';
 import { FloatingMenu } from '@tiptap/react/menus';
@@ -20,7 +21,6 @@ import {
   CommandItem,
   CommandList,
 } from '../../../index';
-import { cn } from '../../../lib/utils';
 import type { EditorLabels } from '../editor-labels';
 
 import { buildGroups, filterGroups } from './slash-menu-items';

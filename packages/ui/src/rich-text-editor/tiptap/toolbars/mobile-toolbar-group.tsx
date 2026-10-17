@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { cn } from '@byte-of-me/ui-utils';
 import { ChevronDown } from 'lucide-react';
 
 import {
@@ -11,7 +12,6 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '../../../index';
-import { cn } from '../../../lib/utils';
 
 interface MobileToolbarGroupProps {
   label: string;

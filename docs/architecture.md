@@ -100,16 +100,25 @@ flowchart TB
 flowchart TB
     WEB["apps/web<br/>Next.js application"]
 
-    UI["@byte-of-me/ui<br/>shadcn/ui · TipTap · motion"]
+    UI["@byte-of-me/ui<br/>shadcn/ui · TipTap"]
+    UTILS["@byte-of-me/ui-utils<br/>cn · link and scroll helpers"]
+    HOOKS["@byte-of-me/ui-hooks<br/>React hooks"]
+    MOTION["@byte-of-me/ui-motion<br/>MotionProvider · tokens · variants"]
     DB["@byte-of-me/db<br/>Prisma schema · client · seed"]
     ST["@byte-of-me/storage<br/>S3-compatible client"]
     LOG["@byte-of-me/logger<br/>structured logging"]
     CFG["@byte-of-me/config<br/>presets · layers · test preloads"]
 
     WEB --> UI
+    WEB --> UTILS
+    WEB --> HOOKS
+    WEB --> MOTION
     WEB --> DB
     WEB --> ST
     WEB --> LOG
+    UI --> UTILS
+    UI --> HOOKS
+    UI --> MOTION
     DB --> LOG
 
     CFG -.->|"tsconfig extends"| WEB
@@ -121,14 +130,14 @@ flowchart TB
     classDef pkg fill:#0f766e,stroke:#5eead4,color:#f0fdfa
 
     class WEB app
-    class UI,DB,ST,LOG,CFG pkg
+    class UI,UTILS,HOOKS,MOTION,DB,ST,LOG,CFG pkg
 ```
 
 Solid arrows are runtime dependencies; dashed arrows are build-time only — `@byte-of-me/config` ships no application code: `tsconfig` presets that each workspace extends by relative path, `boundaries.json` (below), and the `bun test` preloads in `test/`.
 
 Every package is consumed as **TypeScript source** via `transpilePackages`, so there is no build step before `bun run dev`. `next.config.js` derives that list from the root `workspaces` (every directory under `packages/`), so a new package is never added by hand. No package has a `build` script or a `dist/`; `turbo run build` builds only the web app.
 
-`@byte-of-me/ui` uses **subpath exports** rather than one barrel — `./rich-text-editor`, `./rich-text`, `./lib/sanitize`. That is deliberate: importing the barrel from a public-site client component would drag all of TipTap into the visitor's bundle.
+`@byte-of-me/ui` uses **subpath exports** rather than one barrel — `./rich-text-editor`, `./rich-text`, `./lib/sanitize`. That is deliberate: importing the barrel from a public-site client component would drag all of TipTap into the visitor's bundle. The class-name helper, the hooks and the motion tokens are separate packages (`ui-utils`, `ui-hooks`, `ui-motion`); `apps/web/src/shared/lib/utils.ts` takes `cn` from `ui-utils` because the `ui` barrel breaks `/api/og`, and the `ui` root re-exports hooks and motion.
 
 ### Package layers
 
@@ -148,12 +157,21 @@ flowchart TB
     subgraph L0["L0"]
         LOG["logger"]
         ST["storage"]
+        UTILS["ui-utils"]
+        HOOKS["ui-hooks"]
+        MOTION["ui-motion"]
     end
 
     WEB --> UI
     WEB --> DB
     WEB --> ST
     WEB --> LOG
+    WEB --> UTILS
+    WEB --> HOOKS
+    WEB --> MOTION
+    UI --> UTILS
+    UI --> HOOKS
+    UI --> MOTION
     DB --> LOG
 ```
 

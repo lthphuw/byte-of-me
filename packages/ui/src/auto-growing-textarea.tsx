@@ -1,7 +1,8 @@
 'use client';
 
-import { useAutoGrow } from './hooks/use-auto-grow';
-import { cn } from './lib/utils';
+import { useAutoGrow } from '@byte-of-me/ui-hooks';
+import { cn } from '@byte-of-me/ui-utils';
+
 import { Textarea } from './textarea';
 
 export function AutoGrowingTextarea({

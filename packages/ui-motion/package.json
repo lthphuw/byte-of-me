@@ -1,0 +1,26 @@
+{
+  "name": "@byte-of-me/ui-motion",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "test": "bun test"
+  },
+  "peerDependencies": {
+    "framer-motion": "catalog:",
+    "react": "^19.2.5"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "eslint": "catalog:",
+    "framer-motion": "catalog:",
+    "typescript": "catalog:"
+  },
+  "sideEffects": false
+}

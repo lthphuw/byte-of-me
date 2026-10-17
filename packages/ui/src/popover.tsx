@@ -1,10 +1,10 @@
 'use client';
 
 import * as React from 'react';
+import { cn } from '@byte-of-me/ui-utils';
 import * as PopoverPrimitive from '@radix-ui/react-popover';
 
 import { POPUP_MOTION, POPUP_PANEL } from './lib/surface-classes';
-import { cn } from './lib/utils';
 
 const Popover = PopoverPrimitive.Root;
 

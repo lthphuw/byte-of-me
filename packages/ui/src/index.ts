@@ -19,18 +19,18 @@ export * from './dropdown-menu';
 export * from './edit-button';
 export * from './empty';
 export * from './form';
-export * from './hooks';
+export * from './hooks/use-embla-state';
 export * from './icons';
 export * from './input';
 export * from './label';
 export * from './lib/rich-text-content';
 export * from './lib/sanitize';
-export * from './lib/utils';
 export * from './loading';
-export * from './motion';
 export * from './multi-select';
 export * from './pagination';
 export * from './popover';
+export * from '@byte-of-me/ui-hooks';
+export * from '@byte-of-me/ui-motion';
 // `./rich-text` (generateHTML + the extension schema) and `./rich-text-editor` (its
 // `editor-surface.css` import is a side effect that blocks tree-shaking, ~1 MB of tiptap) are NOT
 // re-exported: either puts tiptap in every client bundle. Use `@byte-of-me/ui/rich-text[-editor]`.

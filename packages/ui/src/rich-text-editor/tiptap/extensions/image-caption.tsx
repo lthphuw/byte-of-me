@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '../../../lib/utils';
+import { cn } from '@byte-of-me/ui-utils';
 
 /**
  * The caption under an image or a row: a real `<figcaption>`, holding an `<input>` when

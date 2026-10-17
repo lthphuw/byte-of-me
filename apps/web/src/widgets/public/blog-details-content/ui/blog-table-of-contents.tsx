@@ -1,6 +1,6 @@
 'use client';
 
-import { scrollIntoViewBehavior } from '@byte-of-me/ui/lib/prefers-reduced-motion';
+import { scrollIntoViewBehavior } from '@byte-of-me/ui-utils';
 
 import { cn } from '@/shared/lib/utils';
 import { useSharedArticleHeadings } from '@/widgets/public/blog-details-content/lib/article-headings-context';

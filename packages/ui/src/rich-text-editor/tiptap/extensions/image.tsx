@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { cn } from '@byte-of-me/ui-utils';
 import type { ImageOptions } from '@tiptap/extension-image';
 import {
   type NodeViewProps,
@@ -31,7 +32,6 @@ import {
   Input,
   Separator,
 } from '../../../index';
-import { cn } from '../../../lib/utils';
 import { type EditorLabels, EMPTY_EDITOR_LABELS } from '../editor-labels';
 
 import { ImageBase, type ImageUploadFn } from './image-base';

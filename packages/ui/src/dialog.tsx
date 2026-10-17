@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { cn } from '@byte-of-me/ui-utils';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 
 import {
@@ -10,7 +11,6 @@ import {
   MODAL_TITLE,
   SCRIM,
 } from './lib/surface-classes';
-import { cn } from './lib/utils';
 import { ModalClose } from './modal-close';
 
 const Dialog = DialogPrimitive.Root;

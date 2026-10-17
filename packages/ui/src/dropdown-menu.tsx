@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { cn } from '@byte-of-me/ui-utils';
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
 import { ChevronRight } from 'lucide-react';
 
@@ -11,7 +12,6 @@ import {
   POPUP_MOTION,
   POPUP_PANEL,
 } from './lib/surface-classes';
-import { cn } from './lib/utils';
 
 const DropdownMenu = DropdownMenuPrimitive.Root;
 

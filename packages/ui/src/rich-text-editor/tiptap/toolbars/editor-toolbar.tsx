@@ -1,3 +1,4 @@
+import { cn } from '@byte-of-me/ui-utils';
 import type { Editor } from '@tiptap/core';
 import { Eye, Pencil } from 'lucide-react';
 
@@ -8,7 +9,6 @@ import {
   Separator,
   TooltipProvider,
 } from '../../../index';
-import { cn } from '../../../lib/utils';
 import type { EditorLabels } from '../editor-labels';
 
 import { AlignmentTooolbar } from './alignment';

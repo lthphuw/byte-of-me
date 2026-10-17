@@ -2,8 +2,7 @@
 // components. It prints already-sanitized HTML — only feed it `renderRichTextHtml` output
 // (./rich-text-render), never raw user input.
 import * as React from 'react';
-
-import { cn } from './lib/utils';
+import { cn } from '@byte-of-me/ui-utils';
 
 export type RichTextHtmlProps = {
   /** Sanitized HTML produced by `renderRichTextHtml`. */

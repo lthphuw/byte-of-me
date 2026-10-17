@@ -1,8 +1,7 @@
 import * as React from 'react';
+import { cn } from '@byte-of-me/ui-utils';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
-
-import { cn } from './lib/utils';
 
 // `interactive` is set by `asChild`: a badge that is a button or a link needs a
 // hover state and a focus ring, and a static label must not look clickable.

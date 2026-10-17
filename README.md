@@ -111,6 +111,9 @@ byte-of-me/
 │           └── shared/           # api · config · hooks · i18n · lib · types · ui
 ├── packages/
 │   ├── ui/                       # Shared component & design system (@byte-of-me/ui)
+│   ├── ui-utils/                 # cn, link and scroll helpers (@byte-of-me/ui-utils)
+│   ├── ui-hooks/                 # React hooks (@byte-of-me/ui-hooks)
+│   ├── ui-motion/                # MotionProvider, motion tokens and variants (@byte-of-me/ui-motion)
 │   ├── db/                       # Prisma schema, migrations, seed, client (@byte-of-me/db)
 │   ├── storage/                  # S3-compatible storage client (@byte-of-me/storage)
 │   ├── logger/                   # Structured logging (@byte-of-me/logger)
@@ -227,6 +230,8 @@ The generated client is committed to `packages/db/src/generated/prisma` and re-e
   `vi.json` disagree on any key)
 - `packages/ui/` — `sanitize`, `rich-text-content`, the render pipeline, and component
   rendering via `happy-dom` + `@testing-library/react`
+- `packages/ui-utils` · `packages/ui-hooks` · `packages/ui-motion` — `cn` and link helpers,
+  the hooks (`happy-dom`), motion variants
 - `packages/db` · `packages/storage` · `packages/logger` — client wiring
 
 ```bash
@@ -257,7 +262,7 @@ Start with [docs/README.md](docs/README.md) for the docs index. [docs/architectu
 
 The short version: respect the FSD boundaries, never mix the two translation systems, no `any` and no `@ts-ignore`, prefer Server Components, search before adding a utility, and don't add dependencies that aren't needed. Commits follow Conventional Commits, enforced by commitlint.
 
-Per-package notes: [`packages/db`](packages/db/README.md) · [`packages/ui`](packages/ui/README.md) · [`packages/storage`](packages/storage/README.md) · [`packages/logger`](packages/logger/README.md) · [`packages/config`](packages/config/README.md)
+Per-package notes: [`packages/db`](packages/db/README.md) · [`packages/ui`](packages/ui/README.md) · [`ui-utils`](packages/ui-utils/README.md) · [`ui-hooks`](packages/ui-hooks/README.md) · [`ui-motion`](packages/ui-motion/README.md) · [`packages/storage`](packages/storage/README.md) · [`packages/logger`](packages/logger/README.md) · [`packages/config`](packages/config/README.md)
 
 ---
 
