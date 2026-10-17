@@ -1,9 +1,10 @@
 import { Button, ContentFade } from '@byte-of-me/ui';
 import { getTranslations } from 'next-intl/server';
 
+import { RepoRow } from './repo-row';
+
 import { getOpenSourceContributions } from '@/entities/open-source/api/get-open-source-contributions';
-import { RepoLinkRow } from '@/entities/open-source/ui/repo-link-row';
-import { Routes } from '@/shared/config/global';
+import { openSourceHref } from '@/entities/open-source/model/open-source-url';
 import { Link } from '@/shared/i18n/navigation';
 import { SectionLoadError } from '@/shared/ui';
 
@@ -61,18 +62,21 @@ export async function HomepageOpenSource() {
             className="h-auto self-start p-0 text-sm md:text-base"
             asChild
           >
-            <Link href={`${Routes.Projects}?view=open-source`}>
-              {t('viewAllContributions')}
-            </Link>
+            <Link href={openSourceHref()}>{t('viewAllContributions')}</Link>
           </Button>
         </div>
 
         <ul className="divide-y overflow-hidden rounded-xl border bg-card">
           {repos.slice(0, TOP_REPOS).map((repo) => (
             <li key={repo.nameWithOwner}>
-              <RepoLinkRow
+              <RepoRow
                 repo={repo}
-                labels={{ prCount: (count) => tOss('prCount', { count }) }}
+                labels={{
+                  prCount: (count) => tOss('prCount', { count }),
+                  contributions: t('repoContributions'),
+                  repository: t('repoOnGithub'),
+                  opensInNewTab: t('featuredOpensInNewTab'),
+                }}
               />
             </li>
           ))}

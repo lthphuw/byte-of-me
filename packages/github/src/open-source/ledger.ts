@@ -22,6 +22,19 @@ interface LedgerFilter {
   repo: string | null;
 }
 
+/**
+ * The `?repo=` value when it names a repo in the list, else `null` (every repo). A stale or
+ * hand-typed link then shows the whole ledger instead of an empty one with no chip pressed.
+ */
+export function resolveLedgerRepo(
+  repos: Pick<OpenSourceRepo, 'nameWithOwner'>[],
+  value: string | null
+): string | null {
+  if (value === null) return null;
+
+  return repos.some((repo) => repo.nameWithOwner === value) ? value : null;
+}
+
 export function filterLedger(
   items: OpenSourceLedgerItem[],
   { text, repo }: LedgerFilter

@@ -1,11 +1,6 @@
 'use client';
 
-import {
-  type ReactNode,
-  useEffect,
-  useState,
-  useSyncExternalStore,
-} from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { QueryState } from '@byte-of-me/query';
 import {
   Pagination,
@@ -13,6 +8,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  useHydrated,
 } from '@byte-of-me/ui';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -20,6 +16,7 @@ import { useTranslations } from 'next-intl';
 // Narrow import on purpose: the `@/entities` root barrel pulls unrelated
 // server-rendering modules (education-item -> RichText -> tiptap) into the
 // public bundle, so a client component imports the slice instead.
+import { OPEN_SOURCE_VIEW } from '@/entities/open-source/model/open-source-url';
 import { ProjectEmpty, ProjectTimelineItemSkeleton } from '@/entities/project';
 import { usePublicProjectList } from '@/entities/project/query';
 import {
@@ -31,11 +28,6 @@ import { cn } from '@/shared/lib/utils';
 import { ListPageHeader } from '@/shared/ui';
 import { ProjectsShell } from '@/widgets/public/projects-content/ui/projects-shell';
 import { ProjectsTimeline } from '@/widgets/public/projects-content/ui/projects-timeline';
-
-const OPEN_SOURCE_VIEW = 'open-source';
-
-// `false` during hydration and `true` after it, with no effect. See `hydrated`.
-const subscribeNothing = () => () => {};
 
 const TAB_PILL =
   'pointer-events-none absolute inset-y-1 left-1 -z-10 w-[calc(50%-0.25rem)] rounded-md bg-background shadow motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-sleek';
@@ -68,11 +60,7 @@ export function ProjectsContent({ openSource }: ProjectsContentProps) {
       : 'projects';
   // Static HTML is built without query params and shows the Projects tab; reading `?view=` in the
   // first render breaks hydration (React #418), so the URL view applies once hydrated.
-  const hydrated = useSyncExternalStore(
-    subscribeNothing,
-    () => true,
-    () => false
-  );
+  const hydrated = useHydrated();
   const view = hydrated ? urlView : 'projects';
   const isOpenSourceView = view === OPEN_SOURCE_VIEW;
   // Always an explicit `?view=`, even for the default tab: the Next router silently drops

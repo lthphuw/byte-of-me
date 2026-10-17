@@ -17,6 +17,8 @@ only the ledger helpers drop the fetchers.
 - `toLedger`, `filterLedger`, `pageLedger`, `groupLedgerByMonth`, `LEDGER_PAGE_SIZE`: the
   flat list on `/projects` from the repos: newest first, filtered, paged (5 on a phone, 8
   from `md`) and split by UTC month.
+- `resolveLedgerRepo(repos, value)`: the `?repo=` value if it names a repo in the list,
+  else `null` (every repo), so a stale link shows the whole list.
 - `parseGithubPullRequestUrl`: `https://github.com/{owner}/{repo}/pull/{n}[/...]` to
   `GithubPullRequestRef`, else `null`; a number past GraphQL's `Int` is refused.
 - `fetchFeaturedWorkGithub(refs, token)`: repo, stars, title and state per reference in one

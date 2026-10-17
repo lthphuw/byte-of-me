@@ -12,6 +12,7 @@ export {
   groupLedgerByMonth,
   LEDGER_PAGE_SIZE,
   pageLedger,
+  resolveLedgerRepo,
   toLedger,
 } from './open-source/ledger';
 export type { OpenSourceRepo } from './open-source/types';

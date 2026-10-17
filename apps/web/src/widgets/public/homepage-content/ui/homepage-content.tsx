@@ -12,14 +12,12 @@ import {
   HomepageOpenSourceLoading,
   HomepageProfile,
   HomepageProfileLoading,
-  HomepageTechStack,
-  HomepageTechStackLoading,
 } from '@/features/public';
 import { RevealSection } from '@/shared/ui';
 
 /**
  * The whole public introduction on one page: who, what was featured, what was
- * contributed upstream, where from, what with, then the way to reach out.
+ * contributed upstream, where from, then the way to reach out.
  * It absorbed `/about`, so each block stays short and links onward for detail.
  */
 export async function HomepageContent() {
@@ -54,12 +52,6 @@ export async function HomepageContent() {
         <RevealSection className="empty:hidden">
           <Suspense fallback={<HomepageEducationLoading />}>
             <HomepageEducation />
-          </Suspense>
-        </RevealSection>
-
-        <RevealSection className="empty:hidden">
-          <Suspense fallback={<HomepageTechStackLoading />}>
-            <HomepageTechStack />
           </Suspense>
         </RevealSection>
 

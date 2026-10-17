@@ -170,6 +170,7 @@ The pure GitHub pull request code, moved out of `apps/web/src/entities/open-sour
 | `fetchMergedPullRequests` | `(login, token)` -> `GithubPullRequestNode[]` | GraphQL search, 100 a page, 5 pages at most, 8 s timeout; throws on any transport or GraphQL error. `open-source/fetch-merged-pull-requests.ts` |
 | `groupByRepo` | `(nodes)` -> `OpenSourceRepo[]` | most merged PRs first, ties by lines changed, newest PR first within a repo. `open-source/group-by-repo.ts` |
 | `toLedger`, `filterLedger`, `pageLedger`, `groupLedgerByMonth`, `LEDGER_PAGE_SIZE` | the flat `/projects` list: newest first, text and repo filter, page of 5 (phone) or 8, runs by UTC month | `open-source/ledger.ts` |
+| `resolveLedgerRepo` | `(repos, value)` -> repo name or `null` | the `?repo=` value when it is in the list, else every repo; `open-source/ledger.ts` |
 | `parseGithubPullRequestUrl` | `(url)` -> `GithubPullRequestRef` or `null` | `github.com` or `www.github.com`, `http(s)`, a number past GraphQL's `Int` is refused. `featured-work/parse-github-pull-request-url.ts` |
 | `fetchFeaturedWorkGithub` | `(refs, token, fetchImpl?)` -> `Array<FeaturedWorkGithub \| null>` | one batched query with variables, never string interpolation; an empty batch sends nothing; partial `data` is used. `featured-work/fetch-featured-work-github.ts` |
 | `OpenSourceRepo`, `GithubPullRequestRef`, `FeaturedWorkGithub`, `FeaturedWorkPullRequestState` (types) | | `open-source/types.ts`, `featured-work/types.ts`; the entity's `PublicFeaturedWorkLink.github` is a `FeaturedWorkGithub` |

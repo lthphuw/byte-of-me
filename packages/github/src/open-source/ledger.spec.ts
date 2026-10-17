@@ -4,6 +4,7 @@ import {
   filterLedger,
   groupLedgerByMonth,
   pageLedger,
+  resolveLedgerRepo,
   toLedger,
 } from './ledger';
 import type { OpenSourcePullRequest, OpenSourceRepo } from './types';
@@ -148,5 +149,24 @@ describe('groupLedgerByMonth', () => {
     expect(months.map((month) => month.key)).toEqual(['2026-10', '2026-09']);
     expect(months[0]?.items.map((item) => item.number)).toEqual([1612, 40]);
     expect(months[1]?.items.map((item) => item.number)).toEqual([1561]);
+  });
+});
+
+describe('resolveLedgerRepo', () => {
+  const repos = [rfDetr, trackers];
+
+  it('keeps a repo that is in the list', () => {
+    expect(resolveLedgerRepo(repos, 'roboflow/trackers')).toBe(
+      'roboflow/trackers'
+    );
+  });
+
+  it('falls back to every repo for a name that is not in the list', () => {
+    expect(resolveLedgerRepo(repos, 'someone/else')).toBeNull();
+    expect(resolveLedgerRepo(repos, '')).toBeNull();
+  });
+
+  it('treats a missing value as every repo', () => {
+    expect(resolveLedgerRepo(repos, null)).toBeNull();
   });
 });

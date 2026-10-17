@@ -7,14 +7,27 @@ import {
   LEDGER_PAGE_SIZE,
   type OpenSourceRepo,
   pageLedger,
+  resolveLedgerRepo,
   toLedger,
 } from '@byte-of-me/github';
-import { badgeVariants, Pagination, useMediaQuery } from '@byte-of-me/ui';
+import {
+  badgeVariants,
+  Pagination,
+  useHydrated,
+  useMediaQuery,
+} from '@byte-of-me/ui';
 import { ArrowUpRight, GitPullRequest } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { RepoFilterChips } from './repo-filter-chips';
 
+import {
+  OPEN_SOURCE_REPO_PARAM,
+  openSourceHref,
+} from '@/entities/open-source/model/open-source-url';
+import { Diffstat } from '@/entities/open-source/ui/diffstat';
+import { useRouter } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
 import { FilterSearchInput } from '@/shared/ui';
 
@@ -23,9 +36,9 @@ import { FilterSearchInput } from '@/shared/ui';
 const SEARCH_ENABLED = false;
 
 /**
- * The merged-PR ledger on `/projects`: newest first, search plus repo chips, paged by viewport (5
- * on a phone, 8 from `md`; the server renders 5, desktop swaps after hydration). The repo name
- * links to the repo and the `View` badge to the PR; the row does not link.
+ * The merged-PR ledger on `/projects`: newest first, repo chips (the pressed one is `?repo=`),
+ * paged by viewport (5 on a phone, 8 from `md`, swapped after hydration). The repo name links to
+ * the repo and the `View` badge to the PR; the row does not link.
  */
 export function ProjectsOpenSource({ repos }: { repos: OpenSourceRepo[] }) {
   const t = useTranslations('components.openSource');
@@ -36,9 +49,17 @@ export function ProjectsOpenSource({ repos }: { repos: OpenSourceRepo[] }) {
     ? LEDGER_PAGE_SIZE.desktop
     : LEDGER_PAGE_SIZE.mobile;
 
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [text, setText] = useState('');
-  const [repo, setRepo] = useState<string | null>(null);
   const [page, setPage] = useState(1);
+  // The URL is the source of truth, so the home page can link to one repo and the link can be
+  // shared. The static HTML has no query: `?repo=` applies once hydrated, in the commit that
+  // also reveals this panel, so a deep link never paints the whole list first.
+  const hydrated = useHydrated();
+  const repo = hydrated
+    ? resolveLedgerRepo(repos, searchParams.get(OPEN_SOURCE_REPO_PARAM))
+    : null;
 
   // UTC on purpose: the server renders this and the browser hydrates it, and a
   // PR merged just after midnight UTC must not change day between the two.
@@ -56,7 +77,6 @@ export function ProjectsOpenSource({ repos }: { repos: OpenSourceRepo[] }) {
       }),
     [locale]
   );
-  const numberFormat = useMemo(() => new Intl.NumberFormat(locale), [locale]);
 
   const ledger = useMemo(() => toLedger(repos), [repos]);
   const repoUrls = useMemo(
@@ -72,7 +92,7 @@ export function ProjectsOpenSource({ repos }: { repos: OpenSourceRepo[] }) {
     setPage(1);
   };
   const changeRepo = (value: string | null) => {
-    setRepo(value);
+    router.replace(openSourceHref(value), { scroll: false });
     setPage(1);
   };
 
@@ -124,10 +144,11 @@ export function ProjectsOpenSource({ repos }: { repos: OpenSourceRepo[] }) {
                             #{item.number}
                           </span>
                         </p>
-                        {/* `View` is its own column, not a flex-wrap sibling: a long repo
-                            name or date wraps inside the left cell and cannot push it down. */}
-                        <div className="flex items-center gap-3 text-xs text-muted-foreground md:text-[13px]">
-                          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-0.5 md:gap-x-2">
+                        {/* Below `md` a grid: repo and date on line one, the diffstat and `View` sharing
+                            line two. From `md` one flex line, `View` pushed right; a long repo name
+                            or date wraps inside its own cell and cannot push `View` down. */}
+                        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground md:flex md:gap-2 md:text-[13px]">
+                          <div className="col-span-2 flex flex-wrap items-center gap-x-3 gap-y-0.5 md:min-w-0 md:gap-x-2">
                             <RepoLink name={item.repo} url={repoUrls.get(item.repo)} />
                             {/* The dots only exist from md: a wrapped line leaves one dangling. */}
                             <span aria-hidden className="hidden md:inline">
@@ -139,16 +160,14 @@ export function ProjectsOpenSource({ repos }: { repos: OpenSourceRepo[] }) {
                             >
                               {dateFormat.format(new Date(item.mergedAt))}
                             </time>
-                            <span aria-hidden className="hidden md:inline">
-                              ·
-                            </span>
-                            <span className="hidden tabular-nums md:inline">
-                              <span className="font-medium text-primary">
-                                +{numberFormat.format(item.additions)}
-                              </span>{' '}
-                              −{numberFormat.format(item.deletions)}
-                            </span>
                           </div>
+                          <span aria-hidden className="hidden md:inline">
+                            ·
+                          </span>
+                          <Diffstat
+                            additions={item.additions}
+                            deletions={item.deletions}
+                          />
                           {/* `before:` is a 44px hit area around the 22px chip; it adds no height. */}
                           <a
                             href={item.url}
@@ -156,7 +175,7 @@ export function ProjectsOpenSource({ repos }: { repos: OpenSourceRepo[] }) {
                             rel="noopener noreferrer"
                             className={cn(
                               badgeVariants({ variant: 'outline', interactive: true }),
-                              'relative shrink-0 gap-1 text-primary transition-colors hover:bg-primary/10 before:absolute before:inset-x-0 before:-inset-y-3'
+                              'relative shrink-0 gap-1 text-primary transition-colors hover:bg-primary/10 before:absolute before:inset-x-0 before:-inset-y-3 md:ml-auto'
                             )}
                           >
                             {t('view')}

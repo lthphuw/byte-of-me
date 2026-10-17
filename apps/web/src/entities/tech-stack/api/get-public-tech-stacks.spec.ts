@@ -1,11 +1,7 @@
-/**
- * The public tech-stack reads carry the logo's public columns and never the
- * owner's internal user id.
- */
+/** The public tech-stack read carries only the logo's public columns, never the owner's id. */
 import { prisma } from '@byte-of-me/db';
 import { beforeEach, describe, expect, it, mock } from 'bun:test';
 
-import { getAllPublicTechStacks } from './get-all-public-tech-stacks';
 import { getPaginatedPublicTechStacks } from './get-paginated-public-tech-stacks';
 
 const findMany = mock();
@@ -34,35 +30,6 @@ const row = {
   sortOrder: 1,
   logo: LOGO,
 };
-
-describe('getAllPublicTechStacks', () => {
-  beforeEach(() => {
-    findMany.mockReset().mockResolvedValue([{ ...row, userId: 'owner-id' }]);
-  });
-
-  it('does not return the owner id and selects only public media columns', async () => {
-    const res = await getAllPublicTechStacks();
-
-    if (!res.success) throw new Error('unreachable');
-    expect(res.data.techStacks).toEqual([row]);
-    expect(JSON.stringify(res.data)).not.toContain('owner-id');
-    expect(findMany).toHaveBeenCalledWith(
-      expect.objectContaining({
-        include: {
-          logo: {
-            select: {
-              id: true,
-              url: true,
-              width: true,
-              height: true,
-              mimeType: true,
-            },
-          },
-        },
-      })
-    );
-  });
-});
 
 describe('getPaginatedPublicTechStacks', () => {
   beforeEach(() => {

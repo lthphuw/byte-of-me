@@ -80,7 +80,7 @@ Only the `EMAIL` address can reach `/en/dashboard`.
 bun run check        # type-check, lint, package boundaries, test, build
 ```
 
-Expect `✓ All checks passed.` Measured 2026-10-17 with `bun test` in each workspace on Bun 1.4.3: 1420 tests passed (web 786 in 107 files, api-core 81 in 8, contracts 118 in 14, query 21 in 3, github 32 in 5, rich-text-editor 163 in 18, rich-text-schema 90 in 4, rich-text-render 30 in 3, ui-primitives 21 in 6, ui-hooks 14 in 4, ui-forms 18 in 3, ui-carousel 8 in 2, ui-utils 13 in 2, ui-motion 5 in 1, storage 11, logger 6, db 3), and lint reported no errors and no warnings.
+Expect `✓ All checks passed.` Measured 2026-10-17 with `bun test` in each workspace on Bun 1.4.3: 1424 tests passed (web 785 in 107 files, api-core 81 in 8, contracts 118 in 14, query 21 in 3, github 35 in 5, rich-text-editor 163 in 18, rich-text-schema 90 in 4, rich-text-render 30 in 3, ui-primitives 21 in 6, ui-hooks 16 in 5, ui-forms 18 in 3, ui-carousel 8 in 2, ui-utils 13 in 2, ui-motion 5 in 1, storage 11, logger 6, db 3), and lint reported no errors and no warnings.
 
 ## Troubleshooting
 

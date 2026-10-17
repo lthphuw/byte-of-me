@@ -3,7 +3,6 @@ import {
   HomepageFeaturedWorksLoading,
   HomepageOpenSourceLoading,
   HomepageProfileLoading,
-  HomepageTechStackLoading,
 } from '@/features/public';
 import { HomepageShell } from '@/widgets/public/homepage-content/ui/homepage-shell';
 
@@ -16,7 +15,6 @@ export default function HomeLoading() {
         <HomepageFeaturedWorksLoading />
         <HomepageOpenSourceLoading />
         <HomepageEducationLoading />
-        <HomepageTechStackLoading />
       </div>
     </HomepageShell>
   );
