@@ -1,3 +1,4 @@
+import { unwrapApiResponse } from '@byte-of-me/api-core';
 import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
 
 import { getAdminTagById } from '@/entities/tag/api/get-admin-tag-by-id';
@@ -6,7 +7,6 @@ import { getPaginatedAdminTags } from '@/entities/tag/api/get-paginated-admin-ta
 import { getPaginatedPublicTags } from '@/entities/tag/api/get-paginated-public-tags';
 import { tagKeys } from '@/entities/tag/model/query-keys';
 import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
-import { unwrapApiResponse } from '@/shared/lib/query/unwrap-api-response';
 
 export const tagQueries = {
   /** Admin tags for a picker, resolved in `locale`. */

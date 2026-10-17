@@ -1,4 +1,4 @@
-import type { INTERACTION } from '@/shared/lib/constants';
+import type { INTERACTION } from '@byte-of-me/api-core';
 
 export const blogKeys = {
   all: ['blog'] as const,

@@ -34,7 +34,7 @@ apps/web/src/
 
 ## Key flows
 
-- **Request**: `apps/web/src/proxy.ts:14-22` stamps `x-pathname` (`apps/web/src/shared/lib/constants.ts:70`), then runs next-intl. The matcher (`:25`) skips `api`, `trpc`, `_next`, `_vercel` and dotted paths.
+- **Request**: `apps/web/src/proxy.ts:14-22` stamps `x-pathname` (`apps/web/src/shared/lib/constants.ts:33`), then runs next-intl. The matcher (`:25`) skips `api`, `trpc`, `_next`, `_vercel` and dotted paths.
 - **Locale root**: `apps/web/src/app/[locale]/layout.tsx:145-193` calls `notFound()` for an unknown locale and mounts only the `error` namespace (`apps/web/src/shared/i18n/messages.ts:21`). Public, auth, print and dashboard layouts mount their own messages.
 - **Admin view guard**: `apps/web/src/app/[locale]/(protected)/layout.tsx:23-40` calls `getAuthenticatedAdmin()`, else redirects to `/auth/login` with `from` = `x-pathname`. The nested dashboard layout has no guard of its own; server actions guard separately (AGENTS §5).
 - **Login**: `apps/web/src/app/[locale]/(auth)/layout.tsx:16-20` sends a signed-in admin to `/dashboard`.

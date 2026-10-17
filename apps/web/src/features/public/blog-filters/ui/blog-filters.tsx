@@ -1,5 +1,6 @@
 'use client';
 
+import type { FilterNavigationOptions } from '@byte-of-me/api-core';
 import { Button, Skeleton } from '@byte-of-me/ui';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -12,7 +13,6 @@ import {
 } from '@/features/public/blog-filters/lib';
 import { HYDRATED_LIST_BEHAVIOR } from '@/shared/hooks/use-infinite-list-query';
 import { useUrlSyncedSearch } from '@/shared/hooks/use-url-synced-search';
-import type { FilterNavigationOptions } from '@/shared/lib/filter-params';
 import { FilterSearchInput } from '@/shared/ui';
 
 interface BlogFiltersProps {

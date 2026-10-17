@@ -1,17 +1,13 @@
 'use client';
 
+import type { ApiResponse } from '@byte-of-me/api-core';
+import { ServerActionError, unwrapApiResponse } from '@byte-of-me/api-core';
 import {
   type QueryKey,
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query';
 import { toast } from 'sonner';
-
-import {
-  ServerActionError,
-  unwrapApiResponse,
-} from '@/shared/lib/query/unwrap-api-response';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export type ServerMutationOptions<TVariables, TData> = {
   mutationFn: (variables: TVariables) => Promise<ApiResponse<TData>>;

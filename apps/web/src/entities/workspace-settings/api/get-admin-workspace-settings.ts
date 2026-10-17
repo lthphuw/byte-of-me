@@ -1,12 +1,12 @@
 'use server';
 
+import type { ApiResponse } from '@byte-of-me/api-core';
 import { logger } from '@byte-of-me/logger';
 
 import { readWorkspaceSettings } from '@/entities/workspace-settings/api/get-workspace-settings';
 import type { WorkspaceSettings } from '@/entities/workspace-settings/model/settings-schema';
 import { requireAdmin } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 /**
  * The owner's full workspace settings, for the dashboard's client query

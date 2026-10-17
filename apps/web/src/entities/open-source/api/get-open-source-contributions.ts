@@ -1,5 +1,7 @@
 'use server';
 
+import type { ApiResponse } from '@byte-of-me/api-core';
+import { CACHE_TAGS } from '@byte-of-me/api-core';
 import { logger } from '@byte-of-me/logger';
 
 import { fetchMergedPullRequests } from '@/entities/open-source/lib/fetch-merged-pull-requests';
@@ -7,8 +9,6 @@ import { groupByRepo } from '@/entities/open-source/lib/group-by-repo';
 import type { OpenSourceRepo } from '@/entities/open-source/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import { env } from '@/shared/config/env';
-import { CACHE_TAGS } from '@/shared/lib/constants';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 const REVALIDATE_SECONDS = 3600;
 

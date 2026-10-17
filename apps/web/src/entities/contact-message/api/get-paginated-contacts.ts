@@ -1,13 +1,12 @@
 'use server';
 
+import type { ApiResponse, PaginatedData } from '@byte-of-me/api-core';
+import { buildPaginatedMeta, clampPagination } from '@byte-of-me/api-core';
 import { type Prisma, prisma } from '@byte-of-me/db';
 
 import type { AdminContactMessage } from '@/entities/contact-message';
 import { requireAdmin } from '@/shared/lib/auth';
-import { buildPaginatedMeta, clampPagination } from '@/shared/lib/pagination';
 import { getErrorMessage } from '@/shared/lib/utils';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
-import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 
 export async function getPaginatedContactMessages(
   rawPage: number = 1,

@@ -1,5 +1,8 @@
 'use server';
 
+import type { ApiResponse } from '@byte-of-me/api-core';
+import { CACHE_TAGS } from '@byte-of-me/api-core';
+import { idSchema, parseInput } from '@byte-of-me/api-core/server';
 import { type Blog, prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
@@ -9,9 +12,6 @@ import {
   type BlogFormValues,
 } from '@/entities/blog/model/blog-schema';
 import { requireAdmin } from '@/shared/lib/auth';
-import { CACHE_TAGS } from '@/shared/lib/constants';
-import { idSchema, parseInput } from '@/shared/lib/validate-action-input';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function updateBlog(
   id: string,

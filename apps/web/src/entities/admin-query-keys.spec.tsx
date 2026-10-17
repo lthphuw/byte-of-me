@@ -7,6 +7,7 @@
  * both are checked through real TanStack behaviour, not the shape of arrays.
  */
 import type { ReactNode } from 'react';
+import { unwrapApiResponse } from '@byte-of-me/api-core';
 import type { QueryClient } from '@tanstack/react-query';
 import {
   dehydrate,
@@ -29,7 +30,6 @@ import { tagKeys } from '@/entities/tag/model/query-keys';
 import { type CrudKeys, useCrudManager } from '@/shared/hooks/use-crud-manager';
 import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 import { makeQueryClient } from '@/shared/lib/query/get-query-client';
-import { unwrapApiResponse } from '@/shared/lib/query/unwrap-api-response';
 
 type AdminKeys = CrudKeys & {
   adminList: () => readonly unknown[];

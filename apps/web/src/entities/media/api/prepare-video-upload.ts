@@ -1,5 +1,7 @@
 'use server';
 
+import type { ApiResponse } from '@byte-of-me/api-core';
+import { parseInput } from '@byte-of-me/api-core/server';
 import { logger } from '@byte-of-me/logger';
 
 import { buildMediaFileKey } from '@/entities/media/model/media-file-key';
@@ -11,8 +13,6 @@ import {
 import { supabaseStorage } from '@/shared/api';
 import { requireAdmin } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
-import { parseInput } from '@/shared/lib/validate-action-input';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 /** Long enough for a slow upload of 15 MB to start; the URL only ever writes one key. */
 const UPLOAD_URL_TTL_SECONDS = 300;

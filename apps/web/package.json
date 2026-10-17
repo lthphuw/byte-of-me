@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
+    "@byte-of-me/api-core": "workspace:*",
     "@byte-of-me/db": "workspace:*",
     "@byte-of-me/logger": "workspace:*",
     "@byte-of-me/rich-text-editor": "workspace:*",
@@ -51,7 +52,7 @@
     "react-hook-form": "catalog:",
     "sharp": "^0.35.5",
     "sonner": "catalog:",
-    "zod": "^3.25.67"
+    "zod": "catalog:"
   },
   "optionalDependencies": {
     "@img/sharp-libvips-linux-x64": "1.3.4",

@@ -1,17 +1,17 @@
 'use server';
 
+import type { ApiResponse } from '@byte-of-me/api-core';
+import {
+  CACHE_TAGS,
+  getTranslatedContent,
+  getTranslationLanguages,
+} from '@byte-of-me/api-core';
 import { prisma } from '@byte-of-me/db';
 
 import { readBodyImageSizes } from '@/entities/blog/lib/read-image-sizes';
 import type { PublicBlog } from '@/entities/blog/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
-import { CACHE_TAGS } from '@/shared/lib/constants';
-import {
-  getTranslatedContent,
-  getTranslationLanguages,
-} from '@/shared/lib/i18n-utils';
 import { PUBLIC_MEDIA_SELECT } from '@/shared/lib/public-media';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 // The dashboard's slug field has no upper bound, so a title-derived slug can
 // run past the 64 characters the filter chips allow; this only has to keep an

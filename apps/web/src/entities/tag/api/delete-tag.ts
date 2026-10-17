@@ -1,5 +1,7 @@
 'use server';
 
+import type { ApiResponse } from '@byte-of-me/api-core';
+import { idSchema, parseInput } from '@byte-of-me/api-core/server';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
@@ -7,8 +9,6 @@ import { revalidateTag } from 'next/cache';
 import { TAG_MUTATION_TAGS } from '@/entities/tag/model/revalidation';
 import { requireAdmin } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
-import { idSchema, parseInput } from '@/shared/lib/validate-action-input';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function deleteTag(id: string): Promise<ApiResponse<null>> {
   await requireAdmin();

@@ -1,7 +1,7 @@
+import { isSafeHttpUrl } from '@byte-of-me/api-core';
 import { z } from 'zod';
 
 import { richTextDocSchema } from '@/shared/lib/rich-text-doc-schema';
-import { isSafeHttpUrl } from '@/shared/lib/safe-http-url';
 
 /**
  * The form holds the editor's document, but a row may hold legacy HTML, and the

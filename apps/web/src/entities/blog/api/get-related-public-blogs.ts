@@ -1,18 +1,18 @@
 'use server';
 
+import type { ApiResponse } from '@byte-of-me/api-core';
+import {
+  CACHE_TAGS,
+  getTranslatedContent,
+  getTranslationLanguages,
+} from '@byte-of-me/api-core';
+import { parseInput } from '@byte-of-me/api-core/server';
 import { type Prisma, prisma } from '@byte-of-me/db';
 
 import { relatedPublicBlogsParamsSchema } from '@/entities/blog/model/blog-schema';
 import type { PublicBlog } from '@/entities/blog/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
-import { CACHE_TAGS } from '@/shared/lib/constants';
-import {
-  getTranslatedContent,
-  getTranslationLanguages,
-} from '@/shared/lib/i18n-utils';
 import { PUBLIC_MEDIA_SELECT } from '@/shared/lib/public-media';
-import { parseInput } from '@/shared/lib/validate-action-input';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 /**
  * Published blogs that share at least one tag with the given blog, newest

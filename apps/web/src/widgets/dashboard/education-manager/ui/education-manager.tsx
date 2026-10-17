@@ -1,5 +1,6 @@
 'use client';
 
+import { getTranslatedContent } from '@byte-of-me/api-core';
 import { Badge, Button } from '@byte-of-me/ui';
 import { GraduationCap } from 'lucide-react';
 import Image from 'next/image';
@@ -21,7 +22,6 @@ import {
   useAdminEducationById,
 } from '@/entities/education/query';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
-import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import { formatDate } from '@/shared/lib/utils';
 import {
   AddButton,

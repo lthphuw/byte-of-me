@@ -1,3 +1,4 @@
+import { CACHE_TAGS } from '@byte-of-me/api-core';
 import { logger } from '@byte-of-me/logger';
 
 import { fetchFeaturedWorkGithub } from '@/entities/featured-work/lib/fetch-featured-work-github';
@@ -8,7 +9,6 @@ import type {
 } from '@/entities/featured-work/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import { env } from '@/shared/config/env';
-import { CACHE_TAGS } from '@/shared/lib/constants';
 
 const REVALIDATE_SECONDS = 3600;
 

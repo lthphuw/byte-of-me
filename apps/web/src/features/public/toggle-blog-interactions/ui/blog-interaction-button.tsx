@@ -1,6 +1,7 @@
 'use client';
 
 import { type ComponentType, useState } from 'react';
+import { INTERACTION } from '@byte-of-me/api-core';
 import { Button, Icons, motionDuration, motionEase } from '@byte-of-me/ui';
 import { AnimatePresence, m } from 'framer-motion';
 import { Heart } from 'lucide-react';
@@ -14,7 +15,6 @@ import {
   useBlogInteraction,
   type UseBlogInteractionOptions,
 } from '@/features/public/toggle-blog-interactions/lib/use-blog-interaction';
-import { INTERACTION } from '@/shared/lib/constants';
 import { cn } from '@/shared/lib/utils';
 
 // A tween on purpose: framer's default for x/y is a spring with ~0.45 bounce,

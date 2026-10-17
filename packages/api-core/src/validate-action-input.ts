@@ -11,16 +11,9 @@ import { z } from 'zod';
 export const idSchema = z.string().min(1, 'id is required');
 
 /**
- * What a rejected caller is told, and all they are told.
- *
- * The zod issues name schema fields (`translations.0.title`) in English
- * regardless of the visitor's locale, and every action forwards `errorMsg`
- * straight into `ApiResponse` — so joining them into `errorMsg` put the
- * schema's shape on screen for anyone who could reach the action. The detail
- * is not lost, it moved: `parseInput` logs it, and returns it as `detail` for
- * the callers that legitimately want it (an admin surface, a token-guarded
- * route handler). A caller now has to ask for it by name instead of getting
- * it by default.
+ * All a rejected caller is told: zod issues name schema fields in English and
+ * actions forward `errorMsg`, so they leaked the schema's shape. `parseInput`
+ * logs the detail and returns it as `detail` for admin surfaces and routes.
  */
 export const INVALID_INPUT_MESSAGE =
   'The information provided is not valid. Please check it and try again.';
@@ -41,10 +34,9 @@ export type ParseInputResult<S extends z.ZodTypeAny> =
     };
 
 /**
- * `context` names the caller in the log line. Optional so all ~60 existing
- * call sites keep compiling unchanged; pass the action name where a
- * validation failure would otherwise be unattributable, since every action in
- * the repo shares this one log site.
+ * `context` names the caller in the log line (optional, so ~60 call sites
+ * compile unchanged); pass the action name, as every action shares this one
+ * log site.
  */
 export function parseInput<S extends z.ZodTypeAny>(
   schema: S,

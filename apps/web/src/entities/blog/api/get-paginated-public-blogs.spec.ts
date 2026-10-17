@@ -6,7 +6,7 @@
  * `bun test`). None of that is what this spec defends. What it defends is
  * the action's own contract: the envelope shape callers rely on, that
  * caller-controlled pagination is bounded before it reaches Prisma (see
- * `clampPagination` in `@/shared/lib/pagination`, already unit-tested on its
+ * `clampPagination` in `@byte-of-me/api-core`, already unit-tested on its
  * own), and that an anonymous caller only ever sees published posts.
  *
  * Prisma is not spied on: Prisma 7 synthesizes a fresh function per method

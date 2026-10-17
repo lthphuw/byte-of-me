@@ -61,8 +61,8 @@ There is no `middleware.ts`; the locale comes from the `[locale]` segment.
   `ApiResponse` envelope.
 - Client-side server state uses TanStack Query: `queryOptions` factories and
   hooks in `src/entities/<slice>/query/`, writes through `useServerMutation`
-  (`src/shared/hooks/use-server-mutation.ts`), and the envelope unwrap in
-  `src/shared/lib/query/unwrap-api-response.ts`.
+  (`src/shared/hooks/use-server-mutation.ts`), and the envelope unwrap,
+  `unwrapApiResponse` from `@byte-of-me/api-core`.
 
 ## Scripts
 

@@ -1,9 +1,8 @@
 'use client';
 
+import type { ApiResponse } from '@byte-of-me/api-core';
+import { unwrapApiResponse } from '@byte-of-me/api-core';
 import { useQuery } from '@tanstack/react-query';
-
-import { unwrapApiResponse } from '@/shared/lib/query/unwrap-api-response';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 type EditingRecordOptions<TRecord> = {
   /** The row being edited; `null` for "new" or a closed dialog, which fetches nothing. */

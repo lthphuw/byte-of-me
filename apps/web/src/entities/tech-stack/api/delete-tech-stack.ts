@@ -1,5 +1,7 @@
 'use server';
 
+import type { ApiResponse } from '@byte-of-me/api-core';
+import { idSchema, parseInput } from '@byte-of-me/api-core/server';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
@@ -7,8 +9,6 @@ import { revalidateTag } from 'next/cache';
 import { TECH_MUTATION_TAGS } from '@/entities/tech-stack/model/revalidation';
 import { requireAdmin } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
-import { idSchema, parseInput } from '@/shared/lib/validate-action-input';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function deleteTechStack(id: string): Promise<ApiResponse<null>> {
   const user = await requireAdmin();

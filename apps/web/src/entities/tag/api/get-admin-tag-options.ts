@@ -1,14 +1,14 @@
 'use server';
 
+import type { ApiResponse } from '@byte-of-me/api-core';
+import { getTranslatedContent } from '@byte-of-me/api-core';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { getLocale } from 'next-intl/server';
 
 import { requireAdmin } from '@/shared/lib/auth';
-import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import { ADMIN_OPTIONS_LIMIT } from '@/shared/lib/query/admin-list';
 import { getErrorMessage } from '@/shared/lib/utils';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 /** What a tag picker renders; `name` falls back to the slug. */
 export type TagOption = { id: string; slug: string; name: string };

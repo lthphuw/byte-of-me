@@ -1,10 +1,10 @@
 import { Suspense } from 'react';
+import { INTERACTION } from '@byte-of-me/api-core';
 
 import {
   BlogInteractionWrapper,
   InteractionButtonLoading,
 } from '@/features/public';
-import { INTERACTION } from '@/shared/lib/constants';
 import { ContentFade } from '@/shared/ui';
 import { BlogCommentShareActions } from '@/widgets/public/blog-details-content/ui/blog-comment-share-actions';
 

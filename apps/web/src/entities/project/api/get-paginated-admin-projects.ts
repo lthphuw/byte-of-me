@@ -1,15 +1,14 @@
 'use server';
 
+import type { ApiResponse, PaginatedData } from '@byte-of-me/api-core';
+import { buildPaginatedMeta, clampPagination } from '@byte-of-me/api-core';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 
 import { adminProjectInclude } from '@/entities/project/model/admin-project-include';
 import type { AdminProject } from '@/entities/project/model/types';
 import { requireAdmin } from '@/shared/lib/auth';
-import { buildPaginatedMeta, clampPagination } from '@/shared/lib/pagination';
 import { getErrorMessage } from '@/shared/lib/utils';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
-import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 
 export async function getPaginatedAdminProjects(
   rawPage: number = 1,

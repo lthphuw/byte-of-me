@@ -1,5 +1,10 @@
 'use server';
 
+import type { ApiResponse } from '@byte-of-me/api-core';
+import {
+  getTranslatedContent,
+  getTranslationLanguages,
+} from '@byte-of-me/api-core';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { getLocale } from 'next-intl/server';
@@ -7,12 +12,7 @@ import { getLocale } from 'next-intl/server';
 import type { PublicUserProfile } from '@/entities/user-profile/model/types';
 import { env } from '@/shared/config/env';
 import { requireAdmin } from '@/shared/lib/auth';
-import {
-  getTranslatedContent,
-  getTranslationLanguages,
-} from '@/shared/lib/i18n-utils';
 import { getErrorMessage } from '@/shared/lib/utils';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function getUserProfile(): Promise<
   ApiResponse<PublicUserProfile>

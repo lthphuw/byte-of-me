@@ -4,6 +4,7 @@
  * must write every language's body back, even when the owner never touched it.
  * Drives the real manager, dialog, form and server actions; only Prisma is replaced.
  */
+import type { ApiResponse } from '@byte-of-me/api-core';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -44,7 +45,6 @@ import { MediaViolationError } from '@/entities/media/model/upload-constraints';
 import { workspaceSettingsKeys } from '@/entities/workspace-settings/model/query-keys';
 import { WORKSPACE_SETTINGS_DEFAULTS } from '@/entities/workspace-settings/model/settings-schema';
 import { makeQueryClient } from '@/shared/lib/query/get-query-client';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 import type { Media } from '@/shared/types/models';
 import {
   __getEditorProps,

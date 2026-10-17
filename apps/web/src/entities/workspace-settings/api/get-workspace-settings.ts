@@ -1,4 +1,5 @@
 import { cache } from 'react';
+import { CACHE_TAGS } from '@byte-of-me/api-core';
 import { prisma } from '@byte-of-me/db';
 import { unstable_cache } from 'next/cache';
 
@@ -9,10 +10,7 @@ import {
   type WorkspaceSettings,
 } from '@/entities/workspace-settings/model/settings-schema';
 import { requireAdmin } from '@/shared/lib/auth';
-import {
-  CACHE_TAGS,
-  LAYOUT_CACHE_REVALIDATE_SECONDS,
-} from '@/shared/lib/constants';
+import { LAYOUT_CACHE_REVALIDATE_SECONDS } from '@/shared/lib/constants';
 
 /**
  * The database half of the workspace-settings reads, behind Next's data cache.

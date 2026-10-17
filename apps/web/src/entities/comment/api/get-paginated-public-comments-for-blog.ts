@@ -1,17 +1,17 @@
 'use server';
 
+import type {
+  ApiResponse,
+  PaginatedData,
+  PaginatedParams,
+} from '@byte-of-me/api-core';
+import { buildPaginatedMeta, clampPagination } from '@byte-of-me/api-core';
+import { parseInput } from '@byte-of-me/api-core/server';
 import { prisma } from '@byte-of-me/db';
 
 import type { PublicComment } from '@/entities/comment/model';
 import { publicCommentsParamsSchema } from '@/entities/comment/model/comment-schema';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
-import { buildPaginatedMeta, clampPagination } from '@/shared/lib/pagination';
-import { parseInput } from '@/shared/lib/validate-action-input';
-import type {
-  ApiResponse,
-  PaginatedData,
-  PaginatedParams,
-} from '@/shared/types/api';
 
 /**
  * Ceilings on the reply fan-out under one page of roots. A signed-in visitor

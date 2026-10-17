@@ -1,5 +1,8 @@
 'use server';
 
+import type { ApiResponse } from '@byte-of-me/api-core';
+import { INTERACTION } from '@byte-of-me/api-core';
+import { idSchema, parseInput } from '@byte-of-me/api-core/server';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
@@ -7,11 +10,8 @@ import { z } from 'zod';
 
 import { PUBLIC_ACTION_FAILURE_MESSAGE } from '@/shared/api';
 import { requireUser } from '@/shared/lib/auth';
-import { INTERACTION } from '@/shared/lib/constants';
 import { checkRateLimit } from '@/shared/lib/rate-limit';
 import { getErrorMessage } from '@/shared/lib/utils';
-import { idSchema, parseInput } from '@/shared/lib/validate-action-input';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 const toggleBlogInteractionSchema = z.object({
   blogId: idSchema,

@@ -1,7 +1,8 @@
+import type { INTERACTION } from '@byte-of-me/api-core';
+
 import { BlogInteractionButton } from './blog-interaction-button';
 
 import { getBlogInteractionsOnce } from '@/features/public/toggle-blog-interactions/lib/get-blog-interactions-once';
-import type { INTERACTION } from '@/shared/lib/constants';
 
 /**
  * Server seed for one reaction. A failed read is not rendered as zero: the

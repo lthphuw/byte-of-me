@@ -3,14 +3,13 @@
  * the blog row, never the caller; unpublished blogs are refused, and so is a
  * throttled caller. `revalidateTag` is spied on the preload's `next/cache` stub.
  */
+import { INTERACTION } from '@byte-of-me/api-core';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { beforeEach, describe, expect, it, mock, spyOn } from 'bun:test';
 import * as nextCache from 'next/cache';
 
 import { toggleBlogInteraction } from './toggle-blog-interaction';
-
-import { INTERACTION } from '@/shared/lib/constants';
 
 const blogFindUnique = mock();
 const interactionFindUnique = mock();

@@ -1,12 +1,8 @@
 import { z } from 'zod';
 
 /**
- * Whether `value` parses as an absolute http(s) URL.
- *
- * The scheme is restricted rather than left to `new URL()` (or zod's
- * `.url()`, which only requires `new URL()` to parse): both happily accept
- * `javascript:` and `data:`, and an admin-authored link is rendered straight
- * into an `href` on the public site.
+ * Whether `value` is an absolute http(s) URL. `new URL()` and zod's `.url()`
+ * accept `javascript:` and `data:`, and an admin link is rendered as an `href`.
  */
 export function isSafeHttpUrl(value: string): boolean {
   try {
@@ -24,9 +20,8 @@ export const safeHttpUrl = z
   .refine(isSafeHttpUrl, 'validation.invalidUrl');
 
 /**
- * Render-time defence for an `href` read from the database, which is not
- * trusted to hold a safe URL: anything that is not http(s) (`javascript:`,
- * `data:`, garbage, empty) becomes `null`, and the caller drops the link.
+ * Render-time defence for a database `href` (not trusted): anything but http(s)
+ * (`javascript:`, `data:`, garbage, empty) becomes `null`; the caller drops it.
  */
 export function toSafeHref(value: string | null | undefined): string | null {
   if (!value) return null;

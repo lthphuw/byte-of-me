@@ -1,4 +1,4 @@
-import { parseSlugListParam } from '@/shared/lib/filter-params';
+import { parseSlugListParam } from '@byte-of-me/api-core';
 
 export interface ProjectFilterState {
   tagSlugs: string[];

@@ -1,10 +1,10 @@
+import { unwrapApiResponse } from '@byte-of-me/api-core';
 import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
 
 import { getAdminTechStackById } from '@/entities/tech-stack/api/get-admin-tech-stack-by-id';
 import { getAllAdminTechStack } from '@/entities/tech-stack/api/get-all-admin-tech-stacks';
 import { getPaginatedPublicTechStacks } from '@/entities/tech-stack/api/get-paginated-public-tech-stacks';
 import { techStackKeys } from '@/entities/tech-stack/model/query-keys';
-import { unwrapApiResponse } from '@/shared/lib/query/unwrap-api-response';
 
 export const techStackQueries = {
   /** The full admin list as picker options, uncapped (see `getAllAdminTechStack`). */

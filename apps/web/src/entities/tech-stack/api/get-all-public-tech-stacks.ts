@@ -1,12 +1,12 @@
 'use server';
 
+import type { ApiResponse } from '@byte-of-me/api-core';
+import { CACHE_TAGS } from '@byte-of-me/api-core';
 import { prisma } from '@byte-of-me/db';
 
 import type { PublicTechStack } from '@/entities/tech-stack/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
-import { CACHE_TAGS } from '@/shared/lib/constants';
 import { PUBLIC_MEDIA_SELECT } from '@/shared/lib/public-media';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function getAllPublicTechStacks(): Promise<
   ApiResponse<{

@@ -1,10 +1,8 @@
 'use client';
 
+import type { ApiResponse, PaginatedData } from '@byte-of-me/api-core';
+import { unwrapApiResponse } from '@byte-of-me/api-core';
 import { useInfiniteQuery } from '@tanstack/react-query';
-
-import { unwrapApiResponse } from '@/shared/lib/query/unwrap-api-response';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
-import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 
 /** Fetch behaviour a caller may override. Omit a key rather than pass undefined. */
 export type InfiniteListQueryBehavior = {

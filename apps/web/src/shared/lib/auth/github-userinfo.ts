@@ -1,6 +1,5 @@
+import { normalizeEmail } from '@byte-of-me/api-core';
 import type { GitHubProfile } from 'next-auth/providers/github';
-
-import { normalizeEmail } from '@/shared/lib/auth/normalize-email';
 
 type GitHubEmail = { email: string; verified: boolean; primary: boolean };
 

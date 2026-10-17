@@ -1,8 +1,8 @@
+import { unwrapApiResponse } from '@byte-of-me/api-core';
 import { queryOptions } from '@tanstack/react-query';
 
 import { getPaginatedContactMessages } from '@/entities/contact-message/api/get-paginated-contacts';
 import { contactMessageKeys } from '@/entities/contact-message/model/query-keys';
-import { unwrapApiResponse } from '@/shared/lib/query/unwrap-api-response';
 
 const CONTACT_PAGE_SIZE = 6;
 

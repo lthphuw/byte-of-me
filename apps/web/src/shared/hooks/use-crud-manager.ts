@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import type { ApiResponse, PaginatedData } from '@byte-of-me/api-core';
+import { unwrapApiResponse } from '@byte-of-me/api-core';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
@@ -8,9 +10,6 @@ import { toast } from 'sonner';
 import { useServerMutation } from './use-server-mutation';
 
 import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
-import { unwrapApiResponse } from '@/shared/lib/query/unwrap-api-response';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
-import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 
 /** An entity's key factory: `all` covers every list, `detail(id)` one record. */
 export interface CrudKeys {

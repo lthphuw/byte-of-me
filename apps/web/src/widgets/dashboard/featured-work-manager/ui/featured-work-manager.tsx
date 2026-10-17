@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { getTranslatedContent } from '@byte-of-me/api-core';
 import { Button } from '@byte-of-me/ui';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
@@ -21,7 +22,6 @@ import {
   useAdminFeaturedWorkById,
 } from '@/entities/featured-work/query';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
-import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 import {
   AddButton,

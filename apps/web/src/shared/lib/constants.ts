@@ -1,35 +1,3 @@
-export const CACHE_TAGS = {
-  BLOG: 'blog',
-  COMPANY: 'company',
-  CONTACT: 'contact-message',
-  EDUCATION: 'education',
-  FEATURED_WORK: 'featured-work',
-  MEDIA: 'media',
-  PROJECT: 'project',
-  SOCIAL: 'social-link',
-  TAG: 'tag',
-  TECH: 'tech-stack',
-  USER: 'user-profile',
-  COMMENT: 'comment',
-  /** Merged pull requests read from GitHub; refreshed by time, not by a write. */
-  OPEN_SOURCE: 'open-source',
-  /**
-   * The author's own dashboard preferences — today, image compression.
-   *
-   * Its own tag rather than folded into `USER`, even though there is exactly
-   * one author and the two rows always move together in practice. They are
-   * written by different actions on different surfaces at wildly different
-   * rates: `saveProfile` is a form the author submits a handful of times a
-   * year, while `updateWorkspaceSettings` fires from a popover toggle. Sharing
-   * a tag would mean every change to a compression setting dropped the cached
-   * public about-me and footer reads that `USER` also covers, which is a
-   * public-site cost paid for a private-dashboard change.
-   */
-  WORKSPACE_SETTINGS: 'workspace-settings',
-} as const;
-
-export type CacheTag = (typeof CACHE_TAGS)[keyof typeof CACHE_TAGS];
-
 /**
  * TTL for the two per-request reads that every `(protected)` navigation pays
  * for before it renders anything: the owner's display name and the workspace
@@ -47,11 +15,6 @@ export type CacheTag = (typeof CACHE_TAGS)[keyof typeof CACHE_TAGS];
  * that win back and buys nothing the tag does not already provide.
  */
 export const LAYOUT_CACHE_REVALIDATE_SECONDS = 3600;
-
-export enum INTERACTION {
-  LIKE = 'LIKE',
-  CLAP = 'CLAP',
-}
 
 /**
  * Carries the requested pathname from `proxy.ts` to the server components that

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { createElement } from 'react';
+import { ServerActionError } from '@byte-of-me/api-core';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { act, cleanup, renderHook, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, mock, spyOn, test } from 'bun:test';
@@ -8,7 +9,6 @@ import { toast } from 'sonner';
 import { isRedirectSignal, useServerMutation } from './use-server-mutation';
 
 import { makeQueryClient } from '@/shared/lib/query/get-query-client';
-import { ServerActionError } from '@/shared/lib/query/unwrap-api-response';
 
 afterEach(() => {
   cleanup();

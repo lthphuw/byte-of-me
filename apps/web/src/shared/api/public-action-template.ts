@@ -1,3 +1,4 @@
+import type { ApiResponse } from '@byte-of-me/api-core';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { unstable_cache } from 'next/cache';
@@ -7,7 +8,6 @@ import 'server-only';
 
 import { env } from '@/shared/config/env';
 import { getErrorMessage } from '@/shared/lib/utils';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export type PublicActionContext = {
   locale: string;

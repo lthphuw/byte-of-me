@@ -1,5 +1,8 @@
 'use server';
 
+import type { ApiResponse } from '@byte-of-me/api-core';
+import { CACHE_TAGS } from '@byte-of-me/api-core';
+import { getClientIp, parseInput } from '@byte-of-me/api-core/server';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { escapeHtml } from '@byte-of-me/rich-text-schema/sanitize';
@@ -14,12 +17,8 @@ import {
 import type { ContactMessageFailureCode } from '@/entities/contact-message/model/types';
 import { mailer } from '@/shared/api';
 import { env } from '@/shared/config/env';
-import { getClientIp } from '@/shared/lib/client-ip';
-import { CACHE_TAGS } from '@/shared/lib/constants';
 import { checkRateLimit } from '@/shared/lib/rate-limit';
 import { getErrorMessage } from '@/shared/lib/utils';
-import { parseInput } from '@/shared/lib/validate-action-input';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 // The form is public and bilingual, so every failure carries a code the client
 // can translate; `errorMsg` stays English for the log and for callers that do

@@ -1,11 +1,11 @@
 'use server';
 
+import type { ApiResponse } from '@byte-of-me/api-core';
 import { logger } from '@byte-of-me/logger';
 import { getLocale } from 'next-intl/server';
 
 import { signOut as nextAuthSignOut } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function logOutDashboard(): Promise<ApiResponse<null>> {
   try {

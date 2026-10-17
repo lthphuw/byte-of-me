@@ -1,6 +1,5 @@
+import { safeHttpUrl } from '@byte-of-me/api-core';
 import { z } from 'zod';
-
-import { safeHttpUrl } from '@/shared/lib/safe-http-url';
 
 export const projectTranslationSchema = z.object({
   language: z.string(),

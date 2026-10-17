@@ -1,13 +1,12 @@
 'use server';
 
+import type { ApiResponse } from '@byte-of-me/api-core';
+import { CACHE_TAGS, getTranslatedContent } from '@byte-of-me/api-core';
 import { prisma } from '@byte-of-me/db';
 
 import type { PublicSocialLink } from '@/entities/social-link/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import { siteConfig } from '@/shared/config/site';
-import { CACHE_TAGS } from '@/shared/lib/constants';
-import { getTranslatedContent } from '@/shared/lib/i18n-utils';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function getPublicInfoForFooter(): Promise<
   ApiResponse<{

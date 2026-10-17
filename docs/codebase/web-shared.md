@@ -16,7 +16,7 @@ apps/web/src/shared/
 ├── i18n/     routing.ts (locales), request.ts (next-intl request config),
 │             navigation.ts (Link, useRouter, ...), messages.ts (client namespace lists, `pickMessages`)
 ├── lib/      server and pure helpers (tables below); auth/, query/, media/, templates/
-├── types/    api/ (ApiResponse, PaginatedData), models/ (hand-written Media, Project, Tag, TechStack),
+├── types/    models/ (hand-written Media, Project, Tag, TechStack),
 │             index.d.ts (LocaleType, SiteConfig, global Nullable/Maybe), next-auth.d.ts (session.user)
 └── ui/       app components; index.ts barrel re-exports 17 entries (form/ included), the rest are imported by path
 apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces; *.d.json.ts generated and tracked
@@ -26,18 +26,13 @@ apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces;
 
 | file | purpose | main consumers (non-spec, rg) |
 | --- | --- | --- |
-| `apps/web/src/shared/lib/constants.ts` | `CACHE_TAGS` (14 tags), `LAYOUT_CACHE_REVALIDATE_SECONDS` (3600), `PATHNAME_HEADER` (`x-pathname`), `INTERACTION` | 61 files: `apps/web/src/entities/blog/`, `apps/web/src/features/public/`, `apps/web/src/entities/featured-work/` |
+| `packages/api-core` (`@byte-of-me/api-core`, root) | the pure core of the server-action API, client-safe: `ApiResponse`, `PaginatedData`, `clampPagination`, `buildPaginatedMeta`, `MAX_CACHED_PAGE`, `unwrapApiResponse`, `ServerActionError`, `CACHE_TAGS` (14 tags), `INTERACTION`, `cuidSchema` and the other anonymous-input schemas, `safeHttpUrl`, `isSafeHttpUrl`, `toSafeHref`, `getTranslationLanguages`, `getTranslatedContent`, `parsePageParam`, `parseSlugListParam`, `searchHistoryMode`, `normalizeEmail`; every export is listed in [tooling-and-small-packages.md](tooling-and-small-packages.md) | 142 files (non-spec, rg): `apps/web/src/entities/` (every slice), `apps/web/src/features/`, `apps/web/src/shared/hooks/`, `apps/web/src/shared/api/` |
+| `@byte-of-me/api-core/server` | `parseInput`, `idSchema`, `getClientIp`; imports `logger` and `node:net`, so server code only | 50 files: every `'use server'` action in `apps/web/src/entities/*/api/`, `apps/web/src/features/public/blog-analytics/lib/blog-view-log.ts`, `apps/web/src/shared/lib/auth/magic-link-rate-limit.ts` |
+| `apps/web/src/shared/lib/constants.ts` | `LAYOUT_CACHE_REVALIDATE_SECONDS` (3600), `PATHNAME_HEADER` (`x-pathname`) | 3 files: `apps/web/src/proxy.ts`, `apps/web/src/app/[locale]/(protected)/layout.tsx`, `apps/web/src/entities/workspace-settings/api/get-workspace-settings.ts` |
 | `apps/web/src/shared/lib/utils.ts` | `cn` (re-export from `@byte-of-me/ui-utils`, never the `ui` barrel: `/api/og` fails its build with it), `getErrorMessage`, `ensureValidUrl` (http(s), `mailto:`, `tel:` pass; a bare host gets `https://`; any other scheme returns `#`), date and size formatters | 117 files: `apps/web/src/widgets/public/`, `apps/web/src/shared/ui/`, `apps/web/src/widgets/dashboard/` |
-| `apps/web/src/shared/lib/safe-http-url.ts` | `isSafeHttpUrl` (http/https only), `safeHttpUrl` (zod: trimmed, message `validation.invalidUrl`), `toSafeHref` (render-time: `null` unless http(s)) | `apps/web/src/entities/project/model/project-schema.ts` (`githubLink`, `liveLink`), `apps/web/src/entities/project/ui/project-timeline-item.tsx`, `apps/web/src/entities/user-profile/model/user-profile-schema.ts` |
-| `apps/web/src/shared/lib/validate-action-input.ts` | `parseInput`, `idSchema`, `INVALID_INPUT_MESSAGE` | 42 files: `apps/web/src/entities/blog/`, `apps/web/src/entities/featured-work/`, `apps/web/src/entities/project/` |
-| `apps/web/src/shared/lib/pagination.ts` | `clampPagination` (defaults: 12 rows, max 50), `buildPaginatedMeta`, `MAX_PAGE`, `MAX_CACHED_PAGE` (deepest page a public list caches) | 15 files: `apps/web/src/entities/tag/`, `apps/web/src/entities/project/`, `apps/web/src/entities/comment/` |
 | `apps/web/src/shared/lib/public-media.ts` | `PUBLIC_MEDIA_SELECT`: the Prisma `select` for a Media relation in a public payload (`PublicMedia` in `shared/types/models/media.ts`: id, url, mimeType, width, height) | 8 files: `apps/web/src/entities/blog/`, `apps/web/src/entities/project/`, `apps/web/src/entities/tech-stack/`, `apps/web/src/entities/education/` |
-| `apps/web/src/shared/lib/public-input-schema.ts` | zod for anonymous ids, slugs, search text | 5 files: `apps/web/src/entities/blog/`, `apps/web/src/features/public/`, `apps/web/src/entities/project/` |
-| `apps/web/src/shared/lib/filter-params.ts` | URL filter parsing; `searchHistoryMode` (push vs replace) | 7 files: `apps/web/src/features/public/`, `apps/web/src/shared/hooks/` |
-| `apps/web/src/shared/lib/i18n-utils.ts` | DB translations: `getTranslationLanguages`, `getTranslatedContent` | 23 files: `apps/web/src/entities/blog/`, `apps/web/src/entities/project/`, `apps/web/src/entities/user-profile/` |
 | `apps/web/src/shared/lib/rate-limit.ts` | `checkRateLimit` (fixed window, fails open) | 6 files: `apps/web/src/features/public/`, `apps/web/src/entities/comment/`, `apps/web/src/entities/contact-message/`, `apps/web/src/shared/lib/auth/` |
-| `apps/web/src/shared/lib/client-ip.ts` | `getClientIp(headers)`: Vercel header, `x-real-ip`, `x-forwarded-for`, else `'unknown'` | 3 files: `apps/web/src/entities/contact-message/`, `apps/web/src/features/public/`, `apps/web/src/shared/lib/auth/` |
-| `apps/web/src/shared/lib/query/` | `getQueryClient`, `makeQueryClient`, `unwrapApiResponse` (throws `ServerActionError`, which carries `errorCode`), `ADMIN_PAGE_SIZE` (12), `ADMIN_OPTIONS_LIMIT` (500) | 23 files: `apps/web/src/app/[locale]/`, `apps/web/src/widgets/dashboard/`, `apps/web/src/shared/hooks/` |
+| `apps/web/src/shared/lib/query/` | `getQueryClient`, `makeQueryClient`, `ADMIN_PAGE_SIZE` (12), `ADMIN_OPTIONS_LIMIT` (500) | 24 files: `apps/web/src/app/[locale]/`, `apps/web/src/widgets/dashboard/`, `apps/web/src/shared/hooks/` |
 | `apps/web/src/shared/hooks/use-server-mutation.ts` | `useServerMutation`: the one client write path. Unwraps the envelope, invalidates the `invalidate` keys and runs `onSuccess` only on success, then toasts `successMessage` with `toast.success`; on failure logs `errorMsg` with `console.error` and toasts `errorMessages[errorCode]`, else `errorMessage` | the write hooks in `apps/web/src/entities/*/query/` and the features that save through them |
 | `apps/web/src/shared/ui/query-state.tsx` | `QueryState`: skeleton while loading, error block with a retry button, empty block, then content; a background refetch keeps the content and shows a corner spinner. A `pagination` slot is drawn under the content and in the empty state. Every string comes from the caller | the dashboard managers (through `ManagerListState`) and the public list widgets; see [web-widgets.md](web-widgets.md) |
 | `apps/web/src/shared/lib/rich-text-doc-schema.ts` | `richTextDocSchema` (zod): the top level of a TipTap document, `type: 'doc'` with loose blocks. `RichTextDoc` is its inferred type | `apps/web/src/entities/blog/model/blog-schema.ts` (blog `content`), `apps/web/src/entities/user-profile/model/user-profile-schema.ts` (`aboutMe`, a union with a plain string), `apps/web/src/features/dashboard/blog-editor/ui/form/blog-form.tsx` |
@@ -58,7 +53,7 @@ apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces;
 
 | piece | does | rule it carries |
 | --- | --- | --- |
-| `unwrapApiResponse<T>(res)` (`apps/web/src/shared/lib/query/unwrap-api-response.ts`) | returns `data` on success; throws `ServerActionError` on `{ success: false }` | the only way a query or mutation reads an envelope (AGENTS §8) |
+| `unwrapApiResponse<T>(res)` (`packages/api-core/src/unwrap-api-response.ts`) | returns `data` on success; throws `ServerActionError` on `{ success: false }` | the only way a query or mutation reads an envelope (AGENTS §8) |
 | `ServerActionError` (same file) | `message` is the action's `errorMsg`; `errorCode` is the reason the action named, `undefined` when it named none | a refused read is an error to TanStack, never an empty list |
 | `useServerMutation` (`apps/web/src/shared/hooks/use-server-mutation.ts`) | `mutationFn` → `unwrapApiResponse`, then the success path; the failure path is `onError` | a refused write runs no success path: no toast, no closed dialog |
 | `QueryState` (`apps/web/src/shared/ui/query-state.tsx`) | loading, error, empty, then children | the three states on every client read (AGENTS §9) |
@@ -67,7 +62,7 @@ apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces;
 
 | piece | does | rule it carries |
 | --- | --- | --- |
-| `useCrudManager` (`apps/web/src/shared/hooks/use-crud-manager.ts:65`) | the page-kept list, the create or edit dialog state, the delete confirmation, and the three writes | takes `entity` (the translated noun) and `keys: CrudKeys` (`:16`). Toasts come from `dashboard.shared.crud`; a write invalidates `keys.all` and then drops `keys.detail(id)`. `save(values, { onSaved })` runs `onSaved` only after the write succeeds, so the blog form clears its autosave draft there and a refused save keeps it. The one `fetchAll` list (tech stacks) keys on `keys.all` and caches `{ data }`; its page seeds `initialItems` from a server read and does not prefetch |
+| `useCrudManager` (`apps/web/src/shared/hooks/use-crud-manager.ts:64`) | the page-kept list, the create or edit dialog state, the delete confirmation, and the three writes | takes `entity` (the translated noun) and `keys: CrudKeys` (`:15`). Toasts come from `dashboard.shared.crud`; a write invalidates `keys.all` and then drops `keys.detail(id)`. `save(values, { onSaved })` runs `onSaved` only after the write succeeds, so the blog form clears its autosave draft there and a refused save keeps it. The one `fetchAll` list (tech stacks) keys on `keys.all` and caches `{ data }`; its page seeds `initialItems` from a server read and does not prefetch |
 | `useCrudManager` page clamp | when the last row of the last page is deleted, the page steps back to the new last page | placeholder data is skipped, because it describes the page being left |
 | `useCrudManager` dirty state | none: the hook does not own the form | a dialog that owns its form passes `form.formState.isDirty` to `RecordDialog isDirty` (tag, tech stack). A form that owns its `useForm` reports through `onDirtyChange`, and its dialog keeps the flag in state and passes it on (company, education, project, featured work, blog editor) |
 | `RecordDialog` (`apps/web/src/shared/ui/record-dialog.tsx:52`) | the one create or edit dialog: full screen below `md`, centred from `md`, Save submits the form named by `formId` | every close path goes through `requestClose`: blocked while `isPending`, asks through `ConfirmDiscardDialog` when `isDirty`. `hideFooter` for a read-only record. The default Save is disabled while `isPending` or `submitDisabled` is true. The seven edit dialogs (tag, tech stack, company, education, project, featured work, blog) reach it through `EditRecordDialog`, which passes `submitDisabled` while the full record loads or after its load fails. The close control's name comes from `closeLabel` (`dashboard.shared.crud.close`) |
@@ -89,21 +84,20 @@ apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces;
 | `session.ts` | `getAuthenticatedUser`, `requireUser` (role USER or ADMIN); `getAuthenticatedAdmin`, `requireAdmin` (role ADMIN **and** owner identity) | barrel: 67 files; `apps/web/src/app/[locale]/(protected)/layout.tsx`, `apps/web/src/app/[locale]/(auth)/layout.tsx` |
 | `auth.ts` | Auth.js (next-auth 5 beta): JWT sessions (7-day `maxAge`, `updateAge` 1 day), Prisma adapter, email, GitHub, Google and `-admin` twins; callbacks `signIn` (:94), `jwt` (:111), `session` (:135); exports `handlers`, `auth`, `signIn`, `signOut` | `apps/web/src/app/api/auth/[...nextauth]/route.ts`, `session.ts`, `apps/web/src/features/auth/lib/` |
 | `sign-in-policy.ts` | pure `evaluateSignIn`: email sign-in owner-only; Google and GitHub need a verified email; `-admin` ids owner-only | `auth.ts` |
-| `site-owner.ts` | `isSiteOwnerEmail`: the one owner-identity check (case-insensitive) | `session.ts`, `auth.ts`, `sign-in-policy.ts`, `apps/web/src/features/auth/lib/log-in-to-dashboard.ts` |
+| `site-owner.ts` | `isSiteOwnerEmail`: the one owner-identity check (case-insensitive, through `normalizeEmail` from `@byte-of-me/api-core`) | `session.ts`, `auth.ts`, `sign-in-policy.ts`, `apps/web/src/features/auth/lib/log-in-to-dashboard.ts` |
 | `callback-url.ts` | `sanitizeCallbackUrl(from, locale)`: open-redirect and locale guard; falls back to `/{locale}/dashboard` | `apps/web/src/features/auth/lib/` (log-in-to-dashboard, log-in-to-dashboard-with-oauth, log-in-with-github, log-in-with-google) |
 | `admin-oauth-providers.ts` | `ADMIN_OAUTH_PROVIDER_IDS` (`github-admin`, `google-admin`), `isAdminOAuthProviderId` | `auth.ts`, `sign-in-policy.ts` |
 | `github-userinfo.ts` | `fetchGitHubProfile`: adds `email_verified` from the GitHub emails endpoint | `auth.ts` |
 | `magic-link-rate-limit.ts` | `isMagicLinkRequestAllowed`: 5 mails per 600 s per IP, fails open | `auth.ts` (:103) |
-| `normalize-email.ts` | `normalizeEmail`: trim and lowercase | `site-owner.ts`, `github-userinfo.ts` |
 | `set-test-user.test-helper.ts` | `setTestUser`, `resetTestUser` (specs only) | 24 spec files |
-| `index.ts` | barrel: `admin-oauth-providers`, `auth`, `callback-url`, `normalize-email`, `session`; `site-owner` arrives via `session` | n/a |
+| `index.ts` | barrel: `admin-oauth-providers`, `auth`, `callback-url`, `session`; `site-owner` arrives via `session` | n/a |
 
 ### i18n: two systems (AGENTS §4)
 
 | system | holds | files |
 | --- | --- | --- |
 | next-intl | fixed UI text in `en` and `vi` (14 namespaces) | `apps/web/messages/en.json`, `apps/web/messages/vi.json`; `apps/web/src/shared/i18n/request.ts` (wired at `apps/web/next.config.js:304`); `apps/web/src/shared/i18n/routing.ts` (locales, default `en`); `apps/web/src/shared/i18n/navigation.ts` (28 importers) |
-| DB `*Translation` tables | authored content: titles, bodies, tag names | `apps/web/src/shared/lib/i18n-utils.ts`: `getTranslationLanguages(locale)` in the query, `getTranslatedContent(rows, locale)` picks locale, then `en`, then the first row |
+| DB `*Translation` tables | authored content: titles, bodies, tag names | `packages/api-core/src/i18n-utils.ts`: `getTranslationLanguages(locale)` in the query, `getTranslatedContent(rows, locale)` picks locale, then `en`, then the first row |
 
 - Client message lists per route group: `apps/web/src/shared/i18n/messages.ts` (`ROOT_MESSAGE_NAMESPACES`, `PUBLIC_MESSAGE_NAMESPACES`, `AUTH_MESSAGE_NAMESPACES`, `DASHBOARD_MESSAGE_NAMESPACES`, `PUBLIC_PRINT_MESSAGE_NAMESPACES`, `pickMessages`), used by the layouts under `apps/web/src/app/[locale]/`.
 - Nested providers replace `messages` instead of merging, so each list must be complete on its own.
@@ -137,7 +131,7 @@ apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces;
 - Sign-in: `apps/web/src/shared/lib/auth/auth.ts` `signIn` runs `evaluateSignIn`, then the magic-link limit; sign-in mail is sent only from `sendVerificationRequest`, which re-checks `isSiteOwnerEmail` (`auth.ts:155`).
 - Redirect target: every sign-in entry point passes `from` through `sanitizeCallbackUrl(from, locale)` (`apps/web/src/shared/lib/auth/callback-url.ts:40`).
 - Public read: `handlePublicAction` (`apps/web/src/shared/api/public-action-template.ts:91`) catches, logs, and returns a generic `errorMsg` with `errorCode: 'unknown'`; it wraps `withPublicActionHandler` (`:34`), which adds the locale and optional `unstable_cache`.
-- Public write: `parseInput` (`apps/web/src/shared/lib/validate-action-input.ts:49`), then `checkRateLimit` (`apps/web/src/shared/lib/rate-limit.ts:23`), then Prisma, then `revalidateTag` after the write.
+- Public write: `parseInput` (`packages/api-core/src/validate-action-input.ts:41`), then `checkRateLimit` (`apps/web/src/shared/lib/rate-limit.ts:23`), then Prisma, then `revalidateTag` after the write.
 - Admin list: each paginated manager's page prefetches `<entity>Queries.adminPage(1)` into a `HydrationBoundary`, and `useCrudManager` reads the same `pageKey` factory, so both use one key and one query function. Both use `ADMIN_PAGE_SIZE`. The manager also takes the entity's `keys` (its `model/query-keys.ts` factory), which supplies the toasts' noun and the invalidation root. The tech-stack page is the exception: its server read seeds `initialItems`.
 - Client read: a `queryOptions` factory in `apps/web/src/entities/<slice>/query/<slice>-queries.ts` binds a key to its query function. A server `prefetchQuery` and the client hook both call that factory, so the hydrated entry is the one the hook reads (AGENTS §6).
 - Client write: a component calls `useServerMutation({ mutationFn, invalidate, onSuccess })`. The `invalidate` keys come from the entity's `model/query-keys.ts` factory.
@@ -150,7 +144,7 @@ apps/web/messages/   en.json, vi.json: UI strings, same 14 top-level namespaces;
    2. For a client component in a route group, add its namespace to that group's list in `apps/web/src/shared/i18n/messages.ts`.
    3. Run `cd apps/web && bun run build`, then `bun run check-types` (AGENTS §10 order).
 2. **Rate-limit a public write.**
-   1. Copy the call at `apps/web/src/entities/comment/api/post-comment.ts:49-53` (user key) or `apps/web/src/entities/contact-message/api/send-contact-message.ts:37-41` (IP key from `getClientIp(headerList)`).
+   1. Copy the call at `apps/web/src/entities/comment/api/post-comment.ts:49-53` (user key) or `apps/web/src/entities/contact-message/api/send-contact-message.ts:36-40` (IP key from `getClientIp(headerList)`).
    2. Use a key prefix not listed above; return the failure envelope when `allowed` is false.
 3. **Add a cached public read.**
    1. Copy `apps/web/src/entities/blog/api/get-public-blog-by-slug.ts:21-22` and `:89-91`: `handlePublicAction` around `withPublicActionHandler` with `cache: true`, `cacheKey`, `cacheTags`.
@@ -187,7 +181,7 @@ cd apps/web && bun run build                               # next build; regener
 - `apps/web/src/shared/types/index.d.ts:7` re-declares the locale set that §4 says is declared once, in `apps/web/src/shared/i18n/routing.ts:5` (§4, §11.3). The language toggle reads `routing.locales`; `shared/config/language.ts` only names each one.
 - `apps/web/src/shared/config/env.ts:17,56,63,77` and `apps/web/src/shared/config/site.ts:18`: literal fallback values for environment settings (§11.7).
 - `apps/web/next-runtime-stubs.ts:2`: header says "three specifiers"; the file registers five module stubs (§11.11).
-- Comment blocks far longer than three lines (§11.14): `apps/web/next-runtime-stubs.ts:1-91`, `apps/web/bunfig.toml:2-28`, `apps/web/src/shared/lib/auth/site-owner.ts:6-36`.
+- Comment blocks far longer than three lines (§11.14): `apps/web/next-runtime-stubs.ts:1-91`, `apps/web/bunfig.toml:2-28`, `apps/web/src/shared/lib/auth/site-owner.ts:7-37`.
 
 ## See also
 
@@ -197,5 +191,5 @@ cd apps/web && bun run build                               # next build; regener
 - [web-widgets.md](web-widgets.md): dashboard managers on the CRUD and list hooks.
 - [packages-ui.md](packages-ui.md): `cn`, motion and editor subpath exports.
 - [packages-db.md](packages-db.md): `RateLimitHit` and the Prisma client.
-- [tooling-and-small-packages.md](tooling-and-small-packages.md): `@byte-of-me/logger`, `@byte-of-me/storage`.
+- [tooling-and-small-packages.md](tooling-and-small-packages.md): `@byte-of-me/api-core`, `@byte-of-me/logger`, `@byte-of-me/storage`.
 - [../architecture.md](../architecture.md), [../environment.md](../environment.md).

@@ -54,7 +54,7 @@ Action names are files in `apps/web/src/entities/<slice>/api/`. "admin" = `requi
 
 ### CACHE_TAGS
 
-`apps/web/src/shared/lib/constants.ts:1-29`. 14 keys. Revalidation sites found with `rg "revalidateTag" apps/web/src`.
+`packages/api-core/src/constants.ts:1-22`. 14 keys. Revalidation sites found with `rg "revalidateTag" apps/web/src`.
 
 | Value | Key | Revalidated by |
 | --- | --- | --- |
@@ -70,7 +70,7 @@ Action names are files in `apps/web/src/entities/<slice>/api/`. "admin" = `requi
 | `tech-stack` | `TECH` | tech-stack: create, update, delete; media delete |
 | `user-profile` | `USER` | user-profile: save-profile; media delete |
 | `comment` | `COMMENT` | comment: post, hide, set visibility |
-| `open-source` | `OPEN_SOURCE` | none: time-based only (`constants.ts:14-15`) |
+| `open-source` | `OPEN_SOURCE` | none: time-based only (`packages/api-core/src/constants.ts:14-15`) |
 | `workspace-settings` | `WORKSPACE_SETTINGS` | workspace-settings: update |
 
 - "media delete" = `apps/web/src/entities/media/api/delete-media.ts:54-65`, which loops over BLOG, COMPANY, EDUCATION, FEATURED_WORK, PROJECT, TECH, USER.
@@ -136,8 +136,8 @@ cd apps/web && bun test src/entities/featured-work   # one slice, bun path filte
 - `apps/web/src/entities/blog/api/get-public-blog-by-slug.ts:18`: manual `if (!slug)` instead of `parseInput` (§8 step 2).
 - `apps/web/src/entities/blog/api/get-adjacent-public-blogs.ts:25`: `currentId` is never validated (§8 step 2).
 - `apps/web/src/entities/featured-work/api/reorder-featured-work.ts:14`: `directionSchema` is declared outside `model/featured-work-schema.ts` (§8).
-- `apps/web/src/entities/blog/model/types.ts:3`, `apps/web/src/entities/blog/api/get-paginated-public-blogs.ts:7`: import `@/entities/project/model/types`, another slice's internals (§3 "never sideways").
-- `apps/web/src/entities/featured-work/lib/featured-work-media.ts:4`, `lib/load-public-featured-works.ts:19`, `ui/featured-work-row.tsx:10`: import `@/entities/media/model/upload-constraints` (§3).
+- `apps/web/src/entities/blog/model/types.ts:3`, `apps/web/src/entities/blog/api/get-paginated-public-blogs.ts:21`: import `@/entities/project/model/types`, another slice's internals (§3 "never sideways").
+- `apps/web/src/entities/featured-work/lib/featured-work-media.ts:4`, `lib/load-public-featured-works.ts:25`, `ui/featured-work-row.tsx:10`: import `@/entities/media/model/upload-constraints` (§3).
 - 73 import lines in 40 files outside these slices reach `api/`, `model/`, `ui/` or `lib/` directly instead of the slice barrel (§3). Example: `apps/web/src/widgets/dashboard/company-manager/ui/company-manager.tsx:10-13`.
 
 ## See also
@@ -146,5 +146,5 @@ cd apps/web && bun test src/entities/featured-work   # one slice, bun path filte
 - [Web entities: supporting](web-entities-supporting.md): media, tag, project, comment, the other `CACHE_TAGS` producers.
 - [Web features](web-features.md): public blog and featured-work features.
 - [Web widgets](web-widgets.md): the dashboard managers.
-- [Web shared](web-shared.md): `public-action-template`, `use-crud-manager`, `validate-action-input`.
+- [Web shared](web-shared.md): `public-action-template`, `use-crud-manager`, and the `@byte-of-me/api-core` helpers (`parseInput`, `CACHE_TAGS`).
 - [Architecture](../architecture.md)

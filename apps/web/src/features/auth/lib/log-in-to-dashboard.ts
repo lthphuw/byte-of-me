@@ -1,5 +1,6 @@
 'use server';
 
+import type { ApiResponse } from '@byte-of-me/api-core';
 import { logger } from '@byte-of-me/logger';
 import { getLocale } from 'next-intl/server';
 
@@ -9,7 +10,6 @@ import {
   signIn as nextAuthSignIn,
 } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 /** Every refusal reads the same: a stranger learns nothing about who the owner is. */
 const SIGN_IN_FAILURE_MESSAGE = 'Invalid email, try again later';

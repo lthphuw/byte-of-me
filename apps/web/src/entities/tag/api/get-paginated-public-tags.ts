@@ -1,21 +1,22 @@
 'use server';
 
+import type {
+  ApiResponse,
+  PaginatedData,
+  PaginatedParams,
+} from '@byte-of-me/api-core';
+import {
+  buildPaginatedMeta,
+  CACHE_TAGS,
+  clampPagination,
+  getTranslatedContent,
+  getTranslationLanguages,
+  MAX_CACHED_PAGE,
+} from '@byte-of-me/api-core';
 import { prisma } from '@byte-of-me/db';
 
 import type { PublicTag } from '@/entities/tag/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
-import { CACHE_TAGS } from '@/shared/lib/constants';
-import {
-  getTranslatedContent,
-  getTranslationLanguages,
-} from '@/shared/lib/i18n-utils';
-import {
-  buildPaginatedMeta,
-  clampPagination,
-  MAX_CACHED_PAGE,
-} from '@/shared/lib/pagination';
-import type { PaginatedData, PaginatedParams } from '@/shared/types/api';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function getPaginatedPublicTags(
   pagination: PaginatedParams

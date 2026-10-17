@@ -111,6 +111,7 @@ flowchart TB
     TOAST["@byte-of-me/ui-toast<br/>sonner Toaster"]
     FORMS["@byte-of-me/ui-forms<br/>form · calendar · date-picker · command · multi-select"]
     CAROUSEL["@byte-of-me/ui-carousel<br/>carousel · useEmblaState"]
+    API["@byte-of-me/api-core<br/>ApiResponse · parseInput · pagination · cache tags"]
     DB["@byte-of-me/db<br/>Prisma schema · client · seed"]
     ST["@byte-of-me/storage<br/>S3-compatible client"]
     LOG["@byte-of-me/logger<br/>structured logging"]
@@ -124,6 +125,7 @@ flowchart TB
     WEB --> HOOKS
     WEB --> MOTION
     WEB --> PRIMS
+    WEB --> API
     WEB --> DB
     WEB --> ST
     WEB --> LOG
@@ -149,6 +151,7 @@ flowchart TB
     PRIMS --> UTILS
     PRIMS --> HOOKS
     PRIMS --> MOTION
+    API --> LOG
     DB --> LOG
 
     CFG -.->|"tsconfig extends"| WEB
@@ -160,7 +163,7 @@ flowchart TB
     classDef pkg fill:#0f766e,stroke:#5eead4,color:#f0fdfa
 
     class WEB app
-    class UI,EDITOR,SCHEMA,RENDER,UTILS,HOOKS,MOTION,PRIMS,TOAST,FORMS,CAROUSEL,DB,ST,LOG,CFG pkg
+    class UI,EDITOR,SCHEMA,RENDER,UTILS,HOOKS,MOTION,PRIMS,TOAST,FORMS,CAROUSEL,API,DB,ST,LOG,CFG pkg
 ```
 
 Solid arrows are runtime dependencies; dashed arrows are build-time only — `@byte-of-me/config` ships no application code: `tsconfig` presets that each workspace extends by relative path, `boundaries.json` (below), and the `bun test` preloads in `test/`.
@@ -190,6 +193,7 @@ flowchart TB
         RENDER["rich-text-render"]
     end
     subgraph L1["L1"]
+        API["api-core"]
         DB["db"]
         SCHEMA["rich-text-schema"]
         PRIMS["ui-primitives"]
@@ -205,6 +209,7 @@ flowchart TB
 
     WEB --> UI
     WEB --> EDITOR
+    WEB --> API
     WEB --> DB
     WEB --> ST
     WEB --> LOG
@@ -236,8 +241,11 @@ flowchart TB
     PRIMS --> UTILS
     PRIMS --> HOOKS
     PRIMS --> MOTION
+    API --> LOG
     DB --> LOG
 ```
+
+`api-core` is layer 1, not 0, because `parseInput` logs through `logger` (layer 0). Its root is client-safe (no `logger`, no `node:*`) and its `./server` subpath holds `parseInput` and `getClientIp`. It is on the `noReact` list.
 
 `bun run check-boundaries` (step 3 of `bun run check`) reads every source file with the TypeScript compiler API and prints `file:line  rule  message` per violation, exiting 1 on any. It runs in under a second and enforces:
 
@@ -462,7 +470,7 @@ Three layers, each invalidated differently:
 | Next.js data cache | Tagged queries | `revalidateTag(CACHE_TAGS.X)` inside the mutating server action |
 | TanStack Query | Every client read and write, dashboard and public lists (image uploads are the one `useMutation` that throws) | `useServerMutation` invalidates the factory keys after the envelope check |
 
-`CACHE_TAGS` (`src/shared/lib/constants.ts`) is the single list of tags — `blog`, `company`, `contact-message`, `education`, `featured-work`, `media`, `open-source`, `project`, `social-link`, `tag`, `tech-stack`, `user-profile`, `comment`, `workspace-settings`. A mutation that forgets its tag is the usual cause of "I saved it but the public page is stale."
+`CACHE_TAGS` (`packages/api-core/src/constants.ts`) is the single list of tags — `blog`, `company`, `contact-message`, `education`, `featured-work`, `media`, `open-source`, `project`, `social-link`, `tag`, `tech-stack`, `user-profile`, `comment`, `workspace-settings`. A mutation that forgets its tag is the usual cause of "I saved it but the public page is stale."
 
 `purgeEntireCache()` in `src/widgets/dashboard/dashboard-sidebar/lib/purge-entire-cache.ts` (the dashboard's Clear Cache button) is the blunt escape hatch — `revalidatePath('/', 'layout')`.
 

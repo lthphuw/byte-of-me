@@ -1,4 +1,4 @@
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
+import type { ApiResponse } from './api-response.type';
 
 /** A refused action. `errorCode` is set only when the action names its reason. */
 export class ServerActionError extends Error {

@@ -1,5 +1,19 @@
 'use server';
 
+import type {
+  ApiResponse,
+  PaginatedData,
+  PaginatedParams,
+} from '@byte-of-me/api-core';
+import {
+  buildPaginatedMeta,
+  CACHE_TAGS,
+  clampPagination,
+  getTranslatedContent,
+  getTranslationLanguages,
+  MAX_CACHED_PAGE,
+} from '@byte-of-me/api-core';
+import { parseInput } from '@byte-of-me/api-core/server';
 import { type Prisma, prisma } from '@byte-of-me/db';
 
 import { publicBlogsParamsSchema } from '@/entities/blog/model/blog-schema';
@@ -17,23 +31,7 @@ import {
   withPublicActionHandler,
 } from '@/shared/api/public-action-template';
 import { getAuthenticatedAdmin } from '@/shared/lib/auth';
-import { CACHE_TAGS } from '@/shared/lib/constants';
-import {
-  getTranslatedContent,
-  getTranslationLanguages,
-} from '@/shared/lib/i18n-utils';
-import {
-  buildPaginatedMeta,
-  clampPagination,
-  MAX_CACHED_PAGE,
-} from '@/shared/lib/pagination';
 import { PUBLIC_MEDIA_SELECT } from '@/shared/lib/public-media';
-import { parseInput } from '@/shared/lib/validate-action-input';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
-import type {
-  PaginatedData,
-  PaginatedParams,
-} from '@/shared/types/api/paginated-api.type';
 
 export type GetPublicBlogsParams = PaginatedParams & {
   tagSlugs?: string[];

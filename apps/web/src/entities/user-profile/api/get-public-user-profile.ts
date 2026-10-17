@@ -1,15 +1,15 @@
 'use server';
 
+import type { ApiResponse } from '@byte-of-me/api-core';
+import {
+  CACHE_TAGS,
+  getTranslatedContent,
+  getTranslationLanguages,
+} from '@byte-of-me/api-core';
 import { prisma } from '@byte-of-me/db';
 
 import type { PublicUserProfile } from '@/entities/user-profile/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
-import { CACHE_TAGS } from '@/shared/lib/constants';
-import {
-  getTranslatedContent,
-  getTranslationLanguages,
-} from '@/shared/lib/i18n-utils';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function getPublicUserProfile(): Promise<
   ApiResponse<PublicUserProfile>

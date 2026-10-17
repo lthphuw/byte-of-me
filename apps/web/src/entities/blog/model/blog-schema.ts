@@ -1,12 +1,12 @@
-import * as z from 'zod';
-
 import {
   cuidSchema,
   MAX_FILTER_SLUGS,
   searchTextSchema,
   slugListSchema,
   slugSchema,
-} from '@/shared/lib/public-input-schema';
+} from '@byte-of-me/api-core';
+import * as z from 'zod';
+
 import { richTextDocSchema } from '@/shared/lib/rich-text-doc-schema';
 
 /** Lowercase words joined by single hyphens, as the public URL carries them. */

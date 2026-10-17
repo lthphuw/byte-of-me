@@ -1,12 +1,12 @@
 'use server';
 
+import type { ApiResponse } from '@byte-of-me/api-core';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 
 import type { AdminTechStack } from '@/entities/tech-stack/model/types';
 import { requireAdmin } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 /**
  * The manager's list and the picker options read this one action. It is not

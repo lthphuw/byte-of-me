@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
+import { getTranslatedContent } from '@byte-of-me/api-core';
 import { richTextToPlainText } from '@byte-of-me/rich-text-schema/rich-text-content';
 import { Badge, CardTitle, Icons } from '@byte-of-me/ui';
 import { ExternalLink } from 'lucide-react';
@@ -8,7 +9,6 @@ import { useLocale } from 'next-intl';
 
 import { adminProjectTitle } from '@/entities/project/model/admin-project-title';
 import type { AdminProject } from '@/entities/project/model/types';
-import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import { RecordListItem, RecordRowActions } from '@/shared/ui/record-list';
 
 /**

@@ -2,13 +2,13 @@
  * The id must be a plain id, the limit is clamped and the tag list capped
  * before Prisma; a refused call runs no query.
  */
+import { MAX_FILTER_SLUGS } from '@byte-of-me/api-core';
 import { prisma } from '@byte-of-me/db';
 import { beforeEach, describe, expect, it, mock } from 'bun:test';
 
 import { getRelatedPublicBlogs } from './get-related-public-blogs';
 
 import { MAX_RELATED_BLOGS } from '@/entities/blog/model/blog-schema';
-import { MAX_FILTER_SLUGS } from '@/shared/lib/public-input-schema';
 
 const findMany = mock();
 const findFirst = mock();

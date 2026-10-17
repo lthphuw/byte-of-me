@@ -1,3 +1,9 @@
+import type { ApiResponse } from '@byte-of-me/api-core';
+import {
+  CACHE_TAGS,
+  getTranslatedContent,
+  getTranslationLanguages,
+} from '@byte-of-me/api-core';
 import { prisma } from '@byte-of-me/db';
 import { renderRichTextDocumentHtml } from '@byte-of-me/rich-text-render/rich-text-render';
 import {
@@ -23,12 +29,6 @@ import type {
 } from '@/entities/featured-work/model/types';
 import { ACCEPTED_VIDEO_MIME_TYPES } from '@/entities/media/model/upload-constraints';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
-import { CACHE_TAGS } from '@/shared/lib/constants';
-import {
-  getTranslatedContent,
-  getTranslationLanguages,
-} from '@/shared/lib/i18n-utils';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 const MAX_WORKS = 6;
 

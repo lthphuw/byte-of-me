@@ -7,6 +7,7 @@
  * `dataUpdatedAt`, never by reading the hook's source.
  */
 import type { ReactNode } from 'react';
+import type { PaginatedData } from '@byte-of-me/api-core';
 import {
   dehydrate,
   hydrate,
@@ -23,7 +24,6 @@ import {
 } from './use-infinite-list-query';
 
 import { makeQueryClient } from '@/shared/lib/query/get-query-client';
-import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 
 type Item = { id: string };
 

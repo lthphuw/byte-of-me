@@ -1,3 +1,4 @@
+import { parsePageParam } from '@byte-of-me/api-core';
 import { describe, expect, it } from 'bun:test';
 
 import {
@@ -5,8 +6,6 @@ import {
   DEFAULT_BLOG_FILTERS,
   parseBlogFilters,
 } from './blog-filter-params';
-
-import { parsePageParam } from '@/shared/lib/filter-params';
 
 describe('parseBlogFilters', () => {
   it('returns the defaults for an empty query', () => {

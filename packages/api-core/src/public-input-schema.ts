@@ -7,7 +7,7 @@ import { z } from 'zod';
  */
 
 /** Prisma's default id (`@default(cuid())`): `c` plus 24 lowercase alphanumerics. */
-export const CUID_PATTERN = /^c[a-z0-9]{20,32}$/;
+const CUID_PATTERN = /^c[a-z0-9]{20,32}$/;
 
 export const cuidSchema = z.string().regex(CUID_PATTERN, 'Invalid id');
 

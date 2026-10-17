@@ -2,6 +2,7 @@
 
 // Subpath on purpose: the presentational half of RichText, with no tiptap in
 // it. The HTML itself is rendered by the server action that feeds this list.
+import { toSafeHref } from '@byte-of-me/api-core';
 import { RichTextHtml } from '@byte-of-me/rich-text-render/rich-text-html';
 import { Button } from '@byte-of-me/ui';
 import { Code, ExternalLink } from 'lucide-react';
@@ -11,7 +12,6 @@ import type { PublicProject } from '@/entities/project/model/types';
 import { TagClickableBadge } from '@/entities/tag/ui/tag-clickable-badge';
 import { TechStackClickableBadge } from '@/entities/tech-stack/ui/tech-stack-clickable-badge';
 import { Link } from '@/shared/i18n/navigation';
-import { toSafeHref } from '@/shared/lib/safe-http-url';
 import { cn, formatDate } from '@/shared/lib/utils';
 import { ExpandableRichText } from '@/shared/ui';
 

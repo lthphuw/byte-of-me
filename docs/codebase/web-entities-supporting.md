@@ -63,7 +63,7 @@ Legend: A `requireAdmin()` · U `requireUser()` · — none (public) · P `parse
    4. Manager: `useCrudManager` in `apps/web/src/widgets/dashboard/tag-manager/ui/tag-manager.tsx:56`; pass `keys: { all: tagKeys.all, detail: tagKeys.detail }` from `apps/web/src/entities/tag/model/query-keys.ts`. A save invalidates `all` and drops the `detail(id)` record the dialog loads (`useAdminTagById`), so the pre-save record is not left cached.
 2. Add a cached public read (example: projects)
    1. Params schema: `apps/web/src/entities/project/model/public-project-schema.ts`; call `parseInput` first.
-   2. Wrap with `handlePublicAction` and `withPublicActionHandler(..., { cache: true, cacheKey: [every closure arg], cacheTags: [CACHE_TAGS.X] })`. Pattern: `apps/web/src/entities/project/api/get-paginated-public-projects.ts:174-189`.
+   2. Wrap with `handlePublicAction` and `withPublicActionHandler(..., { cache: true, cacheKey: [every closure arg], cacheTags: [CACHE_TAGS.X] })`. Pattern: `apps/web/src/entities/project/api/get-paginated-public-projects.ts:172-187`.
    3. Client and server prefetch call the same factory: `apps/web/src/app/[locale]/(public)/projects/page.tsx:44` (`projectQueries.publicList`) and `apps/web/src/entities/project/query/use-public-project-list.ts` (the client hook spreads the same options).
 3. Add a workspace setting (no migration: `preferences` is `Json @default("{}")`, `packages/db/prisma/schema.prisma:871`)
    1. Add the field to `workspaceSettingsSchema` and to `WORKSPACE_SETTINGS_DEFAULTS` in `apps/web/src/entities/workspace-settings/model/settings-schema.ts` (lines 26-50). The patch schema is `.partial()` (lines 94-98), so the action needs no change.
@@ -77,9 +77,9 @@ Legend: A `requireAdmin()` · U `requireUser()` · — none (public) · P `parse
 - Every `revalidateTag` call in `apps/web/src` passes `'max'`; none passes `'default'`.
 - `hideComment` lets the author hide their own comment and the site owner hide any (`apps/web/src/entities/comment/api/hide-comment.ts:29-42`). The admin test is `getAuthenticatedAdmin()`, which checks role and owner identity, not `user.role` alone. An anonymous caller rejects at `requireUser()` (`hide-comment.ts:21`, outside the `try`). A signed-in user who is neither gets `errorCode: 'forbidden'` on someone else's comment and `not-found` on a missing one, with no write. `apps/web/src/entities/comment/api/hide-comment.spec.ts` pins the cases. Only the admin `setCommentVisibility` can unhide.
 - `apps/web/src/entities/project/api/index.ts` and `apps/web/src/entities/tag/api/index.ts` omit the picker actions, so the query factories import them by path (`apps/web/src/entities/project/query/project-queries.ts`, `apps/web/src/entities/tag/query/tag-queries.ts`). `apps/web/src/entities/workspace-settings/api/index.ts:1-6` and `apps/web/src/entities/user-profile/api/index.ts:1-7` omit their helpers on purpose.
-- `getWorkspaceSettings` fails closed: a signed-out caller gets the `requireAdmin()` refusal, not defaults (`apps/web/src/entities/workspace-settings/api/get-workspace-settings.ts:94-100`). A failed read in `useWorkspaceSettings()` throws to the error boundary; it never renders defaults.
+- `getWorkspaceSettings` fails closed: a signed-out caller gets the `requireAdmin()` refusal, not defaults (`apps/web/src/entities/workspace-settings/api/get-workspace-settings.ts:92-98`). A failed read in `useWorkspaceSettings()` throws to the error boundary; it never renders defaults.
 - `deleteMedia` deletes the row first (`apps/web/src/entities/media/api/delete-media.ts:36`). The storage object follows, best effort (`:44`); a failed storage delete is logged (`:47`) and leaves an orphan object. A failed row delete keeps the file.
-- `projectKeys.publicList` and `tagKeys.infinite` have no locale segment, but their actions resolve titles by locale (`apps/web/src/entities/project/api/get-paginated-public-projects.ts:88`, `apps/web/src/entities/tag/api/get-paginated-public-tags.ts:31`). `tagKeys.options` includes one for this reason.
+- `projectKeys.publicList` and `tagKeys.infinite` have no locale segment, but their actions resolve titles by locale (`apps/web/src/entities/project/api/get-paginated-public-projects.ts:86`, `apps/web/src/entities/tag/api/get-paginated-public-tags.ts:32`). `tagKeys.options` includes one for this reason.
 - The three picker hooks name their retry differently: `useTagOptions` and `useProjectReferenceOptions` return `retry`; `useTechStackOptions` returns `refetch`, which `apps/web/src/widgets/dashboard/company-manager/ui/company-form.tsx` reads. Rename the hook and its reader together.
 - `getAllAdminTechStack` is capped at `ADMIN_OPTIONS_LIMIT` (500) for the picker and the manager alike; rows past the cap are dropped without a message.
 
@@ -96,24 +96,24 @@ cd apps/web && bun run lint              # eslint .
 
 - `apps/web/src/entities/comment/api/post-comment.ts:26` — §8: schema defined inline; it belongs in `apps/web/src/entities/comment/model/comment-schema.ts`.
 - `apps/web/src/entities/project/api/get-public-project-by-id.ts:15` — §8: `id` is never parsed (no `parseInput(idSchema)`).
-- `apps/web/src/entities/contact-message/api/get-paginated-contacts.ts:15-17` — §8: `filter.search` goes to Prisma unparsed.
+- `apps/web/src/entities/contact-message/api/get-paginated-contacts.ts:14-16` — §8: `filter.search` goes to Prisma unparsed.
 - `apps/web/src/entities/media/api/upload-single-media.ts:1`, `apps/web/src/entities/media/api/upload-video-direct.ts:1` — §8: client code under `api/` without `'use server'`.
 - `apps/web/src/entities/workspace-settings/api/get-workspace-settings.ts:1` — §8: not a server action; intentional per its comment, still outside the letter of the rule.
 - `apps/web/src/entities/user-profile/api/get-public-user-profile.ts:22-33` — §8: translations read with no `language: { in: … }` filter.
-- `apps/web/src/entities/user-profile/api/get-public-user-profile.ts:18-20`, `apps/web/src/entities/project/api/get-paginated-public-projects.ts:59-60` — §8: closure-captured `userId` is absent from `cacheKey`. It is an env constant, so harmless today.
-- `apps/web/src/entities/media/api/upload-single-media.ts:12` — §3: deep cross-slice import; the barrel exports it.
-- `apps/web/src/entities/media/api/upload-media.ts:20` — §3: deep import of `getWorkspaceSettings`, which the barrel omits on purpose (`apps/web/src/entities/workspace-settings/api/index.ts:1-6`).
-- `apps/web/src/entities/project/ui/project-timeline-item.tsx:11-12` — §3: deep cross-slice UI imports from the tag and tech-stack `ui/` folders.
-- `apps/web/src/entities/social-link/api/get-all-public-contacts.ts:27`, `apps/web/src/entities/open-source/api/get-open-source-contributions.ts:49`, `apps/web/src/entities/tech-stack/api/get-all-public-tech-stacks.ts:41`, `apps/web/src/entities/tech-stack/api/get-paginated-public-tech-stacks.ts:47`, `apps/web/src/entities/tag/api/get-paginated-public-tags.ts:64` — §6: `CACHE_TAGS` used as an unstable_cache `cacheKey`; the rule says it is only for `revalidateTag`.
+- `apps/web/src/entities/user-profile/api/get-public-user-profile.ts:18-20`, `apps/web/src/entities/project/api/get-paginated-public-projects.ts:57-58` — §8: closure-captured `userId` is absent from `cacheKey`. It is an env constant, so harmless today.
+- `apps/web/src/entities/media/api/upload-single-media.ts:14` — §3: deep cross-slice import; the barrel exports it.
+- `apps/web/src/entities/media/api/upload-media.ts:23` — §3: deep import of `getWorkspaceSettings`, which the barrel omits on purpose (`apps/web/src/entities/workspace-settings/api/index.ts:1-6`).
+- `apps/web/src/entities/project/ui/project-timeline-item.tsx:12-13` — §3: deep cross-slice UI imports from the tag and tech-stack `ui/` folders.
+- `apps/web/src/entities/social-link/api/get-all-public-contacts.ts:27`, `apps/web/src/entities/open-source/api/get-open-source-contributions.ts:49`, `apps/web/src/entities/tech-stack/api/get-all-public-tech-stacks.ts:41`, `apps/web/src/entities/tech-stack/api/get-paginated-public-tech-stacks.ts:50`, `apps/web/src/entities/tag/api/get-paginated-public-tags.ts:65` — §6: `CACHE_TAGS` used as an unstable_cache `cacheKey`; the rule says it is only for `revalidateTag`.
 - `apps/web/src/entities/open-source/lib/fetch-merged-pull-requests.ts:3` — §11.7: hardcoded endpoint URL (the public GitHub GraphQL API).
 - `apps/web/src/entities/workspace-settings/model/settings-schema.ts`, `apps/web/src/entities/project/model/public-project-schema.ts` — §8: schema file names are not `<slice>-schema.ts`.
-- §11.14: 111 comment blocks over three lines, spec files included (media 40, workspace-settings 19, project 13, comment 12, tag 7, tech-stack 5, user-profile 6, open-source 6, contact-message 3). Largest: `apps/web/src/entities/workspace-settings/api/get-workspace-settings.ts:61-93` (33 lines).
+- §11.14: 111 comment blocks over three lines, spec files included (media 40, workspace-settings 19, project 13, comment 12, tag 7, tech-stack 5, user-profile 6, open-source 6, contact-message 3). Largest: `apps/web/src/entities/workspace-settings/api/get-workspace-settings.ts:59-91` (33 lines).
 
 ## See also
 
 - [web-entities-content.md](web-entities-content.md): blog, company, education, featured-work, the other entities.
 - [web-features.md](web-features.md): the features that call these actions.
 - [web-widgets.md](web-widgets.md): the manager widgets that consume the CRUD actions.
-- [web-shared.md](web-shared.md): `apps/web/src/shared/api` public handler, auth, `validate-action-input`, `constants`.
+- [web-shared.md](web-shared.md): `apps/web/src/shared/api` public handler, auth, and the `@byte-of-me/api-core` helpers (`parseInput`, `clampPagination`, `CACHE_TAGS`).
 - [packages-db.md](packages-db.md): the Prisma models behind these reads and writes.
 - [../architecture.md](../architecture.md)

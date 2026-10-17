@@ -1,9 +1,8 @@
+import type { FilterHistoryMode } from '@byte-of-me/api-core';
 import { act, renderHook } from '@testing-library/react';
 import { describe, expect, it } from 'bun:test';
 
 import { useUrlSyncedSearch } from './use-url-synced-search';
-
-import type { FilterHistoryMode } from '@/shared/lib/filter-params';
 
 /** Short enough to keep the suite fast, long enough to still be a debounce. */
 const DELAY = 5;

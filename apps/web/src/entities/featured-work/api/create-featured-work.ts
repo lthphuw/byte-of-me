@@ -1,5 +1,8 @@
 'use server';
 
+import type { ApiResponse } from '@byte-of-me/api-core';
+import { CACHE_TAGS } from '@byte-of-me/api-core';
+import { parseInput } from '@byte-of-me/api-core/server';
 import { type FeaturedWork, prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
@@ -14,10 +17,7 @@ import {
   featuredWorkSchema,
 } from '@/entities/featured-work/model/featured-work-schema';
 import { requireAdmin } from '@/shared/lib/auth';
-import { CACHE_TAGS } from '@/shared/lib/constants';
 import { getErrorMessage } from '@/shared/lib/utils';
-import { parseInput } from '@/shared/lib/validate-action-input';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function createFeaturedWork(
   input: FeaturedWorkFormValues

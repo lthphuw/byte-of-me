@@ -1,18 +1,18 @@
 'use server';
 
+import type { ApiResponse } from '@byte-of-me/api-core';
+import {
+  CACHE_TAGS,
+  cuidSchema,
+  getTranslatedContent,
+  getTranslationLanguages,
+} from '@byte-of-me/api-core';
 import { prisma } from '@byte-of-me/db';
 import { richTextToPlainText } from '@byte-of-me/rich-text-schema/rich-text-content';
 
 import type { PublicProject } from '@/entities/project/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
-import { CACHE_TAGS } from '@/shared/lib/constants';
-import {
-  getTranslatedContent,
-  getTranslationLanguages,
-} from '@/shared/lib/i18n-utils';
-import { cuidSchema } from '@/shared/lib/public-input-schema';
 import { PUBLIC_MEDIA_SELECT } from '@/shared/lib/public-media';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function getPublicProjectById(
   id: string

@@ -1,9 +1,9 @@
 'use server';
 
+import type { ApiResponse } from '@byte-of-me/api-core';
 import { cookies, headers } from 'next/headers';
 
 import { recordReadingTime } from '@/features/public/blog-analytics/lib/blog-view-log';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export async function updateBlogReadingTime(
   logId: string,

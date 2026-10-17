@@ -1,7 +1,7 @@
+import { getClientIp } from '@byte-of-me/api-core/server';
 import { logger } from '@byte-of-me/logger';
 import { headers } from 'next/headers';
 
-import { getClientIp } from '@/shared/lib/client-ip';
 import { checkRateLimit } from '@/shared/lib/rate-limit';
 import { getErrorMessage } from '@/shared/lib/utils';
 

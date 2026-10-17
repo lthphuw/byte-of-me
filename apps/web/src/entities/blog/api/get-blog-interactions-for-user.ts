@@ -1,15 +1,15 @@
 'use server';
 
+import type { ApiResponse } from '@byte-of-me/api-core';
+import { INTERACTION } from '@byte-of-me/api-core';
+import { idSchema, parseInput } from '@byte-of-me/api-core/server';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { z } from 'zod';
 
 import { PUBLIC_ACTION_FAILURE_MESSAGE } from '@/shared/api';
 import { getAuthenticatedUser } from '@/shared/lib/auth';
-import { INTERACTION } from '@/shared/lib/constants';
 import { getErrorMessage } from '@/shared/lib/utils';
-import { idSchema, parseInput } from '@/shared/lib/validate-action-input';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 export type BlogInteractionState = { isInteracted: boolean; count: number };
 

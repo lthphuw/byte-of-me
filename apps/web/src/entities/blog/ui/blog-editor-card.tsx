@@ -1,5 +1,6 @@
 'use client';
 
+import { getTranslatedContent } from '@byte-of-me/api-core';
 import { Badge } from '@byte-of-me/ui';
 import { Calendar, Eye, EyeOff, ImageOff } from 'lucide-react';
 import Image from 'next/image';
@@ -7,7 +8,6 @@ import { useLocale, useTranslations } from 'next-intl';
 
 import type { AdminBlogListItem } from '@/entities/blog';
 import { tagDisplayName } from '@/entities/tag';
-import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 import { formatDate } from '@/shared/lib/utils';
 import { RecordListItem, RecordRowActions } from '@/shared/ui';
 

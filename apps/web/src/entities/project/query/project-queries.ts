@@ -1,3 +1,4 @@
+import { unwrapApiResponse } from '@byte-of-me/api-core';
 import { queryOptions } from '@tanstack/react-query';
 
 import { getAdminProjectById } from '@/entities/project/api/get-admin-project-by-id';
@@ -7,7 +8,6 @@ import { getPaginatedPublicProjects } from '@/entities/project/api/get-paginated
 import { projectKeys } from '@/entities/project/model/query-keys';
 import type { PublicProjectFilters } from '@/entities/project/model/types';
 import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
-import { unwrapApiResponse } from '@/shared/lib/query/unwrap-api-response';
 
 /**
  * Not in the key, so it lives here: the server prefetch and the client hook

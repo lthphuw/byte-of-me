@@ -1,6 +1,5 @@
+import { cuidSchema } from '@byte-of-me/api-core';
 import * as z from 'zod';
-
-import { cuidSchema } from '@/shared/lib/public-input-schema';
 
 /**
  * `blogId` must be a plain id: `{ not: '' }` would read as a Prisma filter and

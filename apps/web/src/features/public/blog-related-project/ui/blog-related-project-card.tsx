@@ -1,3 +1,4 @@
+import { toSafeHref } from '@byte-of-me/api-core';
 import { Card } from '@byte-of-me/ui';
 import { FolderCode } from 'lucide-react';
 import Link from 'next/link';
@@ -5,7 +6,6 @@ import { getLocale, getTranslations } from 'next-intl/server';
 
 import { getPublicProjectById } from '@/entities/project';
 import { Routes } from '@/shared/config/global';
-import { toSafeHref } from '@/shared/lib/safe-http-url';
 import { formatDate } from '@/shared/lib/utils';
 
 export async function BlogRelatedProjectCard({

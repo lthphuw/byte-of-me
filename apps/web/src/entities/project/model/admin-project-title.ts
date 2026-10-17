@@ -1,6 +1,6 @@
-import type { AdminProject } from './types';
+import { getTranslatedContent } from '@byte-of-me/api-core';
 
-import { getTranslatedContent } from '@/shared/lib/i18n-utils';
+import type { AdminProject } from './types';
 
 /** The project's title in `locale`, falling back to its slug. */
 export function adminProjectTitle(project: AdminProject, locale: string) {

@@ -1,7 +1,8 @@
+import { normalizeEmail } from '@byte-of-me/api-core';
+
 import 'server-only';
 
 import { env } from '@/shared/config/env';
-import { normalizeEmail } from '@/shared/lib/auth/normalize-email';
 
 /**
  * The single source of truth for "is this address the site owner's."

@@ -1,3 +1,6 @@
+import type { ApiResponse } from '@byte-of-me/api-core';
+import { cuidSchema } from '@byte-of-me/api-core';
+import { getClientIp, parseInput } from '@byte-of-me/api-core/server';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import type { cookies, headers } from 'next/headers';
@@ -10,12 +13,8 @@ import {
   verifyViewToken,
 } from '@/features/public/blog-analytics/lib/view-token';
 import { PUBLIC_ACTION_FAILURE_MESSAGE } from '@/shared/api';
-import { getClientIp } from '@/shared/lib/client-ip';
-import { cuidSchema } from '@/shared/lib/public-input-schema';
 import { checkRateLimit } from '@/shared/lib/rate-limit';
 import { getErrorMessage } from '@/shared/lib/utils';
-import { parseInput } from '@/shared/lib/validate-action-input';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 /**
  * The logic of `trackBlogView` / `updateBlogReadingTime`, with the request's

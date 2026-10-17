@@ -1,11 +1,11 @@
 {
   "layers": [
     ["logger", "storage", "ui-hooks", "ui-motion", "ui-utils"],
-    ["db", "rich-text-schema", "ui-primitives", "ui-toast"],
+    ["api-core", "db", "rich-text-schema", "ui-primitives", "ui-toast"],
     ["rich-text-render", "ui-carousel", "ui-forms"],
     ["rich-text-editor"],
     ["ui"]
   ],
   "dbTypesOnly": [],
-  "noReact": ["logger", "rich-text-schema", "storage", "ui-utils"]
+  "noReact": ["api-core", "logger","rich-text-schema", "storage", "ui-utils"]
 }

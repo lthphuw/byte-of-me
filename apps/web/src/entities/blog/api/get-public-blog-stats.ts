@@ -1,12 +1,11 @@
 'use server';
 
+import type { ApiResponse } from '@byte-of-me/api-core';
+import { CACHE_TAGS, cuidSchema, INTERACTION } from '@byte-of-me/api-core';
+import { parseInput } from '@byte-of-me/api-core/server';
 import { prisma } from '@byte-of-me/db';
 
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
-import { CACHE_TAGS, INTERACTION } from '@/shared/lib/constants';
-import { cuidSchema } from '@/shared/lib/public-input-schema';
-import { parseInput } from '@/shared/lib/validate-action-input';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 // The median scans every view log of the blog; a reader's page view must not
 // re-run it. Purged with the blog tag, and by the clock for views and likes.

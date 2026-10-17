@@ -1,8 +1,8 @@
+import { unwrapApiResponse } from '@byte-of-me/api-core';
 import { queryOptions } from '@tanstack/react-query';
 
 import { getAdminUserProfile } from '@/entities/user-profile/api/get-user-profile-with-translations';
 import { userProfileKeys } from '@/entities/user-profile/model/query-keys';
-import { unwrapApiResponse } from '@/shared/lib/query/unwrap-api-response';
 
 export const userProfileQueries = {
   /**

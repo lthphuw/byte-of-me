@@ -2,17 +2,17 @@
 
 import type { Dispatch, SetStateAction } from 'react';
 import { useCallback, useMemo } from 'react';
+import type {
+  FilterHistoryMode,
+  FilterNavigationOptions,
+} from '@byte-of-me/api-core';
+import { parsePageParam } from '@byte-of-me/api-core';
 import { useSearchParams } from 'next/navigation';
 
 import type { BlogFilterState } from './blog-filter-params';
 import { buildBlogFilterQuery, parseBlogFilters } from './blog-filter-params';
 
 import { usePathname, useRouter } from '@/shared/i18n/navigation';
-import type {
-  FilterHistoryMode,
-  FilterNavigationOptions,
-} from '@/shared/lib/filter-params';
-import { parsePageParam } from '@/shared/lib/filter-params';
 
 /**
  * Blog list filters and pagination backed by the URL query

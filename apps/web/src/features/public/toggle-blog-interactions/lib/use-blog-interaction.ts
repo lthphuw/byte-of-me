@@ -1,5 +1,6 @@
 'use client';
 
+import type { INTERACTION } from '@byte-of-me/api-core';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
@@ -9,7 +10,6 @@ import { toggleBlogInteraction } from '@/entities/blog/api/toggle-blog-interacti
 import { blogKeys } from '@/entities/blog/model/query-keys';
 import { useBlogInteractionState } from '@/entities/blog/query';
 import { useServerMutation } from '@/shared/hooks/use-server-mutation';
-import type { INTERACTION } from '@/shared/lib/constants';
 
 export type UseBlogInteractionOptions = {
   blogId: string;

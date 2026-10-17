@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
+import { ServerActionError } from '@byte-of-me/api-core';
 import {
   Button,
   Form,
@@ -26,7 +27,6 @@ import {
   sendContactMessage,
 } from '@/entities/contact-message';
 import { useServerMutation } from '@/shared/hooks/use-server-mutation';
-import { ServerActionError } from '@/shared/lib/query/unwrap-api-response';
 
 const EMPTY_VALUES: ContactMessageFormValues = {
   name: '',

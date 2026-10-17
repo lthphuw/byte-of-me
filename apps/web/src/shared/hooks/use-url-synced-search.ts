@@ -2,10 +2,9 @@
 
 import type { Dispatch, SetStateAction } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import type { FilterHistoryMode } from '@byte-of-me/api-core';
+import { searchHistoryMode } from '@byte-of-me/api-core';
 import { useDebounce } from '@byte-of-me/ui';
-
-import type { FilterHistoryMode } from '@/shared/lib/filter-params';
-import { searchHistoryMode } from '@/shared/lib/filter-params';
 
 /** One typing pause. Long enough to swallow a word, short enough to feel live. */
 export const SEARCH_DEBOUNCE_MS = 400;

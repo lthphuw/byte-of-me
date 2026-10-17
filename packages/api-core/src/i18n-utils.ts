@@ -1,8 +1,7 @@
 /**
- * Languages a locale-scoped read needs to fetch: the requested locale plus the
- * 'en' fallback that getTranslatedContent resolves to. Deduped for locale 'en'.
- * Use it as `where: { language: { in: getTranslationLanguages(locale) } }` so
- * translation queries never pull rows no caller can render.
+ * Languages a locale-scoped read fetches: the locale plus the 'en' fallback
+ * `getTranslatedContent` resolves to. Use as `where: { language: { in:
+ * getTranslationLanguages(locale) } }` so no unrenderable rows are pulled.
  */
 export function getTranslationLanguages(locale: string): string[] {
   return [...new Set([locale, 'en'])];

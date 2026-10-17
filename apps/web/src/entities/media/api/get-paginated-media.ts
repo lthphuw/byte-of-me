@@ -1,15 +1,15 @@
 'use server';
 
+import type {
+  ApiResponse,
+  PaginatedData,
+  PaginatedParams,
+} from '@byte-of-me/api-core';
+import { buildPaginatedMeta, clampPagination } from '@byte-of-me/api-core';
 import { prisma } from '@byte-of-me/db';
 
 import { requireAdmin } from '@/shared/lib/auth';
-import { buildPaginatedMeta, clampPagination } from '@/shared/lib/pagination';
 import { getErrorMessage } from '@/shared/lib/utils';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
-import type {
-  PaginatedData,
-  PaginatedParams,
-} from '@/shared/types/api/paginated-api.type';
 import type { Media } from '@/shared/types/models';
 
 export async function getPaginatedMedia(

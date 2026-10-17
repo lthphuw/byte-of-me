@@ -1,5 +1,19 @@
 'use server';
 
+import type {
+  ApiResponse,
+  PaginatedData,
+  PaginatedParams,
+} from '@byte-of-me/api-core';
+import {
+  buildPaginatedMeta,
+  CACHE_TAGS,
+  clampPagination,
+  getTranslatedContent,
+  getTranslationLanguages,
+  MAX_CACHED_PAGE,
+} from '@byte-of-me/api-core';
+import { parseInput } from '@byte-of-me/api-core/server';
 import { type Prisma, prisma } from '@byte-of-me/db';
 import { renderRichTextHtml } from '@byte-of-me/rich-text-render/rich-text-render';
 import { richTextToPlainText } from '@byte-of-me/rich-text-schema/rich-text-content';
@@ -7,23 +21,7 @@ import { richTextToPlainText } from '@byte-of-me/rich-text-schema/rich-text-cont
 import { publicProjectsParamsSchema } from '@/entities/project/model/public-project-schema';
 import type { PublicProject } from '@/entities/project/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
-import { CACHE_TAGS } from '@/shared/lib/constants';
-import {
-  getTranslatedContent,
-  getTranslationLanguages,
-} from '@/shared/lib/i18n-utils';
-import {
-  buildPaginatedMeta,
-  clampPagination,
-  MAX_CACHED_PAGE,
-} from '@/shared/lib/pagination';
 import { PUBLIC_MEDIA_SELECT } from '@/shared/lib/public-media';
-import { parseInput } from '@/shared/lib/validate-action-input';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
-import type {
-  PaginatedData,
-  PaginatedParams,
-} from '@/shared/types/api/paginated-api.type';
 
 export type GetPublicProjectsParams = PaginatedParams & {
   tagSlugs?: string[];

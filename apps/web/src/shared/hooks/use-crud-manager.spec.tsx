@@ -7,6 +7,7 @@
  * by seeding the cache, never by reading the hook's source.
  */
 import type { ReactNode } from 'react';
+import type { PaginatedData } from '@byte-of-me/api-core';
 import type { QueryClient } from '@tanstack/react-query';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { act, cleanup, renderHook, waitFor } from '@testing-library/react';
@@ -33,7 +34,6 @@ import {
 } from './use-crud-manager';
 
 import { makeQueryClient } from '@/shared/lib/query/get-query-client';
-import type { PaginatedData } from '@/shared/types/api/paginated-api.type';
 
 type Item = { id: string };
 

@@ -1,7 +1,7 @@
+import { getTranslatedContent } from '@byte-of-me/api-core';
 import { prisma } from '@byte-of-me/db';
 
 import { routing } from '@/shared/i18n/routing';
-import { getTranslatedContent } from '@/shared/lib/i18n-utils';
 
 /** Newest published posts exposed by the RSS feed. */
 const FEED_ITEM_LIMIT = 30;

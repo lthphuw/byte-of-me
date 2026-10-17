@@ -1,8 +1,9 @@
 'use server';
 
+import type { ApiResponse } from '@byte-of-me/api-core';
+
 import { loadPublicFeaturedWorks } from '@/entities/featured-work/lib/load-public-featured-works';
 import type { PublicFeaturedWork } from '@/entities/featured-work/model/types';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 /**
  * Featured works for the homepage, at most six, in the owner's order.

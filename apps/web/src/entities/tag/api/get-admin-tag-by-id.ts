@@ -1,5 +1,7 @@
 'use server';
 
+import type { ApiResponse } from '@byte-of-me/api-core';
+import { idSchema, parseInput } from '@byte-of-me/api-core/server';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 
@@ -7,8 +9,6 @@ import { adminTagInclude } from '@/entities/tag/model/admin-tag-include';
 import type { AdminTag } from '@/entities/tag/model/types';
 import { requireAdmin } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
-import { idSchema, parseInput } from '@/shared/lib/validate-action-input';
-import type { ApiResponse } from '@/shared/types/api/api-response.type';
 
 /**
  * The edit dialog's source of truth: a tag's per-language rows, one per locale.

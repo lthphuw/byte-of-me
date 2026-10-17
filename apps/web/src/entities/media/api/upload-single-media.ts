@@ -1,3 +1,5 @@
+import { ServerActionError, unwrapApiResponse } from '@byte-of-me/api-core';
+
 import { uploadMedia } from './upload-media';
 import { uploadVideoDirect } from './upload-video-direct';
 
@@ -12,10 +14,6 @@ import {
 import { getImageCompressionSettings } from '@/entities/workspace-settings/api/get-image-compression-settings';
 import { compressInBrowser } from '@/shared/lib/media/compress-in-browser';
 import type { ImageCompressionConfig } from '@/shared/lib/media/image-compression-config';
-import {
-  ServerActionError,
-  unwrapApiResponse,
-} from '@/shared/lib/query/unwrap-api-response';
 import type { Media } from '@/shared/types/models';
 
 /**

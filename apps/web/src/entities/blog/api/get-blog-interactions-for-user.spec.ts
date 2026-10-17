@@ -2,6 +2,7 @@
  * Anonymous readers call this for the public count. A failure must not carry the
  * database's own text back to them; the detail goes to the log.
  */
+import { INTERACTION } from '@byte-of-me/api-core';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import {
@@ -21,7 +22,6 @@ import {
   resetTestUser,
   setTestUser,
 } from '@/shared/lib/auth/set-test-user.test-helper';
-import { INTERACTION } from '@/shared/lib/constants';
 
 const BLOG_ID = 'cl9ebqhxk00003b600tymydho';
 
