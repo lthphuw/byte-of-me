@@ -1,5 +1,7 @@
 # @byte-of-me/ui
 
+Layer 4 in `packages/config/boundaries.json`: it may import only lower layers.
+
 The facade over the TipTap-free UI packages. `src/index.ts` is the only source file: it
 `export *`s `@byte-of-me/ui-primitives`, `ui-toast`, `ui-forms`, `ui-carousel`, `ui-hooks`
 and `ui-motion`, so the root-barrel imports across `apps/web` read as one import. It has one

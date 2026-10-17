@@ -224,7 +224,7 @@ async function main() {
     },
     update: {},
     create: {
-      // Mirrors INTERACTION.LIKE in the app; packages/db cannot import app code.
+      // Mirrors INTERACTION.LIKE in @byte-of-me/api-core, which db (same layer) cannot import.
       type: 'LIKE',
       userId: user.id,
       blogId: blog.id

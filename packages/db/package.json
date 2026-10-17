@@ -2,22 +2,29 @@
   "name": "@byte-of-me/db",
   "version": "1.0.0",
   "private": true,
+  "description": "Prisma schema, migrations, seed and client for byte-of-me.",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
     "./types": "./src/types.ts"
   },
   "scripts": {
-    "test": "bun test",
-    "generate": "prisma generate",
     "check-types": "tsc --noEmit",
     "lint": "eslint src __tests__",
     "lint:fix": "eslint src __tests__ --fix",
+    "test": "bun test",
+    "generate": "prisma generate",
     "db:migrate:dev": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:migrate:apply": "bun run prisma/apply-migrations.ts",
     "db:push": "prisma db push",
     "db:seed": "prisma db seed"
+  },
+  "dependencies": {
+    "@byte-of-me/logger": "workspace:*",
+    "@prisma/adapter-pg": "^7.0.1",
+    "@prisma/client": "^7.7.0",
+    "dotenv": "^16.6.0"
   },
   "devDependencies": {
     "@types/node": "catalog:",
@@ -25,11 +32,5 @@
     "prisma": "^7.7.0",
     "tsx": "^4.20.3",
     "typescript": "catalog:"
-  },
-  "dependencies": {
-    "@byte-of-me/logger": "workspace:*",
-    "@prisma/adapter-pg": "^7.0.1",
-    "@prisma/client": "^7.7.0",
-    "dotenv": "^16.6.0"
   }
 }

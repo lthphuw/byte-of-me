@@ -1,5 +1,8 @@
 # @byte-of-me/db
 
+Layer 1 in `packages/config/boundaries.json`: it may import only lower layers.
+Consumed as TypeScript source through `transpilePackages`; there is no build step.
+
 Prisma 7 schema, migrations, seed and client for Byte of Me. PostgreSQL 17 through `@prisma/adapter-pg`; there is no query-engine binary.
 
 Setup: [docs/setup.md](../../docs/setup.md) · env: [docs/environment.md](../../docs/environment.md) · code map: [docs/codebase/packages-db.md](../../docs/codebase/packages-db.md)

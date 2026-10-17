@@ -2,6 +2,7 @@
   "name": "@byte-of-me/rich-text-schema",
   "version": "1.0.0",
   "private": true,
+  "description": "TipTap schema, sanitiser and table rules shared by the editor and the server-side renderer.",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
@@ -14,6 +15,7 @@
     "lint:fix": "eslint src --fix",
     "test": "bun test"
   },
+  "sideEffects": false,
   "dependencies": {
     "@byte-of-me/ui-utils": "workspace:*",
     "@tiptap/core": "catalog:",
@@ -37,6 +39,5 @@
   "devDependencies": {
     "eslint": "catalog:",
     "typescript": "catalog:"
-  },
-  "sideEffects": false
+  }
 }

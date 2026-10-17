@@ -39,7 +39,7 @@ import { toast } from 'sonner';
 // The catalogue lives outside `src/`, so the `@/` alias cannot reach it.
 // eslint-disable-next-line import-alias/import-alias
 import en from '../../../../../messages/en.json';
-// eslint-disable-next-line import-alias/import-alias
+// eslint-disable-next-line import-alias/import-alias -- messages sit outside src, which no alias reaches
 import vi from '../../../../../messages/vi.json';
 
 import { FeaturedWorkManager } from './featured-work-manager';
@@ -225,7 +225,12 @@ function detailOf(
   list: AdminFeaturedWork,
   bodies: Record<string, string> = {},
   demo: ReturnType<typeof demoRow>[] = [],
-  links: Array<{ id: string; url: string; label: string | null; sortOrder: number }> = []
+  links: Array<{
+    id: string;
+    url: string;
+    label: string | null;
+    sortOrder: number;
+  }> = []
 ) {
   return {
     ...list,
@@ -866,7 +871,12 @@ describe('FeaturedWorkManager links', () => {
     screen.queryAllByLabelText('Label') as HTMLInputElement[];
 
   const openWork = async (
-    links: Array<{ id: string; url: string; label: string | null; sortOrder: number }>
+    links: Array<{
+      id: string;
+      url: string;
+      label: string | null;
+      sortOrder: number;
+    }>
   ) => {
     findFirst.mockResolvedValue(
       detailOf(rows[0] as AdminFeaturedWork, { en: EN_BODY }, [], links)

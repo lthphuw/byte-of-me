@@ -2,6 +2,7 @@
   "name": "@byte-of-me/ui-primitives",
   "version": "1.0.0",
   "private": true,
+  "description": "shadcn-style components built on Radix, class-variance-authority and lucide-react.",
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -12,6 +13,7 @@
     "lint:fix": "eslint src --fix",
     "test": "bun test"
   },
+  "sideEffects": false,
   "peerDependencies": {
     "framer-motion": "catalog:",
     "react": "^19.2.5",
@@ -45,6 +47,5 @@
     "eslint": "catalog:",
     "framer-motion": "catalog:",
     "typescript": "catalog:"
-  },
-  "sideEffects": false
+  }
 }

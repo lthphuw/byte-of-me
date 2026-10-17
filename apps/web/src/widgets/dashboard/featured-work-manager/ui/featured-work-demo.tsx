@@ -279,7 +279,7 @@ export function FeaturedWorkDemo({
                       className="h-full w-full object-contain"
                     />
                   ) : (
-                    // eslint-disable-next-line @next/next/no-img-element
+                    // eslint-disable-next-line @next/next/no-img-element -- a stored SVG or GIF is drawn only by a plain <img>
                     <img
                       src={preview.url}
                       alt={t('previewLabel', { slot })}

@@ -4,7 +4,7 @@
  *   bun run gen:icons
  *
  * The single source of truth is `apps/web/src/shared/lib/brand-mark.ts`. This
- * script writes the five SVGs from it, then rasterises those to the PNGs and
+ * script writes the four SVGs from it, then rasterises those to the PNGs and
  * the .ico. Every output is committed, because the app serves them statically.
  *
  * Imported by relative path rather than package name: the workspace uses an
@@ -54,12 +54,19 @@ const log = (line: string) => process.stdout.write(`${line}\n`);
 async function rasterise(svgPath: string, size: number): Promise<Buffer> {
   const svg = await readFile(svgPath);
   return sharp(svg, { density: Math.ceil((BASE_DPI * size) / MARK_VIEWBOX) })
-    .resize(size, size, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+    .resize(size, size, {
+      fit: 'contain',
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    })
     .png({ compressionLevel: 9 })
     .toBuffer();
 }
 
-async function emit(svgPath: string, size: number, outPath: string): Promise<void> {
+async function emit(
+  svgPath: string,
+  size: number,
+  outPath: string
+): Promise<void> {
   await writeFile(outPath, await rasterise(svgPath, size));
   log(`  ${path.relative(ROOT, outPath)}  ${size}x${size}`);
 }
@@ -79,7 +86,11 @@ log('Rasterising…');
 // for; anything larger is served by the SVG.
 for (const layer of BRAND_LAYERS) {
   for (const size of [16, 32]) {
-    await emit(icons(`mark-${layer}.svg`), size, icons(`mark-${layer}-${size}.png`));
+    await emit(
+      icons(`mark-${layer}.svg`),
+      size,
+      icons(`mark-${layer}-${size}.png`)
+    );
   }
 }
 
@@ -91,14 +102,16 @@ await emit(icons('maskable.svg'), 512, pub('android-chrome-512x512.png'));
 // implicitly from the origin root, so it carries the public layer.
 const icoSizes = [16, 32, 48];
 const icoFrames = await Promise.all(
-  icoSizes.map((size) => rasterise(icons('mark-public.svg'), size)),
+  icoSizes.map((size) => rasterise(icons('mark-public.svg'), size))
 );
 await writeFile(pub('favicon.ico'), await pngToIco(icoFrames));
 log(`  ${path.relative(ROOT, pub('favicon.ico'))}  ${icoSizes.join('/')}`);
 
 const digests: Record<string, string> = {};
 for (const name of FAVICON_FILES) {
-  digests[name] = createHash('sha256').update(renderFaviconSvg(name)).digest('hex');
+  digests[name] = createHash('sha256')
+    .update(renderFaviconSvg(name))
+    .digest('hex');
 }
 await writeFile(LOCKFILE, `${JSON.stringify(digests, null, 2)}\n`);
 log(`  ${path.relative(ROOT, LOCKFILE)}  ${FAVICON_FILES.length} sources`);

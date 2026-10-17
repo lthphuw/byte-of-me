@@ -1,6 +1,5 @@
-// Subpath imports, not the package barrel: both of these are leaves, and the
-// barrel would pull the whole UI package — TipTap included — onto a page that
-// renders one document.
+// Subpath imports: `@byte-of-me/rich-text-render` has no root entry, and these
+// two leaves keep the editor out of a page that renders one document.
 import type { ReactNode } from 'react';
 import { MathRenderer } from '@byte-of-me/rich-text-render/math-renderer';
 import { RichText } from '@byte-of-me/rich-text-render/rich-text';

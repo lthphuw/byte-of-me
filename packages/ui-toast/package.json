@@ -2,6 +2,7 @@
   "name": "@byte-of-me/ui-toast",
   "version": "1.0.0",
   "private": true,
+  "description": "Sonner toaster wired to the next-themes theme and the site's surface tokens.",
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -11,6 +12,7 @@
     "lint": "eslint src",
     "lint:fix": "eslint src --fix"
   },
+  "sideEffects": false,
   "peerDependencies": {
     "next-themes": "catalog:",
     "react": "^19.2.5",
@@ -22,6 +24,5 @@
     "next-themes": "catalog:",
     "sonner": "catalog:",
     "typescript": "catalog:"
-  },
-  "sideEffects": false
+  }
 }

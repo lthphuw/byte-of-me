@@ -123,20 +123,19 @@ Relations show the schema's `onDelete` (`cascade`, `setNull`, or `no onDelete`).
 ## Gotchas
 
 1. Local `db:migrate:*` and `db:push` connect to production: `packages/db/.env` holds production values, and only tests are guarded (AGENTS §2). Override `DATABASE_URL` for the command, or do not run them.
-2. `DIRECT_URL` is validated (`apps/web/src/shared/config/env.ts:15`), but no db code reads it outside the test guard. `prisma.config.ts` uses only `DATABASE_URL`, and the datasource has no `directUrl`. `packages/db/README.md:16` says migrations use it; they do not.
+2. `DIRECT_URL` is validated (`apps/web/src/shared/config/env.ts:15`), but no db code reads it outside the test guard. `prisma.config.ts` uses only `DATABASE_URL`, and the datasource has no `directUrl`.
 3. `packages/db/src/generated/prisma/` is tracked in git (50 files). A schema change changes these files, so commit the regenerated output with it. Never hand-edit it. Root `postinstall` runs generate (`package.json:73`), so `bun install` rewrites them too.
 4. Model name is not table name: `BlogStatisticLog` is `prisma.blogStatisticLog` and maps to `blog_view_logs` (`packages/db/prisma/schema.prisma:610`, `:637`). Search the `@@map` value too.
 5. No enums. `User.role` (`packages/db/prisma/schema.prisma:66`) and `Interaction.type` (`:750`) are plain `String`s, and the database accepts any value.
-6. `packages/db/tsconfig.json:8-9` sets `strict: false` and `noImplicitAny: false`, overriding `packages/config/typescript/base.json` (`strict: true`). `check-types` misses what strict would catch.
-7. The test guard is a substring check (`packages/config/test/db-guard.ts:12`): any URL containing `127.0.0.1` or `localhost` passes. It does not parse the host.
-8. Migration history is not a replay. Read `schema.prisma` for the current shape, not the 16 early folders (e.g. `20260317161110_init_portfolio_schema` drops `accounts`; `20260330071045_init` drops `Account` and re-creates `accounts`).
+6. The test guard is a substring check (`packages/config/test/db-guard.ts:12`): any URL containing `127.0.0.1` or `localhost` passes. It does not parse the host.
+7. Migration history is not a replay. Read `schema.prisma` for the current shape, not the 16 early folders (e.g. `20260317161110_init_portfolio_schema` drops `accounts`; `20260330071045_init` drops `Account` and re-creates `accounts`).
 
 ## Run
 
 ```bash
 cd packages/db              # run from here: bunfig.toml resolves against cwd (AGENTS §10)
 bun run generate            # prisma generate into src/generated/prisma (root: bun run generate)
-bun run check-types         # tsc --noEmit over src and __tests__ (non-strict, Gotcha 6); lint covers both too
+bun run check-types         # tsc --noEmit over src and __tests__ (strict, inherited from `base.json`); lint covers both too
 bun run test                # bun test; the db-guard.ts preload loads first
 bun run db:migrate:dev      # prisma migrate dev: migration from schema diff, applied to .env DB (production, Gotcha 1)
 bun run db:migrate:deploy   # prisma migrate deploy: apply committed migrations only

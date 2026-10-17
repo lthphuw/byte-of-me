@@ -83,6 +83,7 @@ writeJson(path.join(dir, 'package.json'), {
     'lint:fix': 'eslint src --fix',
     ...(tests && { test: 'bun test' }),
   },
+  sideEffects: values.css ? ['**/*.css'] : false,
   ...(dom && {
     peerDependencies: { react: '^19.2.5', 'react-dom': '^19.2.0' },
   }),
@@ -91,7 +92,6 @@ writeJson(path.join(dir, 'package.json'), {
     eslint: 'catalog:',
     typescript: 'catalog:',
   },
-  sideEffects: values.css ? ['**/*.css'] : false,
 });
 write(
   path.join(dir, 'tsconfig.json'),
@@ -138,8 +138,9 @@ transpilePackages and the Tailwind content glob pick it up from the workspace.
 
 Still to do by hand:
   1. git mv the code into packages/${name}/src and export it from src/index.ts.
-  2. Add third-party dependencies to its package.json (catalog: when the root
-     catalog has the entry), then run bun install.
+  2. Add a one-sentence "description" after "private" in its package.json, and
+     its third-party dependencies (catalog: when the root catalog has the
+     entry), then run bun install.
   3. Point imports at ${fullName}; delete the old files, leave no re-export.
   4. Add the name to boundaries.json "noReact" or "dbTypesOnly" if rule 4 or 5
      applies.

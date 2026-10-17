@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 type ServerMutationOptions<TVariables, TData> = {
   mutationFn: (variables: TVariables) => Promise<ApiResponse<TData>>;
   /**
-   * Localised generic failure text, the fallback for every failure (D2). Omit
+   * Localised generic failure text, the fallback for every failure. Omit
    * it for a background write that must stay silent: the failure is logged only.
    */
   errorMessage?: string;

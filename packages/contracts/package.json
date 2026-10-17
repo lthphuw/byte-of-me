@@ -2,6 +2,7 @@
   "name": "@byte-of-me/contracts",
   "version": "1.0.0",
   "private": true,
+  "description": "Client-safe entity contracts: zod schemas, TanStack query-key factories, upload constraints and cache-tag maps.",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
@@ -24,6 +25,7 @@
     "lint:fix": "eslint src --fix",
     "test": "bun test"
   },
+  "sideEffects": false,
   "dependencies": {
     "@byte-of-me/api-core": "workspace:*",
     "@byte-of-me/rich-text-schema": "workspace:*",
@@ -32,6 +34,5 @@
   "devDependencies": {
     "eslint": "catalog:",
     "typescript": "catalog:"
-  },
-  "sideEffects": false
+  }
 }

@@ -2,6 +2,7 @@
   "name": "@byte-of-me/query",
   "version": "1.0.0",
   "private": true,
+  "description": "TanStack Query client, server-mutation and list-state hooks that need nothing from the app.",
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -12,6 +13,7 @@
     "lint:fix": "eslint src --fix",
     "test": "bun test"
   },
+  "sideEffects": false,
   "peerDependencies": {
     "@tanstack/react-query": "catalog:",
     "react": "^19.2.5",
@@ -29,6 +31,5 @@
     "eslint": "catalog:",
     "sonner": "catalog:",
     "typescript": "catalog:"
-  },
-  "sideEffects": false
+  }
 }

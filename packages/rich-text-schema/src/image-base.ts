@@ -17,9 +17,7 @@ export type ImageUploadFn = (file: File) => Promise<string>;
 type Spec = [string, ...unknown[]];
 
 /** A node's caption, trimmed. `''` when it has none. */
-function captionOf(node: {
-  attrs?: Record<string, unknown> | null;
-}): string {
+function captionOf(node: { attrs?: Record<string, unknown> | null }): string {
   const caption = node.attrs?.caption;
   return typeof caption === 'string' ? caption.trim() : '';
 }
@@ -102,9 +100,8 @@ export const ImageBase = Image.extend({
   },
 
   /**
-   * Markdown has no figure: the caption becomes the italic line under the image.
-   * Notes round-trip through markdown on every raw-mode toggle, so dropping it
-   * here would drop it from the saved note.
+   * Markdown has no figure: the caption becomes the italic line under the image,
+   * so `editor.getMarkdown()` does not drop it.
    */
   renderMarkdown: (node) => {
     const attrs = node.attrs ?? {};

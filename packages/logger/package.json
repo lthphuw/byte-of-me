@@ -1,17 +1,19 @@
 {
   "name": "@byte-of-me/logger",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
+  "description": "Tiny structured logger that prints colourized JSON per level.",
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
   },
   "scripts": {
-    "test": "bun test",
     "check-types": "tsc --noEmit",
     "lint": "eslint src __tests__",
-    "lint:fix": "eslint src __tests__ --fix"
+    "lint:fix": "eslint src __tests__ --fix",
+    "test": "bun test"
   },
+  "sideEffects": false,
   "dependencies": {
     "chalk": "^5.4.1"
   },
@@ -19,6 +21,5 @@
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:"
-  },
-  "sideEffects": false
+  }
 }

@@ -56,7 +56,7 @@ const NumericTableCell = TableCell.extend({
 /**
  * Header scopes of the table being serialized, keyed by node. A cell's `renderHTML` sees only
  * itself and the table is the last to know its rows; the editor re-renders cells apart from
- * the table, so it uses decorations (`header-scopes-plugin.ts`). Live note: 184 `<th>`, 0 scopes.
+ * the table, so it uses decorations (`header-scopes-plugin.ts`). Measured on a live document: 184 `<th>`, 0 scopes.
  */
 const headerScopes = new WeakMap<ProseMirrorNode, HeaderScope>();
 

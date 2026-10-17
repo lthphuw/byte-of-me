@@ -1,7 +1,10 @@
+import { logger } from '@byte-of-me/logger';
 import { hasLocale } from 'next-intl';
 import { getRequestConfig } from 'next-intl/server';
 
 import { routing } from './routing';
+
+import { getErrorMessage } from '@/shared/lib/utils';
 
 export default getRequestConfig(async ({ requestLocale }) => {
   const requested = await requestLocale;
@@ -17,7 +20,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     const mod = await import(`../../../messages/${locale}.json`);
     messages = mod.default ?? {};
   } catch (err) {
-    console.error('[i18n] Static load error:', err);
+    logger.error(`[i18n] Static load error: ${getErrorMessage(err)}`);
   }
 
   return {

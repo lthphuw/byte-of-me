@@ -15,9 +15,8 @@ const BLOG_PRINT_PATH = '/print/blogs';
 /**
  * Href for a blog's print view, relative to the locale root — pass it to the
  * `Link` / router from `@/shared/i18n/navigation`, which adds the prefix. The
- * locale is not optional here the way it is for a note: a blog body comes
- * from `BlogTranslation`, so `/vi/print/blogs/x` and `/en/print/blogs/x` are
- * two different documents.
+ * locale is not optional here: a blog body comes from `BlogTranslation`, so
+ * `/vi/print/blogs/x` and `/en/print/blogs/x` are two different documents.
  *
  * `?print=1` is what makes the opened tab raise its own print dialog. The
  * page does NOT do that unprompted — see `BlogPrintTrigger`.

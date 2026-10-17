@@ -2,6 +2,7 @@
   "name": "@byte-of-me/ui-carousel",
   "version": "1.0.0",
   "private": true,
+  "description": "Embla carousel components and the hook that subscribes to its selected slide.",
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -12,6 +13,7 @@
     "lint:fix": "eslint src --fix",
     "test": "bun test"
   },
+  "sideEffects": false,
   "peerDependencies": {
     "react": "^19.2.5",
     "react-dom": "^19.2.0"
@@ -26,6 +28,5 @@
     "@types/react": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:"
-  },
-  "sideEffects": false
+  }
 }

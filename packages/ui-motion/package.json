@@ -2,6 +2,7 @@
   "name": "@byte-of-me/ui-motion",
   "version": "1.0.0",
   "private": true,
+  "description": "Motion tokens, variants and transitions on framer-motion, plus the MotionProvider.",
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -12,6 +13,7 @@
     "lint:fix": "eslint src --fix",
     "test": "bun test"
   },
+  "sideEffects": false,
   "peerDependencies": {
     "framer-motion": "catalog:",
     "react": "^19.2.5"
@@ -21,6 +23,5 @@
     "eslint": "catalog:",
     "framer-motion": "catalog:",
     "typescript": "catalog:"
-  },
-  "sideEffects": false
+  }
 }

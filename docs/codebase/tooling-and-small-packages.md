@@ -236,7 +236,7 @@ Ports bind to loopback only, so a laptop on public Wi-Fi does not expose the dat
 
 **Add a package**
 1. `bun run new-package <name> --layer <n>` (`--dom` for a React package with specs, `--tests` for specs without a DOM, `--css` for a package that imports CSS). It writes `packages/<name>/{package.json,tsconfig.json,README.md,src/index.ts}`, lists the name in `packages/config/boundaries.json` and adds `"@byte-of-me/<name>": "workspace:*"` to `apps/web/package.json`.
-2. `git mv` the code into `src/`, give `package.json` its third-party dependencies (`catalog:` when the root catalog has the entry), run `bun install`.
+2. `git mv` the code into `src/`, give `package.json` a one-sentence `description` (after `private`) and its third-party dependencies (`catalog:` when the root catalog has the entry), run `bun install`.
 3. `transpilePackages` and the Tailwind `content` glob (`../../packages/*/src/**/*.{ts,tsx}`) pick the package up from the workspace. Nothing to edit.
 4. Add a row to `docs/README.md` ("Keeping these docs current"), then `bun run check`.
 
@@ -280,7 +280,6 @@ bun run generate       # after a Prisma schema change
 ## AGENTS.md deviations
 
 - `scripts/gen-icons.ts:1-17` and `:35-47` — §11.14: 17-line header and 13-line docblock.
-- `scripts/gen-icons.ts:7` — §11.11: says "the five SVGs"; `FAVICON_FILES` (`apps/web/src/shared/lib/brand-mark.ts:93-98`) lists four.
 - `scripts/check.sh:2-10` — §11.14: 9-line header comment.
 - `packages/storage/src/storage.ts:53-67` and `:83-90` — §11.14: 15-line and 8-line docblocks.
 - `.husky/commit-msg:4-7` and `:11-14` — §11.14: two 4-line comment blocks.

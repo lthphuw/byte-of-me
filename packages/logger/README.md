@@ -1,5 +1,8 @@
 # @byte-of-me/logger
 
+Layer 0 in `packages/config/boundaries.json`: it may import only lower layers.
+Consumed as TypeScript source through `transpilePackages`; there is no build step.
+
 Tiny structured logger shared across the monorepo. Emits pretty-printed JSON,
 colourized per level with `chalk`.
 

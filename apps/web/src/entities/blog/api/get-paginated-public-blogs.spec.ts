@@ -39,8 +39,8 @@ import type * as GetPaginatedPublicBlogsModule from './get-paginated-public-blog
 //
 // This used to call `GlobalRegistrator.unregister()` (destroying happy-dom's
 // `Window`) with nothing to undo it. `GlobalRegistrator` is process-global,
-// not per-file — confirmed the hard way by `note-editor.spec.tsx`, the first
-// `*.spec.tsx` in this suite: every file that ran after this one in the same
+// not per-file — confirmed the hard way by the first `*.spec.tsx` in this
+// suite: every file that ran after this one in the same
 // `bun test` process saw no `document` at all and `render()` failed outright
 // (contradicting an earlier version of this comment, which claimed each spec
 // file gets its own globals). Re-registering afterward

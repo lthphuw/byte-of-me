@@ -22,9 +22,9 @@ required to resolve them:
 }
 ```
 
-`packages/db` intentionally deviates from the baseline (`strict: false`,
-bundler resolution) because of the generated Prisma client; its
-`tsconfig.json` documents the overrides explicitly.
+`packages/db` extends `base.json` (strict) rather than `library.json`: it holds
+no React, so it needs no DOM libs or JSX, and its `tsconfig.json` sets the
+module options itself.
 
 ## Package layers (`boundaries.json`)
 

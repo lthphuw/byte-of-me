@@ -1,5 +1,8 @@
 # @byte-of-me/storage
 
+Layer 0 in `packages/config/boundaries.json`: it may import only lower layers.
+Consumed as TypeScript source through `transpilePackages`; there is no build step.
+
 Lightweight S3-compatible object storage client, built on AWS SDK v3. Used with
 **Supabase Storage** via its S3 endpoint, but nothing here is Supabase-specific —
 any S3-compatible provider works.

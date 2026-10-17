@@ -2,6 +2,7 @@
   "name": "@byte-of-me/ui-forms",
   "version": "1.0.0",
   "private": true,
+  "description": "Form controls and form hooks built on react-hook-form, cmdk and react-day-picker.",
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -12,6 +13,7 @@
     "lint:fix": "eslint src --fix",
     "test": "bun test"
   },
+  "sideEffects": false,
   "peerDependencies": {
     "react": "^19.2.5",
     "react-dom": "^19.2.0"
@@ -30,6 +32,5 @@
     "@types/react": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:"
-  },
-  "sideEffects": false
+  }
 }

@@ -10,8 +10,8 @@
  * show them their document. A consumer that autosaves cannot tell those
  * apart from the JSON alone (the reported document is normalised too —
  * parse-time attribute defaults — so it never equals the string that was
- * loaded), which is how `note-editor.tsx` came to write every note back over
- * itself on open. `RichTextChangeMeta.initial` is the distinction, reported
+ * loaded), which once made an autosaving consumer write every document back
+ * over itself on open. `RichTextChangeMeta.initial` is the distinction, reported
  * from the editor because the editor is the only thing that knows.
  *
  * These tests mount the real component — no double. That is deliberate: the
@@ -837,11 +837,10 @@ describe('RichTextEditor image paste', () => {
  * The published render pipeline has carried it since `ScopedTable`, and
  * `lib/render-pipeline.spec.ts` guards that half. This is the other half, and
  * it was missing entirely: `ScopedTable`/`NumericTableHeader` are registered
- * only in `renderExtensions`, so the editor — which is the surface the note's
- * own author reads their document on — mounted a stock `TableKit` and produced
- * 184 `<th>` with not one `scope` among them. Measured on the live note at
- * `/space/notes/[id]`: `document.querySelectorAll('.ProseMirror th[scope]')`
- * returned 0.
+ * only in `renderExtensions`, so the editor — which is the surface its author
+ * reads their document on — mounted a stock `TableKit` and produced 184 `<th>`
+ * with not one `scope` among them. Measured on a live document in the editor:
+ * `document.querySelectorAll('.ProseMirror th[scope]')` returned 0.
  *
  * The mutation cases below are the point of the file. A scope that is right on
  * first render and wrong after a row is inserted is worse than no scope: it
@@ -863,7 +862,7 @@ describe('RichTextEditor table header scopes', () => {
     content: cells,
   });
 
-  // The shape these notes actually have: a header row, and a `th` row label
+  // The shape these documents actually have: a header row, and a `th` row label
   // pinned at the start of every body row.
   const BENCHMARK_TABLE: JSONContent = {
     type: 'doc',

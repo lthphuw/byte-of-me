@@ -2,6 +2,7 @@
   "name": "@byte-of-me/rich-text-render",
   "version": "1.0.0",
   "private": true,
+  "description": "Server-side renderer for stored rich text, plus the client leaves that finish an article in the browser.",
   "type": "module",
   "exports": {
     "./rich-text": "./src/rich-text.tsx",
@@ -17,6 +18,9 @@
     "lint:fix": "eslint src --fix",
     "test": "bun test"
   },
+  "sideEffects": [
+    "**/*.css"
+  ],
   "peerDependencies": {
     "react": "^19.2.5"
   },
@@ -32,8 +36,5 @@
     "@types/react": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:"
-  },
-  "sideEffects": [
-    "**/*.css"
-  ]
+  }
 }

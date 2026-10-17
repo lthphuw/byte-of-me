@@ -2,6 +2,7 @@
   "name": "@byte-of-me/rich-text-editor",
   "version": "1.0.0",
   "private": true,
+  "description": "TipTap rich-text editor the dashboard writes with, and its mobile toolbar drawer.",
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -12,6 +13,9 @@
     "lint:fix": "eslint src --fix",
     "test": "bun test"
   },
+  "sideEffects": [
+    "**/*.css"
+  ],
   "peerDependencies": {
     "react": "^19.2.5",
     "react-dom": "^19.2.0",
@@ -46,8 +50,5 @@
     "react-hook-form": "catalog:",
     "sonner": "catalog:",
     "typescript": "catalog:"
-  },
-  "sideEffects": [
-    "**/*.css"
-  ]
+  }
 }

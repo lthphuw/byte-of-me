@@ -8,8 +8,8 @@
  * pointing at nothing and the error text unreachable, with no type error and
  * nothing visibly different on screen.
  *
- * The sibling case for the controls that live in `packages/ui` (DatePicker,
- * MultiSelect, RichTextEditor) is `packages/ui/src/form.spec.tsx`.
+ * The sibling case for the controls that live in packages (DatePicker,
+ * MultiSelect, RichTextEditor) is `packages/rich-text-editor/src/form.spec.tsx`.
  */
 import * as React from 'react';
 import { useForm } from 'react-hook-form';

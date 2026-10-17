@@ -1,6 +1,6 @@
 // Server-side only: pulls in `generateHTML` and the full extension schema (tiptap + prosemirror +
-// lowlight ≈ 1 MB). The schema comes from rich-text-schema, never `./rich-text-editor`: that entry
-// is 'use client' and would ship the whole editor (~380 KB) with every page that renders rich text.
+// lowlight ≈ 1 MB). The schema comes from rich-text-schema, never `@byte-of-me/rich-text-editor`: that
+// package is 'use client' and would ship the whole editor (~380 KB) with every page that renders rich text.
 import {
   applyCitationNumbering,
   type ImageSizes,

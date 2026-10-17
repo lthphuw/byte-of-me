@@ -174,7 +174,6 @@ cd apps/web && bun run build                               # next build; regener
 
 ## AGENTS.md deviations
 
-- `apps/web/src/shared/i18n/request.ts:20`: `console.error` in server request config; §8 requires `logger` from `@byte-of-me/logger`.
 - `apps/web/src/shared/types/index.d.ts:7` re-declares the locale set that §4 says is declared once, in `apps/web/src/shared/i18n/routing.ts:5` (§4, §11.3). The language toggle reads `routing.locales`; `shared/config/language.ts` only names each one.
 - `apps/web/src/shared/config/env.ts:17,56,63,77` and `apps/web/src/shared/config/site.ts:18`: literal fallback values for environment settings (§11.7).
 - `apps/web/next-runtime-stubs.ts:2`: header says "three specifiers"; the file registers five module stubs (§11.11).

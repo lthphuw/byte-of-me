@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-# AGENTS.md §12 forbids `Co-authored-by` and attribution trailers. That rule is
+# AGENTS.md §13 forbids `Co-authored-by` and attribution trailers. That rule is
 # prose, and agent harnesses inject those lines from their own system prompts —
 # so it held on most commits and silently failed on four. Strip them here
 # instead: a hook does not forget.

@@ -2,6 +2,7 @@
   "name": "@byte-of-me/ui-hooks",
   "version": "1.0.0",
   "private": true,
+  "description": "Client React hooks with no dependency beyond React.",
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -12,6 +13,7 @@
     "lint:fix": "eslint src --fix",
     "test": "bun test"
   },
+  "sideEffects": false,
   "peerDependencies": {
     "react": "^19.2.5",
     "react-dom": "^19.2.0"
@@ -21,6 +23,5 @@
     "@types/react-dom": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:"
-  },
-  "sideEffects": false
+  }
 }

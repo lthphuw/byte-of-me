@@ -12,9 +12,6 @@ export function TanStackQueryProvider({
   const [queryClient] = useState(makeQueryClient);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      {children}
-      {/*<ReactQueryDevtools initialIsOpen={false} />*/}
-    </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 }

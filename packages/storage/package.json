@@ -8,11 +8,12 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "test": "bun test",
-    "lint": "eslint src __tests__",
     "check-types": "tsc --noEmit",
-    "lint:fix": "eslint src __tests__ --fix"
+    "lint": "eslint src __tests__",
+    "lint:fix": "eslint src __tests__ --fix",
+    "test": "bun test"
   },
+  "sideEffects": false,
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1009.0",
     "@aws-sdk/s3-request-presigner": "^3.1009.0"
@@ -21,6 +22,5 @@
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:"
-  },
-  "sideEffects": false
+  }
 }

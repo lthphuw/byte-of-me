@@ -2,6 +2,7 @@
   "name": "@byte-of-me/github",
   "version": "1.0.0",
   "private": true,
+  "description": "Pure TypeScript GitHub pull request fetchers, URL parsing and open-source ledger, with no dependency.",
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -12,9 +13,9 @@
     "lint:fix": "eslint src --fix",
     "test": "bun test"
   },
+  "sideEffects": false,
   "devDependencies": {
     "eslint": "catalog:",
     "typescript": "catalog:"
-  },
-  "sideEffects": false
+  }
 }
