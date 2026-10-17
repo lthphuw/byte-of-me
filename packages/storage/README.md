@@ -34,6 +34,8 @@ const storage = new Storage({
 | --- | --- |
 | `uploadFile({ fileKey, body, contentType })` | `PutObject`; returns `{ fileKey }` |
 | `deleteFile(key)` | `DeleteObject` |
+| `getFile(key)` | `GetObject`; returns `{ body, contentType, contentLength }`, `body` a web stream |
+| `copyFileFrom(sourceBucket, sourceKey, destKey)` | server-side `CopyObject`; the source is URL-encoded |
 | `getPublicUrl(key)` | `{publicEndpoint}/{bucket}/{key}` — no network call |
 | `getPresignedUploadUrl(key, expiresIn?)` | Presigned `PutObject` URL for direct browser uploads |
 

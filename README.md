@@ -43,9 +43,9 @@ The whole thing is a single TypeScript monorepo, organized with [Feature-Sliced 
 ### Engineered for quality
 - **Feature-Sliced Design** architecture with clear `app → widgets → features → entities → shared` boundaries.
 - **Server Components first**; server actions for mutations, TanStack Query for client-side server state.
-- **Bundle discipline** — subpath exports keep TipTap out of public-site JS; `optimizePackageImports` deep-imports the barrel packages (`lucide-react`, `date-fns`, `framer-motion`, …).
+- **Bundle discipline** — TipTap lives in its own package (`@byte-of-me/rich-text-editor`), reached only through `LazyRichTextEditor`; the `@byte-of-me/ui` facade is TipTap-free and `bun run check-boundaries` enforces the package layers. Turbopack does the tree-shaking, so `next.config.js` has no `optimizePackageImports` list.
 - **Edge caching by route group** — public pages get `s-maxage=3600, stale-while-revalidate=86400`; every dashboard route is `no-store`.
-- **Turborepo + Bun** workspace with shared, independently-typed packages and a full `type-check → lint → test → build` gate.
+- **Turborepo + Bun** workspace with shared, independently-typed packages and a full `type-check → lint → boundaries → test → build` gate.
 
 ---
 
@@ -106,8 +106,8 @@ byte-of-me/
 │           ├── widgets/          # auth · dashboard · public
 │           ├── features/         # auth · dashboard · public
 │           ├── entities/         # blog, comment, company, contact-message, education,
-│           │                     # media, project, social-link, tag,
-│           │                     # tech-stack, user-profile, workspace-settings
+│           │                     # featured-work, media, open-source, project, social-link,
+│           │                     # tag, tech-stack, user-profile, workspace-settings
 │           └── shared/           # api · config · hooks · i18n · lib · types · ui
 ├── packages/
 │   ├── ui/                       # The facade over the TipTap-free UI packages (@byte-of-me/ui)
@@ -197,13 +197,14 @@ Run from the repo root (Turborepo fans each task out across the workspace and ca
 | `bun run lint:fix` | Lint and auto-fix |
 | `bun run test` | Run the `bun test` suites |
 | `bun run generate` | Regenerate the Prisma client (`@byte-of-me/db`) |
+| `bun run gen:icons` | Regenerate the favicon SVG, PNG and ICO files from `brand-mark.ts` |
+| `bun run format` / `format:check` | Prettier write / check over every workspace `src` |
 
 Package-scoped extras:
 
 | Command | Description |
 | --- | --- |
 | `bun run --filter 'web' preview` | Production build, then `next start` |
-| `bun run format` | Prettier over every workspace `src` |
 | `bun run --filter '@byte-of-me/db' db:migrate:dev` | Create + apply a migration |
 | `bun run --filter '@byte-of-me/db' db:migrate:apply` | Apply pending migrations on a new database (handles `CONCURRENTLY` indexes) |
 | `bun run --filter '@byte-of-me/db' db:migrate:deploy` | Apply pending migrations (production; fails on a new database) |
@@ -216,6 +217,8 @@ Git hooks (Husky):
 - **commit-msg** — commitlint (Conventional Commits).
 - **pre-commit** — `turbo run check-types lint`.
 - **pre-push** — `turbo run test build`.
+
+No hook runs `check-boundaries`; only `bun run check` does.
 
 ---
 

@@ -13,7 +13,7 @@
 │   ├── check.sh          bun run check: check-types, lint, boundaries, test, build
 │   ├── check-boundaries.ts  bun run check-boundaries: package layers (docs/architecture.md)
 │   ├── new-package.ts    bun run new-package: scaffold a packages/<name> and register its layer
-│   ├── tsconfig.json     type-checks the two scripts above (run by packages/config check-types)
+│   ├── tsconfig.json     type-checks the three TypeScript scripts (run by packages/config check-types)
 │   ├── gen-icons.ts      bun run gen:icons: brand-mark.ts -> SVG, PNG, ICO
 │   └── icons.lock.json   sha256 of the 4 favicon SVG sources (written by gen-icons)
 ├── .husky/               pre-commit, pre-push, commit-msg (husky 8)
@@ -40,8 +40,9 @@
     ├── query/            layer 2: useServerMutation, the list and edit hooks, QueryState, the query client (below)
     ├── rich-text-editor/ layer 3: the TipTap editor and the drawer it uses (packages-ui.md)
     ├── ui/               layer 4: the facade that re-exports the TipTap-free UI packages (packages-ui.md)
-    ├── storage/src       index.ts -> storage.ts, storage.interface.ts, s3.factory.ts
-    └── logger/src        index.ts (Logger class + logger singleton)
+    ├── storage/          layer 0: src/index.ts -> storage.ts, storage.interface.ts, s3.factory.ts (below)
+    ├── logger/           layer 0: src/index.ts (Logger class + logger singleton) (below)
+    └── db/               layer 1: Prisma schema, migrations, client (packages-db.md)
 ```
 
 ### Root scripts
@@ -64,8 +65,8 @@
 ### Turbo graph (`turbo.json`, Turbo 2.11.7)
 
 - `build` outputs `.next/**` minus `.next/cache` and `.next/dev`; inputs add `.env*`. Web's build reads its packages from source (`transpilePackages`, derived from the workspace in `apps/web/next.config.js`), so there is no dependency build to wait for. No package builds a `dist/`: every `exports` map points at `src`.
-- `check-types`, `lint`, `test` and `build` `dependsOn` `^transit`, and `transit` `dependsOn` `^transit`. No package has a `transit` script, so nothing runs for it, but turbo still hashes it per package (the package's files plus its dependencies' `transit` hashes). Without it a source edit in a package changed only that package's hashes: web's four tasks stayed cache hits and `bun run check` and both hooks reported green from a stale cache. Now an edit re-runs the package and every package that depends on it, directly or not, and nothing else; the tasks still run in parallel. Measured: editing `ui-utils` re-ran `ui-utils`, `ui-primitives`, `ui-forms`, `ui-carousel`, `ui` and `web` (19 of 38 tasks) and hit `ui-hooks`, `ui-motion`, `ui-toast`, `db`, `logger`, `storage` and `config`; editing only `apps/web` re-ran the four `web` tasks. A chain (`dependsOn: ["^check-types"]` and so on) was rejected: it serialises each task behind its dependencies' and a cold `bun run check` took 59.9 s against 47.6 s. `^build` alone would also invalidate (a missing script still has a hash) but would start running a package's build the day one is added.
-- Files a task reads from outside its package, with no dependency on the package that owns them, are `inputs` globs relative to the repo root (`$TURBO_ROOT$`), or an edit leaves the cache green: `test` adds `$TURBO_ROOT$/packages/config/test/**` (the `bunfig.toml` preloads of seven workspaces) and `packages/config/turbo.json` (extends `//`) adds `$TURBO_ROOT$/scripts/**` to config's `check-types` and `lint`.
+- `check-types`, `lint`, `test` and `build` `dependsOn` `^transit`, and `transit` `dependsOn` `^transit`. No package has a `transit` script, so nothing runs for it, but turbo still hashes it per package (the package's files plus its dependencies' `transit` hashes). Without it a source edit in a package changed only that package's hashes: web's four tasks stayed cache hits and `bun run check` and both hooks reported green from a stale cache. Now an edit re-runs the package and every package that depends on it, directly or not, and nothing else; the tasks still run in parallel. Counted from the package graph at 20 workspaces (58 tasks: 20 `check-types`, 20 `lint`, 17 `test`, 1 `build`; not a turbo run): editing `ui-utils` re-runs 33 of them, in `ui-utils`, `ui-primitives`, `ui-forms`, `ui-carousel`, `rich-text-schema`, `rich-text-render`, `rich-text-editor`, `ui`, `query`, `contracts` and `web`, and leaves `ui-hooks`, `ui-motion`, `ui-toast`, `api-core`, `github`, `db`, `logger`, `storage` and `config` as cache hits; editing only `apps/web` re-runs the four `web` tasks. A chain (`dependsOn: ["^check-types"]` and so on) was rejected: it serialises each task behind its dependencies' and a cold `bun run check` took 59.9 s against 47.6 s. `^build` alone would also invalidate (a missing script still has a hash) but would start running a package's build the day one is added.
+- Files a task reads from outside its package, with no dependency on the package that owns them, are `inputs` globs relative to the repo root (`$TURBO_ROOT$`), or an edit leaves the cache green: `test` adds `$TURBO_ROOT$/packages/config/test/**` (the `bunfig.toml` preloads of eight workspaces: `web`, `db`, `query`, `rich-text-editor`, `ui-hooks`, `ui-primitives`, `ui-forms`, `ui-carousel`) and `packages/config/turbo.json` (extends `//`) adds `$TURBO_ROOT$/scripts/**` to config's `check-types` and `lint`.
 - Local cache cap: `cacheMaxSize` `5GB` and `cacheMaxAge` `14d` (eviction runs at the start of each `turbo run`). Without them the cache never shrinks, and the web build entry is about 6 MB compressed.
 - Vercel: `apps/web/vercel.json` sets `framework` (nextjs), `buildCommand` (`cd ../.. && bunx turbo run build --filter=web`), `ignoreCommand` and `regions` (`hnd1`, Tokyo, next to Supabase in `ap-northeast-1`). The file is read from the Root Directory, so the dashboard's Root Directory must be `apps/web`; the repo cannot show that setting. `ignoreCommand` runs `turbo query affected` and skips the build (exit 0) when no package affects `web`; any other result builds. Vercel's install step is left to auto-detection (bun.lock).
 - `generate` dependsOn `^generate`. Nothing besides `generate`, `transit` and the four tasks above has a dependsOn.
@@ -80,12 +81,14 @@
 | `commit-msg` | removes `Co-authored-by:` and attribution lines (`Generated/Made/Created with/by`), then `npx commitlint --edit` | message breaks Conventional Commits |
 | `pre-push` | `./node_modules/.bin/turbo run test build` | any test or build failure |
 
+Neither hook runs `check-boundaries`: a layer violation passes both and is caught only by `bun run check`.
+
 ### packages/config (presets, package layers, test preloads)
 
 - `typescript/base.json`: `strict`, `esModuleInterop`, `skipLibCheck`, `resolveJsonModule`. Extended by the presets below; `packages/db` extends it directly.
 - `typescript/nextjs.json` (extends base): ESNext modules, `moduleResolution: node`, ES2023, `jsx: preserve`, `noEmit`, `isolatedModules`, Next plugin. Used by `apps/web`.
 - `typescript/node-library.json` (extends base): `module: commonjs`, ES2019. Used by `packages/storage`, `packages/logger`.
-- `typescript/library.json` (extends base): ESNext modules, `moduleResolution: bundler`, ES2023, DOM libs, `jsx: react-jsx`, `noEmit`, `isolatedModules`; no `incremental`, no Next plugin. The preset `new-package` gives every new package; used by `packages/api-core`, `packages/contracts`, `packages/query`, `packages/github`, `packages/ui`, `packages/ui-utils`, `packages/ui-hooks`, `packages/ui-motion`, `packages/rich-text-schema`, `packages/ui-primitives`, `packages/ui-toast`, `packages/ui-forms`, `packages/ui-carousel`, `packages/rich-text-render`, `packages/rich-text-editor`.
+- `typescript/library.json` (extends base): ESNext modules, `moduleResolution: bundler`, ES2023, DOM libs, `jsx: react-jsx`, `noEmit`, `isolatedModules`; no `incremental`, no Next plugin. The preset `new-package` gives every new package; used by `packages/api-core`, `packages/contracts`, `packages/query`, `packages/github`, `packages/ui`, `packages/ui-utils`, `packages/ui-hooks`, `packages/ui-motion`, `packages/rich-text-schema`, `packages/ui-primitives`, `packages/ui-toast`, `packages/ui-forms`, `packages/ui-carousel`, `packages/rich-text-render`, `packages/rich-text-editor`, `packages/config` and `scripts/tsconfig.json`.
 - `boundaries.json`: `layers` (package names per layer, index = layer), `dbTypesOnly`, `noReact`. Read by `check-boundaries.ts` and rewritten by `new-package.ts`. Rules: [../architecture.md](../architecture.md) ("Package layers").
 - `test/happydom.ts`: registers happy-dom on `globalThis` and sets `IS_REACT_ACT_ENVIRONMENT`. Preloaded by `apps/web`, `packages/rich-text-editor`, `packages/query`, `packages/ui-hooks`, `packages/ui-primitives`, `packages/ui-forms` and `packages/ui-carousel`.
 - `test/db-guard.ts`: forces `DATABASE_URL` and `DIRECT_URL` to `postgres://test:test@127.0.0.1:1/test`, then throws if either is non-local. Preloaded by `apps/web` and `packages/db`; details in [packages-db.md](packages-db.md).
@@ -215,7 +218,7 @@ Ports bind to loopback only, so a laptop on public Wi-Fi does not expose the dat
 - `bun run check` -> `scripts/check.sh`: `turbo run check-types` -> `lint` -> `bun run check-boundaries` -> `turbo run test` -> `build`; `set -e` stops at the first failing step.
 - Commit: `.husky/pre-commit` (check-types, lint), then `.husky/commit-msg` (strip attribution lines, commitlint). Push: `.husky/pre-push` (test, build).
 - Icons: `apps/web/src/shared/lib/brand-mark.ts` -> `scripts/gen-icons.ts` -> `apps/web/public/` (PNG, ICO), `apps/web/public/icons/` (SVG, 16/32 PNG), `scripts/icons.lock.json`. `apps/web/src/shared/lib/icon-set.spec.ts` reads the lock.
-- API core: a server action imports `parseInput` from `@byte-of-me/api-core/server` and `ApiResponse`, `CACHE_TAGS` from `@byte-of-me/api-core`; a client query imports `unwrapApiResponse` from the root. 156 files in `apps/web` import it (50 use `./server`).
+- API core: a server action imports `parseInput` from `@byte-of-me/api-core/server` and `ApiResponse`, `CACHE_TAGS` from `@byte-of-me/api-core`; a client query imports `unwrapApiResponse` from the root. 142 files in `apps/web` import it, 131 of them outside specs (50 use `./server`; `rg -l "@byte-of-me/api-core" apps/web -g '!node_modules'`).
 - Contracts: a server action imports its schema from `@byte-of-me/contracts/<slice>` and parses it with `parseInput`; the client form's resolver and the `<slice>Queries` `queryOptions` factory import the same subpath, so the schema and the query key have one definition.
 - Query: a client write calls `useServerMutation` from `@byte-of-me/query`; a client read is a `queryOptions` factory in `entities/<slice>/query/` whose hook calls `useInfiniteListQuery` or `useEditingRecord` from the same package; a server page prefetches with `getQueryClient`. The query key of each comes from `@byte-of-me/contracts/<slice>`.
 - GitHub: `getOpenSourceContributions` calls `fetchMergedPullRequests` and `groupByRepo`; `getFeaturedWorkGithub` calls `fetchFeaturedWorkGithub`; `load-public-featured-works.ts` calls `parseGithubPullRequestUrl`. `projects-open-source.tsx` (client) takes the ledger helpers from the same root.
@@ -230,20 +233,20 @@ Ports bind to loopback only, so a laptop on public Wi-Fi does not expose the dat
 3. Add it to `scripts/check.sh` only if it belongs in the gate.
 
 **Change the brand mark or favicon**
-1. Edit `apps/web/src/shared/lib/brand-mark.ts`. `FAVICON_FILES` (line 93) decides which SVGs are generated.
+1. Edit `apps/web/src/shared/lib/brand-mark.ts`. `FAVICON_FILES` decides which SVGs are generated.
 2. Run `bun run gen:icons`.
 3. Commit the regenerated `apps/web/public/` files with `scripts/icons.lock.json`. Verify with `bun run --filter 'web' test` (runs `icon-set.spec.ts`).
 
 **Add a package**
 1. `bun run new-package <name> --layer <n>` (`--dom` for a React package with specs, `--tests` for specs without a DOM, `--css` for a package that imports CSS). It writes `packages/<name>/{package.json,tsconfig.json,README.md,src/index.ts}`, lists the name in `packages/config/boundaries.json` and adds `"@byte-of-me/<name>": "workspace:*"` to `apps/web/package.json`.
-2. `git mv` the code into `src/`, give `package.json` a one-sentence `description` (after `private`) and its third-party dependencies (`catalog:` when the root catalog has the entry), run `bun install`.
+2. `git mv` the code into `src/`, give `package.json` a one-sentence `description` (after `private`) and its third-party dependencies (`catalog:` when the root catalog has the entry), run `bun install`. Every `packages/*/package.json` keeps the scaffold's key order: `name`, `version`, `private`, `description`, `type`, `exports`, `scripts`, `sideEffects`, `peerDependencies`, `dependencies`, `devDependencies` (`db` has no `sideEffects` on purpose: its index runs `dotenv/config` and builds the client at import; `config` has no `exports`).
 3. `transpilePackages` and the Tailwind `content` glob (`../../packages/*/src/**/*.{ts,tsx}`) pick the package up from the workspace. Nothing to edit.
 4. Add a row to `docs/README.md` ("Keeping these docs current"), then `bun run check`.
 
 **Add a `Storage` operation**
-1. Add the method to `packages/storage/src/storage.ts`, following `copyFileFrom` (line 91).
+1. Add the method to `packages/storage/src/storage.ts`, following `copyFileFrom`.
 2. Add new types to `packages/storage/src/storage.interface.ts`; `src/index.ts` re-exports them.
-3. Test with the injected `mockClient` in `packages/storage/__tests__/storage.spec.ts`. Example: the `copyFileFrom` test (line 149).
+3. Test with the injected `mockClient` in `packages/storage/__tests__/storage.spec.ts`. Example: the `copyFileFrom URL-encodes the source` test.
 
 ## Gotchas
 
@@ -254,12 +257,12 @@ Ports bind to loopback only, so a laptop on public Wi-Fi does not expose the dat
 - A query-key factory in `packages/contracts` is a contract with the server prefetch that uses it: a changed shape leaves the prefetched page unhydrated, raises no error and shows skeletons. Change a factory only with every prefetch and `invalidate` that calls it; `apps/web/src/entities/admin-query-keys.spec.tsx` checks the admin ones through real TanStack behaviour.
 - `contracts` has no `@/` alias, so `Maybe<T>` and the other globals of `apps/web/src/shared/types` are not available there; write `T | null | undefined`.
 - The root package declares `typescript` (catalog) because `check-boundaries.ts` imports the compiler API; Bun's isolated linker does not hoist it from a workspace.
-- `no-explicit-any` is `error`; `no-console` (`eslint.config.mjs:97`) and `simple-import-sort` are `warn`, and no lint script passes `--max-warnings`, so `bun run lint` passes with warnings.
+- `no-explicit-any` is `error`; `no-console` and `simple-import-sort` (both in `eslint.config.mjs`) are `warn`, and no lint script passes `--max-warnings`, so `bun run lint` passes with warnings. `scripts/gen-icons.ts` is type-checked (`scripts/tsconfig.json`) and linted (the config package's `lint`) like the other two scripts.
 - Root `format` and `format:check` run the `prettier` in the root `devDependencies` (`^2.8.8`), so keep it there. `.prettierignore` excludes `packages/db/src/generated`, which `prisma generate` rewrites.
-- `LOG_LEVEL` is never read: the level is `NODE_ENV === 'production' ? 'info' : 'debug'`, so the "Invalid LOG_LEVEL" branch (`packages/logger/src/index.ts:10-13`) cannot fire.
-- The logger level is module-global (`src/index.ts:7`): `setLogLevel` on any instance changes all of them. Each entry is multi-line pretty JSON.
-- `copyFileFrom` uses `encodeURI`, which leaves `#`, `?`, `&` and `+` unencoded although its docblock warns about `#`. No caller exists in the repo; the spec covers only a space (`storage.spec.ts:149`).
-- `getPublicUrl` does not encode the key (`storage.ts:104`). Media keys are safe because `buildMediaFileKey` uses a generated ID (`apps/web/src/entities/media/model/media-file-key.ts`).
+- `LOG_LEVEL` is never read: the level is `NODE_ENV === 'production' ? 'info' : 'debug'`, so the "Invalid LOG_LEVEL" branch at the top of `packages/logger/src/index.ts` cannot fire.
+- The logger level is module-global (`currentLevel` in `src/index.ts`): `setLogLevel` on any instance changes all of them. Each entry is multi-line pretty JSON.
+- `copyFileFrom` uses `encodeURI`, which leaves `#`, `?`, `&` and `+` unencoded although its docblock warns about `#`. No caller exists in the repo; the spec covers only a space (the `copyFileFrom URL-encodes the source` test in `storage.spec.ts`).
+- `getPublicUrl` does not encode the key. Media keys are safe because `buildMediaFileKey` uses a generated ID (`apps/web/src/entities/media/model/media-file-key.ts`).
 
 ## Run
 
@@ -279,10 +282,7 @@ bun run generate       # after a Prisma schema change
 
 ## AGENTS.md deviations
 
-- `scripts/gen-icons.ts:1-17` and `:35-47` — §11.14: 17-line header and 13-line docblock.
-- `scripts/check.sh:2-10` — §11.14: 9-line header comment.
-- `packages/storage/src/storage.ts:53-67` and `:83-90` — §11.14: 15-line and 8-line docblocks.
-- `.husky/commit-msg:4-7` and `:11-14` — §11.14: two 4-line comment blocks.
+None in this area. §11.14 (three lines per comment block) holds for `scripts/`, `.husky/` and the packages here since the comment pass (a parser-based scan of the TypeScript, CSS and shell files finds no block over three lines); the one known exception is the `///` block above `WorkspaceSettings` in `schema.prisma` (see [packages-db.md](packages-db.md)).
 
 ## See also
 

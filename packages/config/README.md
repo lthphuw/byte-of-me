@@ -44,13 +44,13 @@ Referenced by relative path from a workspace's `bunfig.toml`:
 
 | File | Registers | Used by |
 | --- | --- | --- |
-| `happydom.ts` | happy-dom on `globalThis`, `IS_REACT_ACT_ENVIRONMENT` | `apps/web`, `packages/ui`, `packages/ui-hooks`, `packages/ui-primitives`, `packages/ui-forms`, `packages/ui-carousel`, any package made with `new-package --dom` |
+| `happydom.ts` | happy-dom on `globalThis`, `IS_REACT_ACT_ENVIRONMENT` | `apps/web`, `packages/rich-text-editor`, `packages/query`, `packages/ui-hooks`, `packages/ui-primitives`, `packages/ui-forms`, `packages/ui-carousel`, any package made with `new-package --dom` |
 | `db-guard.ts` | a local, unreachable `DATABASE_URL` and `DIRECT_URL`; throws on a non-local host | `apps/web`, `packages/db` |
 
 `test/**` is an input of every package's `test` task (root `turbo.json`), so editing a
 preload re-runs the suites that load it even though none of them depends on this package.
 `turbo.json` here extends the root and adds `scripts/**` to this package's `check-types`
-and `lint` for the same reason: they read `../../scripts` by relative path.
+and `lint` for the same reason: they read `../../scripts` by relative path, where this package type-checks (`scripts/tsconfig.json`) and lints the three TypeScript scripts, `check-boundaries.ts`, `gen-icons.ts` and `new-package.ts`.
 
 ESLint is configured once at the repository root (`eslint.config.mjs`,
 flat config) and applies to every workspace — no per-workspace config

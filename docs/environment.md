@@ -52,4 +52,4 @@ Read directly, not validated: `PORT` (dev server port) and `VERCEL_PROJECT_PRODU
 
 ## Known deviation
 
-- `apps/web/src/shared/config/env.ts` defaults `EMAIL` (line 17) and `NEXT_PUBLIC_AUTHOR_EMAIL` (line 77) to the owner's address, and `GITHUB_LOGIN` (line 56) to the owner's login. AGENTS.md §11.7 forbids literals. Set them explicitly. The defaults are not removed here, because an environment that omits them would change behaviour; `OWNER_EMAIL` is required in production, so the `EMAIL` default no longer decides who is admin there.
+- `apps/web/src/shared/config/env.ts` defaults `EMAIL` and `NEXT_PUBLIC_AUTHOR_EMAIL` to the owner's address, and `GITHUB_LOGIN` to the owner's login. AGENTS.md §11.7 forbids literals. Set them explicitly. The defaults are not removed here, because an environment that omits them would change behaviour; `OWNER_EMAIL` is required in production, so the `EMAIL` default no longer decides who is admin there.

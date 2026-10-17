@@ -165,10 +165,7 @@ flowchart TB
     API --> LOG
     DB --> LOG
 
-    CFG -.->|"tsconfig extends"| WEB
-    CFG -.->|"tsconfig extends"| DB
-    CFG -.->|"tsconfig extends"| ST
-    CFG -.->|"tsconfig extends"| LOG
+    CFG -.->|"tsconfig extends, every workspace"| WEB
 
     classDef app fill:#4338ca,stroke:#a5b4fc,color:#eef2ff
     classDef pkg fill:#0f766e,stroke:#5eead4,color:#f0fdfa
@@ -177,7 +174,7 @@ flowchart TB
     class UI,EDITOR,SCHEMA,RENDER,UTILS,HOOKS,MOTION,PRIMS,TOAST,FORMS,CAROUSEL,API,CONTRACTS,QUERY,GITHUB,DB,ST,LOG,CFG pkg
 ```
 
-Solid arrows are runtime dependencies; dashed arrows are build-time only — `@byte-of-me/config` ships no application code: `tsconfig` presets that each workspace extends by relative path, `boundaries.json` (below), and the `bun test` preloads in `test/`.
+Solid arrows are runtime dependencies; dashed arrows are build-time only — `@byte-of-me/config` ships no application code: `tsconfig` presets that each workspace extends by relative path (`library.json` in 16 packages and `scripts/`, `nextjs.json` in `apps/web`, `node-library.json` in `storage` and `logger`, `base.json` in `db`; the dashed edge stands for all of them), `boundaries.json` (below), and the `bun test` preloads in `test/`.
 
 Every package is consumed as **TypeScript source** via `transpilePackages`, so there is no build step before `bun run dev`. `next.config.js` derives that list from the root `workspaces` (every directory under `packages/`), so a new package is never added by hand. No package has a `build` script or a `dist/`; `turbo run build` builds only the web app. Turborepo's task cache still follows the package graph: `check-types`, `lint`, `test` and `build` depend on a script-less `transit` task, so editing a package's source re-runs that package's tasks and those of every package that depends on it (directly or not), and nothing else ([codebase/tooling-and-small-packages.md](codebase/tooling-and-small-packages.md), "Turbo graph").
 
@@ -282,7 +279,7 @@ flowchart TB
 | 1 | `layers` | A package imports only lower layers; same-layer and upward imports, and so cycles, are violations. A package that exports code must be listed in `boundaries.json`. |
 | 2 | `facade`, `no-app` | No package imports `@byte-of-me/ui` (the facade), `apps/`, or the `@/` alias. |
 | 3 | `exports`, `deps` | A cross-package import goes through the target's `exports` map, and the importer lists the target in `dependencies` or `peerDependencies`. |
-| 4 | `no-react` | Packages named in `noReact` never import `react` or `react-dom` and never carry `'use client'`. This list is explicit, not "all of L0", because the React hooks and motion packages are L0; `rich-text-schema` (L1) is on it, which is what keeps the server renderer's schema free of React, and so is `github`. |
+| 4 | `no-react` | Packages named in `noReact` never import `react` or `react-dom` and never carry `'use client'`. This list is explicit, not "all of L0", because the React hooks and motion packages are L0; `rich-text-schema` (L1) is on it, which is what keeps the server renderer's schema free of React. The list is `api-core`, `contracts`, `github`, `logger`, `rich-text-schema`, `storage` and `ui-utils`; `dbTypesOnly` is `contracts`. |
 | 5 | `db-types` | Packages named in `dbTypesOnly`, and any `'use client'` file, import `@byte-of-me/db/types`, never the db root. |
 | 6 | `fsd` | Inside `apps/web/src`, no `@/entities` root-barrel import and no import of a layer above the importing one (`shared` to `entities`, `entities` to `features`, and so on). |
 
@@ -303,7 +300,7 @@ flowchart TB
     FEAT["features/<br/>user-facing capabilities<br/>blog-comment · blog-filters · blog-editor · media-library"]
     ENT["entities/<br/>domain models + their server API, client queries and UI<br/>blog · project · company · tag · media · comment"]
     SH["shared/<br/>api · config · hooks · i18n · lib · types · ui"]
-    PKG["packages/*<br/>ui · db · storage · logger"]
+    PKG["packages/*<br/>19 workspace packages in layers L0 to L4"]
 
     APP --> WID
     APP --> FEAT

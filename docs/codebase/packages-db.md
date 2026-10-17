@@ -6,8 +6,8 @@
 ```text
 packages/db/
 ├── prisma/
-│   ├── schema.prisma                    # 41 models, generator, datasource; no enums
-│   ├── migrations/                      # 36 folders (grouped below) + migration_lock.toml (postgresql)
+│   ├── schema.prisma                    # 42 models, generator, datasource; no enums
+│   ├── migrations/                      # 39 folders (grouped below) + migration_lock.toml (postgresql)
 │   ├── apply-migrations.ts              # db:migrate:apply: migrate deploy, but CONCURRENTLY migrations run statement by statement (untracked at writing)
 │   └── migrate-project-descriptions.ts  # one-off: plain-text project descriptions to TipTap JSON; --dry-run; no reference outside its own header
 ├── prisma.config.ts                     # Prisma CLI: dotenv, schema and migrations paths, datasource URL from DATABASE_URL (empty fallback)
@@ -20,7 +20,7 @@ packages/db/
 └── .env.example                         # DATABASE_URL, DIRECT_URL, NODE_ENV, EMAIL
 ```
 
-### Models (41, by domain)
+### Models (42, by domain)
 
 Relations show the schema's `onDelete` (`cascade`, `setNull`, or `no onDelete`). Every model has `id String @id @default(cuid())` except the nine composite-key models marked "no `id`". Enums: none (Gotcha 5).
 
@@ -76,7 +76,7 @@ Relations show the schema's `onDelete` (`cascade`, `setNull`, or `no onDelete`).
 | `ContactMessage` (`contact_messages`) | `name`, `email`, `subject`, `message`, `isRead`, `isReplied` | — | user → User (no onDelete) | — |
 | `RateLimitHit` (`rate_limit_hits`) | `key`, `windowStart`, `count` | `(key, windowStart)`; no `id` | — | — |
 
-### Migrations (38 folders, by purpose)
+### Migrations (39 folders, by purpose)
 
 | Folders | Purpose |
 |---|---|
@@ -92,42 +92,42 @@ Relations show the schema's `onDelete` (`cascade`, `setNull`, or `no onDelete`).
 
 ## Key flows
 
-- Import: `apps/web/src/entities/tag/api/create-tag.ts:10` uses `import { prisma } from '@byte-of-me/db'`; types come from `@byte-of-me/db/types` (e.g. `apps/web/src/entities/tech-stack/model/types.ts:1`). The root import throws when `DATABASE_URL` is unset (`packages/db/src/index.ts:8-12`), and loads `.env` through `dotenv/config` (`:4`), so `dotenv` is a runtime dependency, not a dev one.
-- Client: `createPrismaClient(deps?)` (`packages/db/src/index.ts:23-37`) builds `new PrismaPg({ connectionString })` from `@prisma/adapter-pg` and passes it as `adapter` to `new PrismaClient`. `PrismaDeps` (`:18-21`, file-private) is the shape of that test seam. No query engine (AGENTS §1).
-- Singleton: `prisma = globalThis.prisma ?? createPrismaClient()` (`packages/db/src/index.ts:53-58`), cached on `global` outside production only.
-- Logging: `$on('query')` is attached outside production only and logs SQL, params and duration via `logger.debug` (`packages/db/src/index.ts:42-48`). Error, info and warn go to stdout (`:31-36`).
-- Generated client: the `prisma-client` generator writes `packages/db/src/generated/prisma` (`packages/db/prisma/schema.prisma:1-7`); `packages/db/src/index.ts:60` re-exports it, so `PrismaClient`, `Prisma` and model types come from the package root.
-- Prisma CLI: `packages/db/prisma.config.ts` loads `.env` via dotenv, sets the schema and migrations paths, and sets `datasource.url` to `process.env.DATABASE_URL ?? ""` (line 13), not `env()`, so generate runs on a fresh clone (comments at 11-12).
-- Test guard: `packages/db/bunfig.toml` preloads `packages/config/test/db-guard.ts`, shared with `apps/web`. It overwrites `DATABASE_URL` and `DIRECT_URL` with a `127.0.0.1:1` placeholder (lines 4-7), then throws unless both contain `127.0.0.1` or `localhost` (lines 10-18).
+- Import: `apps/web/src/entities/tag/api/create-tag.ts` uses `import { prisma } from '@byte-of-me/db'`; types come from `@byte-of-me/db/types` (e.g. `apps/web/src/entities/tech-stack/model/types.ts`). The root import throws when `DATABASE_URL` is unset (top of `packages/db/src/index.ts`), and loads `.env` through `dotenv/config`, so `dotenv` is a runtime dependency, not a dev one.
+- Client: `createPrismaClient(deps?)` (`packages/db/src/index.ts`) builds `new PrismaPg({ connectionString })` from `@prisma/adapter-pg` and passes it as `adapter` to `new PrismaClient`. `PrismaDeps` (file-private) is the shape of that test seam. No query engine (AGENTS §1).
+- Singleton: `prisma = globalForPrisma.prisma ?? createPrismaClient()` (`packages/db/src/index.ts`), cached on `global` outside production only.
+- Logging: `$on('query')` is attached outside production only and logs SQL, params and duration via `logger.debug`. Error, info and warn go to stdout (the `log` option of `createPrismaClient`).
+- Generated client: the `prisma-client` generator writes `packages/db/src/generated/prisma` (the `generator client` block of `packages/db/prisma/schema.prisma`); the last line of `packages/db/src/index.ts` re-exports it, so `PrismaClient`, `Prisma` and model types come from the package root.
+- Prisma CLI: `packages/db/prisma.config.ts` loads `.env` via dotenv, sets the schema and migrations paths, and sets `datasource.url` to `process.env.DATABASE_URL ?? ""`, not `env()`, so generate runs on a fresh clone (the comment above it says so).
+- Test guard: `packages/db/bunfig.toml` preloads `packages/config/test/db-guard.ts`, shared with `apps/web`. It overwrites `DATABASE_URL` and `DIRECT_URL` with a `127.0.0.1:1` placeholder, then throws unless both contain `127.0.0.1` or `localhost`.
 - Tests: `packages/db/__tests__/prisma.spec.ts` (3 tests). Two use injected fakes for adapter and query wiring; one checks singleton reuse. None issues a query.
 
 ## Recipes
 
 **1. Add a field to an existing model.** Example: `cef4721f` (`details` on `FeaturedWorkTranslation`).
-1. Edit the model in `packages/db/prisma/schema.prisma` (`FeaturedWorkTranslation`, lines 206-222).
+1. Edit the model in `packages/db/prisma/schema.prisma` (`FeaturedWorkTranslation`).
 2. `cd packages/db && bun run db:migrate:dev` (read Gotcha 1 first).
 3. `bun run generate` (from root) to refresh `packages/db/src/generated/prisma`.
 4. Update the entity's schema and types, e.g. `packages/contracts/src/featured-work/featured-work-schema.ts` and `apps/web/src/entities/featured-work/model/types.ts`.
 
 **2. Add a model with a translation table.** Example: `0f1f46f7` (`FeaturedWork` and `FeaturedWorkTranslation`).
-1. Copy the shape of `FeaturedWork` (`packages/db/prisma/schema.prisma:184-204`): cuid `id`, snake_case `@map`s, `userId` to `User` with `onDelete: Cascade`, `@@map`.
-2. Add `XTranslation` with `language String` and `@@unique([xId, language])` (pattern: lines 206-222).
-3. Add the back-relation field to `model User` (`packages/db/prisma/schema.prisma:61-94`).
+1. Copy the shape of `model FeaturedWork` (`packages/db/prisma/schema.prisma`): cuid `id`, snake_case `@map`s, `userId` to `User` with `onDelete: Cascade`, `@@map`.
+2. Add `XTranslation` with `language String` and `@@unique([xId, language])` (pattern: `FeaturedWorkTranslation`).
+3. Add the back-relation field to `model User` (`packages/db/prisma/schema.prisma`).
 4. Migrate and generate as in recipe 1. The same commit also changed the generated `models/FeaturedWork.ts`.
 
-**3. Add an index.** Example migration: `20260819120000_add_hot_path_indexes`; pattern: `Project` (`packages/db/prisma/schema.prisma:508-511`).
+**3. Add an index.** Example migration: `20260819120000_add_hot_path_indexes`; pattern: the `@@index` pair at the end of `model Project` in `packages/db/prisma/schema.prisma`.
 1. Add `@@index([...], map: "idx_<table>_<cols>")` to the model. All 40 existing `@@index` lines are named this way.
-2. Add a one-line comment naming the query it serves (style: `schema.prisma:509-510`).
+2. Add a one-line comment naming the query it serves (style: the comment above `idx_projects_user_created_at`).
 3. Migrate and generate as in recipe 1. The example uses `CONCURRENTLY`, which the apply script's header says `migrate deploy` cannot run, so deploy it with `bun run db:migrate:apply` (see Run).
 
 ## Gotchas
 
 1. Local `db:migrate:*` and `db:push` connect to production: `packages/db/.env` holds production values, and only tests are guarded (AGENTS §2). Override `DATABASE_URL` for the command, or do not run them.
-2. `DIRECT_URL` is validated (`apps/web/src/shared/config/env.ts:15`), but no db code reads it outside the test guard. `prisma.config.ts` uses only `DATABASE_URL`, and the datasource has no `directUrl`.
-3. `packages/db/src/generated/prisma/` is tracked in git (50 files). A schema change changes these files, so commit the regenerated output with it. Never hand-edit it. Root `postinstall` runs generate (`package.json:73`), so `bun install` rewrites them too.
-4. Model name is not table name: `BlogStatisticLog` is `prisma.blogStatisticLog` and maps to `blog_view_logs` (`packages/db/prisma/schema.prisma:610`, `:637`). Search the `@@map` value too.
-5. No enums. `User.role` (`packages/db/prisma/schema.prisma:66`) and `Interaction.type` (`:750`) are plain `String`s, and the database accepts any value.
-6. The test guard is a substring check (`packages/config/test/db-guard.ts:12`): any URL containing `127.0.0.1` or `localhost` passes. It does not parse the host.
+2. `DIRECT_URL` is validated (`apps/web/src/shared/config/env.ts`), but no db code reads it outside the test guard. `prisma.config.ts` uses only `DATABASE_URL`, and the datasource has no `directUrl`.
+3. `packages/db/src/generated/prisma/` is tracked in git (50 files). A schema change changes these files, so commit the regenerated output with it. Never hand-edit it. Root `postinstall` runs generate (root `package.json`), so `bun install` rewrites them too.
+4. Model name is not table name: `BlogStatisticLog` is `prisma.blogStatisticLog` and maps to `blog_view_logs` (`model BlogStatisticLog` and its `@@map` in `packages/db/prisma/schema.prisma`). Search the `@@map` value too.
+5. No enums. `User.role` and `Interaction.type` (`packages/db/prisma/schema.prisma`) are plain `String`s, and the database accepts any value.
+6. The test guard is a substring check (the `includes` test in `packages/config/test/db-guard.ts`): any URL containing `127.0.0.1` or `localhost` passes. It does not parse the host.
 7. Migration history is not a replay. Read `schema.prisma` for the current shape, not the 16 early folders (e.g. `20260317161110_init_portfolio_schema` drops `accounts`; `20260330071045_init` drops `Account` and re-creates `accounts`).
 
 ## Run
@@ -145,8 +145,7 @@ bun run db:push             # prisma db push: sync schema without a migration fi
 
 ## AGENTS.md deviations
 
-- `packages/db/src/types.ts:1-6`: §11.14, 6-line comment block.
-- `packages/db/prisma/schema.prisma:847-861`: §11.14, 15-line `///` block above `WorkspaceSettings`.
+- The `///` block above `model WorkspaceSettings` in `packages/db/prisma/schema.prisma` is 15 lines, against §11.14 (three lines). It is copied into the tracked generated client, so shortening it changes four generated files.
 
 ## See also
 

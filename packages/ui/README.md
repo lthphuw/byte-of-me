@@ -22,7 +22,8 @@ consuming app has to do.
 
 1. `"@byte-of-me/ui": "workspace:*"` in dependencies, plus the package of anything imported
    by name: `@byte-of-me/rich-text-editor`, `rich-text-schema`, `rich-text-render`,
-   `ui-utils`. The app declares only what it imports itself.
+   `ui-utils`, `ui-hooks`, `ui-motion`, `ui-primitives`. The app declares only what it
+   imports itself (`apps/web` does not list `ui-forms`, `ui-carousel` or `ui-toast`).
 2. `transpilePackages` needs no entry: `next.config.js` lists every workspace package.
 3. Cover `'../../packages/*/src/**/*.{ts,tsx}'` in the Tailwind `content` globs. The
    components use the app's theme and CSS variables (`--input`, `--scrim`,

@@ -34,28 +34,28 @@ apps/web/src/
 
 ## Key flows
 
-- **Request**: `apps/web/src/proxy.ts:14-22` stamps `x-pathname` (`apps/web/src/shared/lib/constants.ts:33`), then runs next-intl. The matcher (`:25`) skips `api`, `trpc`, `_next`, `_vercel` and dotted paths.
-- **Locale root**: `apps/web/src/app/[locale]/layout.tsx:145-193` calls `notFound()` for an unknown locale and mounts only the `error` namespace (`apps/web/src/shared/i18n/messages.ts:21`). Public, auth, print and dashboard layouts mount their own messages.
-- **Admin view guard**: `apps/web/src/app/[locale]/(protected)/layout.tsx:23-40` calls `getAuthenticatedAdmin()`, else redirects to `/auth/login` with `from` = `x-pathname`. The nested dashboard layout has no guard of its own; server actions guard separately (AGENTS §5).
-- **Login**: `apps/web/src/app/[locale]/(auth)/layout.tsx:16-20` sends a signed-in admin to `/dashboard`.
-- **Redirects**: `apps/web/next.config.js:192-220`: `/about` to `/`, `/:locale(en|vi)/about` to `/:locale`, and `/experience` to `/` in both forms, all permanent.
-- **Route handlers**: `apps/web/src/app/api/og/route.tsx:47-178` takes `?title` (max 80) and `?subtitle` (max 90), reads Cal Sans with `readFile`, sets its own `Cache-Control` on success (`:167`), returns 500 text on failure. `apps/web/src/app/api/auth/[...nextauth]/route.ts:3` exports `GET`, `POST` from `handlers`. `apps/web/src/app/feed.xml/route.ts` is RSS for the default locale only, `revalidate = 3600` (`:8`).
-- **Metadata routes**: `apps/web/src/app/robots.ts` allows `/api/og`, disallows `/dashboard`, `/en/dashboard`, `/vi/dashboard` and `/api/` (`:7-19`). `apps/web/src/app/sitemap.ts` lists `sitemapConfig` keys plus every published post (`getPublishedBlogs`), in every locale. A post's `lastmod` is its `updatedAt`; static pages carry none. Each URL lists `x-default` beside `en` and `vi`. `apps/web/src/app/llms.txt/route.ts` serves `/llms.txt`: the homepage, the list pages and every published post with its summary, English only, `revalidate = 3600`.
+- **Request**: `proxy()` in `apps/web/src/proxy.ts` stamps `x-pathname` (`PATHNAME_HEADER`, `apps/web/src/shared/lib/constants.ts`), then runs next-intl. Its `config.matcher` skips `api`, `trpc`, `_next`, `_vercel` and dotted paths.
+- **Locale root**: `apps/web/src/app/[locale]/layout.tsx` calls `notFound()` for an unknown locale and mounts only the `error` namespace (`ROOT_MESSAGE_NAMESPACES` in `apps/web/src/shared/i18n/messages.ts`). Public, auth, print and dashboard layouts mount their own messages.
+- **Admin view guard**: `apps/web/src/app/[locale]/(protected)/layout.tsx` calls `getAuthenticatedAdmin()`, else redirects to `/auth/login` with `from` = `x-pathname`. The nested dashboard layout has no guard of its own; server actions guard separately (AGENTS §5).
+- **Login**: `AuthLayout` in `apps/web/src/app/[locale]/(auth)/layout.tsx` sends a signed-in admin to `/dashboard`.
+- **Redirects**: `redirects()` in `apps/web/next.config.js`: `/about` to `/`, `/:locale(en|vi)/about` to `/:locale`, and `/experience` to `/` in both forms, all permanent.
+- **Route handlers**: `apps/web/src/app/api/og/route.tsx` takes `?title` (max 80) and `?subtitle` (max 90), reads Cal Sans with `readFile`, sets its own `Cache-Control` on success, returns 500 text on failure. `apps/web/src/app/api/auth/[...nextauth]/route.ts` exports `GET`, `POST` from `handlers`. `apps/web/src/app/feed.xml/route.ts` is RSS for the default locale only, `revalidate = 3600`.
+- **Metadata routes**: `apps/web/src/app/robots.ts` allows `/api/og`, disallows `/dashboard`, `/en/dashboard`, `/vi/dashboard` and `/api/` (`DASHBOARD_PATHS`). `apps/web/src/app/sitemap.ts` lists `sitemapConfig` keys plus every published post (`getPublishedBlogs`), in every locale. A post's `lastmod` is its `updatedAt`; static pages carry none. Each URL lists `x-default` beside `en` and `vi`. `apps/web/src/app/llms.txt/route.ts` serves `/llms.txt`: the homepage, the list pages and every published post with its summary, English only, `revalidate = 3600`.
 - **Page titles and descriptions**: all live in `metadata.*` in `apps/web/messages/{en,vi}.json`. A page `title` is a short noun, usually the nav label; the locale layout's `%s | Byte of me` template adds the suffix, so a page never writes it. A `description` is one sentence ending in a period. `openGraph` and `twitter` repeat the same title and description, with `| Byte of me` after the title. Public pages get their card from `buildPublicPageMetadata` (`apps/web/src/shared/lib/metadata.ts`); the homepage and blog posts pass a localized `/api/og` card. Dashboard and login pages are `noindex`: dashboard pages inherit the homepage's `openGraph`, and login sets its title and description with no image.
-- **Edge caching**: `apps/web/next.config.js:221-291` `headers()`, in the match order below. It reaches static and ISR output only; function responses set their own (see `/api/og` below).
+- **Edge caching**: `headers()` in `apps/web/next.config.js`, in the match order below. It reaches static and ISR output only; function responses set their own (see `/api/og` below).
 
 **Cache-Control rules, match order** (`apps/web/next.config.js`)
 
-| # | Source (line) | Cache-Control or headers | Matches |
+| # | Source | Cache-Control or headers | Matches |
 | --- | --- | --- | --- |
-| 1 | `/((?!api\|_next\|.*dashboard).*)/:path*` (`:241`) | `public, s-maxage=3600, stale-while-revalidate=86400` | public pages, `/en/print/*`, `/feed.xml`, `/robots.txt`, `/sitemap.xml`, `/site.webmanifest`; not `api`, `_next`, or any path containing `dashboard` |
-| 2 | `/:locale/dashboard/:path*` (`:252`) | `private, no-cache, no-store, max-age=0, must-revalidate` | `/<locale>/dashboard/*` |
-| 3 | `/:locale/auth/:path*` (`:263`) | `private, no-store` | `/<locale>/auth/*`; overrides rule 1 |
-| 4 | `/:path*` (`:272`) | no Cache-Control: nosniff, Referrer-Policy, Permissions-Policy, HSTS | everything |
-| 5 | `/:locale/dashboard/:path*` (`:288`) | no Cache-Control: `X-Frame-Options: DENY`, CSP `frame-ancestors 'none'` | dashboard |
-| 6 | `/:locale/auth/:path*` (`:289`) | as rule 5 | auth |
+| 1 | `/((?!api\|_next\|.*dashboard).*)/:path*` | `public, s-maxage=3600, stale-while-revalidate=86400` | public pages, `/en/print/*`, `/feed.xml`, `/robots.txt`, `/sitemap.xml`, `/site.webmanifest`; not `api`, `_next`, or any path containing `dashboard` |
+| 2 | `/:locale/dashboard/:path*` | `private, no-cache, no-store, max-age=0, must-revalidate` | `/<locale>/dashboard/*` |
+| 3 | `/:locale/auth/:path*` | `private, no-store` | `/<locale>/auth/*`; overrides rule 1 |
+| 4 | `/:path*` | no Cache-Control: nosniff, Referrer-Policy, Permissions-Policy, HSTS | everything |
+| 5 | `/:locale/dashboard/:path*` | no Cache-Control: `X-Frame-Options: DENY`, CSP `frame-ancestors 'none'` | dashboard |
+| 6 | `/:locale/auth/:path*` | as rule 5 | auth |
 
-There is no `/api` rule. `/api/og` sets its own `Cache-Control` (`apps/web/src/app/api/og/route.tsx:167`). Auth.js sets `private, no-cache, no-store` on `/api/auth/*` (`@auth/core` `lib/actions/session.js:11`). Locally rule 3 also matches `/api/auth/*`, because `:locale` takes any segment, so `next start` shows `private, no-store` there. Production shows Auth.js's own value.
+There is no `/api` rule. `/api/og` sets its own `Cache-Control` (in `apps/web/src/app/api/og/route.tsx`). Auth.js sets `private, no-cache, no-store` on `/api/auth/*` (the session action in `@auth/core`). Locally rule 3 also matches `/api/auth/*`, because `:locale` takes any segment, so `next start` shows `private, no-store` there. Production shows Auth.js's own value.
 
 ## Recipes
 
@@ -63,16 +63,16 @@ There is no `/api` rule. `/api/og` sets its own `Cache-Control` (`apps/web/src/a
    1. Copy its `page.tsx` (`generateStaticParams`, `setRequestLocale`, one widget) and `layout.tsx` (`buildPublicPageMetadata`) to `apps/web/src/app/[locale]/(public)/<name>/`.
    2. Copy its `loading.tsx`; the skeleton reuses the widget's classes (AGENTS §14).
    3. Widget in `apps/web/src/widgets/public/<name>-content/`, exported from `apps/web/src/widgets/public/index.ts`.
-   4. New namespace: add to `PUBLIC_MESSAGE_NAMESPACES` (`apps/web/src/shared/i18n/messages.ts:26`); strings go in both `apps/web/messages/en.json` and `apps/web/messages/vi.json`.
+   4. New namespace: add to `PUBLIC_MESSAGE_NAMESPACES` (`apps/web/src/shared/i18n/messages.ts`); strings go in both `apps/web/messages/en.json` and `apps/web/messages/vi.json`.
    5. If it should be indexed, add it to `sitemapConfig` in `apps/web/src/shared/config/sitemap.ts`.
 2. **Dashboard page** (model folder: `apps/web/src/app/[locale]/(protected)/dashboard/tags/`)
    1. Copy its `page.tsx` (`getQueryClient` + `prefetchQuery(<x>Queries.adminPage(1))` + `dehydrate` in `HydrationBoundary` + noindex `metadata`) and `loading.tsx` to `apps/web/src/app/[locale]/(protected)/dashboard/<name>/`.
    2. Widget `apps/web/src/widgets/dashboard/<name>-manager/` (`index.ts` + `ui/`), modelled on `apps/web/src/widgets/dashboard/tag-manager/`.
    3. Nav link in `apps/web/src/widgets/dashboard/dashboard-sidebar/model/use-dashboard-nav-groups.ts`.
-   4. New namespace: add to `DASHBOARD_MESSAGE_NAMESPACES` (`apps/web/src/shared/i18n/messages.ts:52`).
+   4. New namespace: add to `DASHBOARD_MESSAGE_NAMESPACES` (`apps/web/src/shared/i18n/messages.ts`).
    5. Every admin action and query calls `requireAdmin()` itself (AGENTS §5).
 3. **Cache rule change** in `apps/web/next.config.js`
-   1. Edit the `headers()` array (`:208-300`).
+   1. Edit the array `headers()` returns.
    2. Add a narrower rule after rule 1. For each header key the last matching rule wins (`apps/web/node_modules/next/dist/server/lib/router-utils/resolve-routes.js:543-564`).
    3. Verify: `cd apps/web && bun run preview`, then `curl -sI http://localhost:3000/<path>` from a second shell.
 
@@ -80,10 +80,10 @@ There is no `/api` rule. `/api/og` sets its own `Cache-Control` (`apps/web/src/a
 
 - Rule 1 excludes any path containing `dashboard`, not only a segment. `/en/blogs/dashboard-tips` gets no public rule and falls back to Next's own default (`s-maxage=31536000` when static; `apps/web/node_modules/next/dist/server/lib/cache-control.js:19`).
 - `next dev` replaces every HTML response's Cache-Control with `no-cache, must-revalidate` (`apps/web/node_modules/next/dist/server/base-server.js:1106-1108`). Check headers only on `bun run preview`.
-- `/api/og` sets its own `Cache-Control` in `apps/web/src/app/api/og/route.tsx:167`. Production does not apply `headers()` to function responses: on `phu-lth.space`, `/api/og` answered `public, max-age=0, must-revalidate` (the `ImageResponse` default, `apps/web/node_modules/next/dist/server/og/image-response.js:58`) and `/api/auth/session` answered Auth.js's own `private, no-cache, no-store`, while `next start` showed the configured values. Locally a routing header overrides the route's (`apps/web/node_modules/next/dist/server/send-response.js:46-52`), which hid the difference. A header set in the route is what both environments serve.
+- `/api/og` sets its own `Cache-Control` in `apps/web/src/app/api/og/route.tsx`. Production does not apply `headers()` to function responses: on `phu-lth.space`, `/api/og` answered `public, max-age=0, must-revalidate` (the `ImageResponse` default, `apps/web/node_modules/next/dist/server/og/image-response.js:58`) and `/api/auth/session` answered Auth.js's own `private, no-cache, no-store`, while `next start` showed the configured values. Locally a routing header overrides the route's (`apps/web/node_modules/next/dist/server/send-response.js:46-52`), which hid the difference. A header set in the route is what both environments serve.
 - `/experience` and `/en|vi/experience` are permanent 308s to `/` from `apps/web/next.config.js`. The page itself is gone; the redirect stays so old links keep working.
-- The proxy matcher skips dotted paths (`apps/web/src/proxy.ts:25`), so `/feed.xml`, `/robots.txt` and `/sitemap.xml` never get a locale prefix.
-- `apps/web/src/app/not-found.tsx:16`: the `;` after `<Error statusCode={404} />` renders as visible text on the root 404.
+- The proxy matcher skips dotted paths (`config.matcher` in `apps/web/src/proxy.ts`), so `/feed.xml`, `/robots.txt` and `/sitemap.xml` never get a locale prefix.
+- `GlobalNotFound` in `apps/web/src/app/not-found.tsx`: the `;` after `<Error statusCode={404} />` renders as visible text on the root 404.
 
 ## Run
 
@@ -96,12 +96,10 @@ bun run preview    # build, then next start (blocks; curl from a second shell)
 
 ## AGENTS.md deviations
 
-- `AGENTS.md:206` (§6) says Next serves dynamic routes `private, no-store` by default. Next 16.3.8 sends `private, no-cache, no-store, max-age=0, must-revalidate` for `revalidate: 0` (`apps/web/node_modules/next/dist/server/lib/cache-control.js:15`; `apps/web/node_modules/next/dist/server/app-render/app-render.js:1868`). Bare `private, no-store` only appears in the adapter's PPR data headers, with more directives (`apps/web/node_modules/next/dist/build/adapter/build-complete.js:772`).
-- `AGENTS.md:181` (§6) scopes the public rule to "Public HTML". Rule 1 also matches `/feed.xml`, `/robots.txt`, `/sitemap.xml` and `/site.webmanifest` (`apps/web/next.config.js:228`).
-- `AGENTS.md:323` (§7) says `next.config.js` holds a list of barrel packages. `apps/web/next.config.js:119` says the list was removed.
-- `apps/web/src/app/providers/global-provider.tsx:4` (§7): a `'use client'` provider mounted on every page imports the `@byte-of-me/ui` root barrel; §7 says client entry points use subpaths.
-- `AGENTS.md:110` (§3): 8 deep `@/entities/<slice>/api/...` and 7 deep `@/widgets/<group>/<slice>/...` imports in `apps/web/src/app` (e.g. `apps/web/src/app/sitemap.ts:5`, `apps/web/src/app/[locale]/(protected)/dashboard/layout.tsx:18`). No comment in `apps/web/src/app` gives a reason for them; §3 has no carve-out.
-- `AGENTS.md:442` (§11.14): comment blocks far over three lines: `apps/web/next.config.js:119-140` (22 lines), `:12-29` (18), `apps/web/src/app/[locale]/(print)/layout.tsx:10-32` (23).
+- AGENTS §6 (the edge-layer paragraph) says Next serves dynamic routes `private, no-store` by default. Next 16.3.8 sends `private, no-cache, no-store, max-age=0, must-revalidate` for `revalidate: 0` (`apps/web/node_modules/next/dist/server/lib/cache-control.js:15`; `apps/web/node_modules/next/dist/server/app-render/app-render.js:1868`). Bare `private, no-store` only appears in the adapter's PPR data headers, with more directives (`apps/web/node_modules/next/dist/build/adapter/build-complete.js:772`).
+- AGENTS §6 (the caching table) scopes the public rule to "Public HTML". Rule 1 also matches `/feed.xml`, `/robots.txt`, `/sitemap.xml` and `/site.webmanifest`.
+- `apps/web/src/app/providers/global-provider.tsx` (§7): a `'use client'` provider mounted on every page imports the `@byte-of-me/ui` root barrel. That is allowed now: the facade is TipTap-free and `check-boundaries` keeps it so.
+- AGENTS §3: 8 deep `@/entities/<slice>/api/...` imports (`rg "from '@/entities/[a-z-]+/api/" apps/web/src/app`) and 7 deep `@/widgets/<group>/<slice>/...` imports in `apps/web/src/app`, e.g. `sitemap.ts` and `[locale]/(protected)/dashboard/layout.tsx`. No comment in `apps/web/src/app` gives a reason for them; §3 has no carve-out. The `/query` sub-barrels the pages also import are the sanctioned form.
 
 ## See also
 
