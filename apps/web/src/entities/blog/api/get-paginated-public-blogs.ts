@@ -14,9 +14,9 @@ import {
   MAX_CACHED_PAGE,
 } from '@byte-of-me/api-core';
 import { parseInput } from '@byte-of-me/api-core/server';
+import { publicBlogsParamsSchema } from '@byte-of-me/contracts/blog';
 import { type Prisma, prisma } from '@byte-of-me/db';
 
-import { publicBlogsParamsSchema } from '@/entities/blog/model/blog-schema';
 import type { PublicBlog } from '@/entities/blog/model/types';
 import type { PublicProject } from '@/entities/project/model/types';
 // Direct submodule import, not the `@/shared/api` barrel: that barrel also

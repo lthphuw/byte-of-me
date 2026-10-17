@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import type { CompanyFormValues } from '@byte-of-me/contracts/company';
 import { useTranslations } from 'next-intl';
 
 import { CompanyForm } from './company-form';
 import { CompanyFormLoading } from './company-form-loading';
 
-import type { CompanyFormValues } from '@/entities/company/model/company-schema';
 import type { AdminCompany } from '@/entities/company/model/types';
 import { useTechStackOptions } from '@/entities/tech-stack/query';
 import { EditRecordDialog, type EditRecordDialogControls } from '@/shared/ui';

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { isVideoMimeType } from '@byte-of-me/contracts/media';
 import { RichTextHtml } from '@byte-of-me/rich-text-render/rich-text-html';
 import { useTranslations } from 'next-intl';
 
@@ -8,7 +9,6 @@ import { FeaturedWorkLink } from './featured-work-link';
 import { WORK_LINKS } from './featured-work-row-classes';
 
 import type { PublicFeaturedWork } from '@/entities/featured-work/model/types';
-import { isVideoMimeType } from '@/entities/media/model/upload-constraints';
 
 /**
  * Overrides on RichTextHtml's compact variant for the body. The author's headings stay

@@ -3,6 +3,10 @@
 import type { ApiResponse } from '@byte-of-me/api-core';
 import { CACHE_TAGS } from '@byte-of-me/api-core';
 import { idSchema, parseInput } from '@byte-of-me/api-core/server';
+import {
+  type FeaturedWorkFormValues,
+  featuredWorkSchema,
+} from '@byte-of-me/contracts/featured-work';
 import { type FeaturedWork, prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
@@ -12,10 +16,6 @@ import {
   ownsAllMedia,
   toMediaRows,
 } from '@/entities/featured-work/lib/featured-work-media';
-import {
-  type FeaturedWorkFormValues,
-  featuredWorkSchema,
-} from '@/entities/featured-work/model/featured-work-schema';
 import { requireAdmin } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
 

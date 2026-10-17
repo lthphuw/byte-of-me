@@ -1,10 +1,10 @@
 'use client';
 
+import { commentKeys } from '@byte-of-me/contracts/comment';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import { setCommentVisibility } from '@/entities/comment/api/set-comment-visibility';
-import { commentKeys } from '@/entities/comment/model/query-keys';
 import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 
 /**

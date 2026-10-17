@@ -1,20 +1,20 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Button } from '@byte-of-me/ui';
-import { ImageIcon, Loader2, X } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-import { toast } from 'sonner';
-
+import type { ImageCompressionConfig } from '@byte-of-me/contracts';
 import {
   ACCEPTED_IMAGE_MIME_TYPES,
   ACCEPTED_MEDIA_MIME_TYPES,
   findUploadViolation,
   MAX_UPLOAD_BATCH,
   maxUploadSizeFor,
-} from '@/entities/media/model/upload-constraints';
+} from '@byte-of-me/contracts/media';
+import { Button } from '@byte-of-me/ui';
+import { ImageIcon, Loader2, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
+
 import { compressInBrowser } from '@/shared/lib/media/compress-in-browser';
-import type { ImageCompressionConfig } from '@/shared/lib/media/image-compression-config';
 
 export interface ImageUploadProps {
   /**

@@ -8,6 +8,11 @@
  */
 import type { ReactNode } from 'react';
 import { unwrapApiResponse } from '@byte-of-me/api-core';
+import { blogKeys } from '@byte-of-me/contracts/blog';
+import { companyKeys } from '@byte-of-me/contracts/company';
+import { educationKeys } from '@byte-of-me/contracts/education';
+import { projectKeys } from '@byte-of-me/contracts/project';
+import { tagKeys } from '@byte-of-me/contracts/tag';
 import type { QueryClient } from '@tanstack/react-query';
 import {
   dehydrate,
@@ -22,11 +27,6 @@ import { NextIntlClientProvider } from 'next-intl';
 // eslint-disable-next-line import-alias/import-alias -- messages sit outside src, which no alias reaches
 import messages from '../../messages/en.json';
 
-import { blogKeys } from '@/entities/blog/model/query-keys';
-import { companyKeys } from '@/entities/company/model/query-keys';
-import { educationKeys } from '@/entities/education/model/query-keys';
-import { projectKeys } from '@/entities/project/model/query-keys';
-import { tagKeys } from '@/entities/tag/model/query-keys';
 import { type CrudKeys, useCrudManager } from '@/shared/hooks/use-crud-manager';
 import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 import { makeQueryClient } from '@/shared/lib/query/get-query-client';

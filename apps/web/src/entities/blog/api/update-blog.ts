@@ -3,14 +3,14 @@
 import type { ApiResponse } from '@byte-of-me/api-core';
 import { CACHE_TAGS } from '@byte-of-me/api-core';
 import { idSchema, parseInput } from '@byte-of-me/api-core/server';
+import {
+  blogFormSchema,
+  type BlogFormValues,
+} from '@byte-of-me/contracts/blog';
 import { type Blog, prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
-import {
-  blogFormSchema,
-  type BlogFormValues,
-} from '@/entities/blog/model/blog-schema';
 import { requireAdmin } from '@/shared/lib/auth';
 
 export async function updateBlog(

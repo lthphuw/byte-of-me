@@ -1,8 +1,5 @@
 import { ServerActionError, unwrapApiResponse } from '@byte-of-me/api-core';
-
-import { uploadMedia } from './upload-media';
-import { uploadVideoDirect } from './upload-video-direct';
-
+import type { ImageCompressionConfig } from '@byte-of-me/contracts';
 import {
   describeVideoNotAllowed,
   findUploadViolation,
@@ -10,10 +7,13 @@ import {
   MAX_UPLOAD_BATCH,
   type MediaScope,
   MediaViolationError,
-} from '@/entities/media/model/upload-constraints';
+} from '@byte-of-me/contracts/media';
+
+import { uploadMedia } from './upload-media';
+import { uploadVideoDirect } from './upload-video-direct';
+
 import { getImageCompressionSettings } from '@/entities/workspace-settings/api/get-image-compression-settings';
 import { compressInBrowser } from '@/shared/lib/media/compress-in-browser';
-import type { ImageCompressionConfig } from '@/shared/lib/media/image-compression-config';
 import type { Media } from '@/shared/types/models';
 
 /**

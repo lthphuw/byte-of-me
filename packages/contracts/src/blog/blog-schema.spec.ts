@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'bun:test';
 
-import { blogFormSchema, type BlogFormValues } from './blog-schema';
+import type { RichTextDoc } from '../rich-text-doc-schema';
 
-import type { RichTextDoc } from '@/shared/lib/rich-text-doc-schema';
+import { blogFormSchema, type BlogFormValues } from './blog-schema';
 
 const doc: RichTextDoc = { type: 'doc', content: [{ type: 'paragraph' }] };
 

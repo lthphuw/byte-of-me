@@ -1,9 +1,9 @@
 import { unwrapApiResponse } from '@byte-of-me/api-core';
+import { educationKeys } from '@byte-of-me/contracts/education';
 import { queryOptions } from '@tanstack/react-query';
 
 import { getAdminEducationById } from '@/entities/education/api/get-admin-education-by-id';
 import { getPaginatedAdminEducations } from '@/entities/education/api/get-paginated-admin-educations';
-import { educationKeys } from '@/entities/education/model/query-keys';
 import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 
 export const educationQueries = {

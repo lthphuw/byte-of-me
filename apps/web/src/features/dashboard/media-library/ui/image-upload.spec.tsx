@@ -4,6 +4,7 @@
  * server would refuse as a whole (too many files, too many bytes) is answered here,
  * in the active locale, before anything is sent. Renders the real component.
  */
+import type { ImageCompressionConfig } from '@byte-of-me/contracts';
 import {
   act,
   cleanup,
@@ -29,8 +30,6 @@ import { toast } from 'sonner';
 import en from '../../../../../messages/en.json';
 
 import { ImageUpload } from './image-upload';
-
-import type { ImageCompressionConfig } from '@/shared/lib/media/image-compression-config';
 
 const MiB = 1024 * 1024;
 const compressionOff: ImageCompressionConfig = {

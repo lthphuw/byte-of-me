@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { type Control, useWatch } from 'react-hook-form';
+import type { UserProfileFormValues } from '@byte-of-me/contracts/user-profile';
 import {
   Button,
   Form,
@@ -17,10 +18,7 @@ import { useTranslations } from 'next-intl';
 import { ProfileTranslationCard } from './profile-translation-card';
 import { UserProfileSectionManager } from './user-profile-section-manager';
 
-import type {
-  AdminUserProfile,
-  UserProfileFormValues,
-} from '@/entities/user-profile';
+import type { AdminUserProfile } from '@/entities/user-profile';
 import { SocialLinksSection } from '@/features/dashboard/manage-social-link-form';
 import { useProfileController } from '@/features/dashboard/update-profile';
 import {

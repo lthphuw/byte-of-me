@@ -14,11 +14,11 @@ import {
   MAX_CACHED_PAGE,
 } from '@byte-of-me/api-core';
 import { parseInput } from '@byte-of-me/api-core/server';
+import { publicProjectsParamsSchema } from '@byte-of-me/contracts/project';
 import { type Prisma, prisma } from '@byte-of-me/db';
 import { renderRichTextHtml } from '@byte-of-me/rich-text-render/rich-text-render';
 import { richTextToPlainText } from '@byte-of-me/rich-text-schema/rich-text-content';
 
-import { publicProjectsParamsSchema } from '@/entities/project/model/public-project-schema';
 import type { PublicProject } from '@/entities/project/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import { PUBLIC_MEDIA_SELECT } from '@/shared/lib/public-media';

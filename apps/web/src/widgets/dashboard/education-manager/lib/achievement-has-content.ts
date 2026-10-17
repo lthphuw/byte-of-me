@@ -1,6 +1,5 @@
+import type { EducationFormValues } from '@byte-of-me/contracts/education';
 import { isRichTextBlank } from '@byte-of-me/rich-text-schema/rich-text-content';
-
-import type { EducationFormValues } from '@/entities/education/model/education-schema';
 
 type Achievement = EducationFormValues['achievements'][number];
 

@@ -1,4 +1,4 @@
-import type { FeaturedWorkFormValues } from '@/entities/featured-work/model/featured-work-schema';
+import type { FeaturedWorkFormValues } from '@byte-of-me/contracts/featured-work';
 
 /** The rows for a validated `links` array: a link's position is its array index. */
 export function toLinkRows(

@@ -5,6 +5,7 @@
  * database is touched.
  */
 import type { ReactNode } from 'react';
+import { commentKeys } from '@byte-of-me/contracts/comment';
 import { prisma } from '@byte-of-me/db';
 import { type QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, cleanup, renderHook, waitFor } from '@testing-library/react';
@@ -26,7 +27,6 @@ import en from '../../../../messages/en.json';
 
 import { useSetCommentVisibility } from './use-set-comment-visibility';
 
-import { commentKeys } from '@/entities/comment/model/query-keys';
 import { makeQueryClient } from '@/shared/lib/query/get-query-client';
 
 const COMMENT_ID = 'cl9ebqhxk00003b600tymydho';

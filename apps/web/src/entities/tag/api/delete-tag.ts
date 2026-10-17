@@ -2,11 +2,11 @@
 
 import type { ApiResponse } from '@byte-of-me/api-core';
 import { idSchema, parseInput } from '@byte-of-me/api-core/server';
+import { TAG_MUTATION_TAGS } from '@byte-of-me/contracts/tag';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
-import { TAG_MUTATION_TAGS } from '@/entities/tag/model/revalidation';
 import { requireAdmin } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
 

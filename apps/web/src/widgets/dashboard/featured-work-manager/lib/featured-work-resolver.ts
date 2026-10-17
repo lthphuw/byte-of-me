@@ -1,12 +1,11 @@
 import type { FieldErrors, Resolver } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-
-import { keptTranslationIndexes } from './translation-values';
-
 import {
   type FeaturedWorkFormValues,
   featuredWorkSchema,
-} from '@/entities/featured-work/model/featured-work-schema';
+} from '@byte-of-me/contracts/featured-work';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+import { keptTranslationIndexes } from './translation-values';
 
 const validate = zodResolver(featuredWorkSchema);
 

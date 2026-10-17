@@ -1,8 +1,8 @@
 import { unwrapApiResponse } from '@byte-of-me/api-core';
+import { mediaKeys } from '@byte-of-me/contracts/media';
 import { queryOptions } from '@tanstack/react-query';
 
 import { getPaginatedMedia } from '@/entities/media/api/get-paginated-media';
-import { mediaKeys } from '@/entities/media/model/query-keys';
 
 /** Rows per page, in the library grid and in both pickers. */
 export const MEDIA_PAGE_SIZE = 12;

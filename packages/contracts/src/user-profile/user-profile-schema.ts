@@ -1,7 +1,7 @@
 import { isSafeHttpUrl } from '@byte-of-me/api-core';
 import { z } from 'zod';
 
-import { richTextDocSchema } from '@/shared/lib/rich-text-doc-schema';
+import { richTextDocSchema } from '../rich-text-doc-schema';
 
 /**
  * The form holds the editor's document, but a row may hold legacy HTML, and the
@@ -11,8 +11,7 @@ import { richTextDocSchema } from '@/shared/lib/rich-text-doc-schema';
 const aboutMeSchema = z.union([richTextDocSchema, z.string()]);
 
 /** Stable ids for the validation messages, so the dashboard form can translate
- *  them (`dashboard.userProfile.validation.*`) without the entity importing
- *  next-intl. */
+ *  them (`dashboard.userProfile.validation.*`) without importing next-intl. */
 export type UserProfileErrorKey =
   | 'platformRequired'
   | 'urlInvalid'

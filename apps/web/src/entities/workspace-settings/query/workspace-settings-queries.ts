@@ -1,8 +1,8 @@
 import { unwrapApiResponse } from '@byte-of-me/api-core';
+import { workspaceSettingsKeys } from '@byte-of-me/contracts/workspace-settings';
 import { queryOptions } from '@tanstack/react-query';
 
 import { getAdminWorkspaceSettings } from '@/entities/workspace-settings/api/get-admin-workspace-settings';
-import { workspaceSettingsKeys } from '@/entities/workspace-settings/model/query-keys';
 
 export const workspaceSettingsQueries = {
   current: () =>

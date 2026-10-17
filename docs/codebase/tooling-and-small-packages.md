@@ -1,6 +1,6 @@
 # Tooling and small packages
 
-> Root toolchain (scripts, Turbo, git hooks, lint and format, Node pin, docker-compose) and the `config`, `api-core`, `storage` and `logger` packages. Source: `package.json`, `turbo.json`, `eslint.config.mjs`, `scripts/`, `.husky/`, `.commitlintrc.json`, `.prettierrc.json`, `.editorconfig`, `.nvmrc`, `.vercelignore`, `docker-compose.yml`, `packages/config`, `packages/api-core`, `packages/storage`, `packages/logger`.
+> Root toolchain (scripts, Turbo, git hooks, lint and format, Node pin, docker-compose) and the `config`, `api-core`, `contracts`, `storage` and `logger` packages. Source: `package.json`, `turbo.json`, `eslint.config.mjs`, `scripts/`, `.husky/`, `.commitlintrc.json`, `.prettierrc.json`, `.editorconfig`, `.nvmrc`, `.vercelignore`, `docker-compose.yml`, `packages/config`, `packages/api-core`, `packages/contracts`, `packages/storage`, `packages/logger`.
 
 ## Layout
 
@@ -35,6 +35,7 @@
     ├── ui-forms/         layer 2: form, calendar, date picker, command, multi-select (packages-ui.md)
     ├── ui-carousel/      layer 2: Embla carousel and useEmblaState (packages-ui.md)
     ├── rich-text-render/ layer 2: the server-side renderer of rich text, mermaid and math leaves (packages-ui.md)
+    ├── contracts/        layer 2: the entities' zod schemas, query-key factories, upload constraints, cache-tag maps (below)
     ├── rich-text-editor/ layer 3: the TipTap editor and the drawer it uses (packages-ui.md)
     ├── ui/               layer 4: the facade that re-exports the TipTap-free UI packages (packages-ui.md)
     ├── storage/src       index.ts -> storage.ts, storage.interface.ts, s3.factory.ts
@@ -52,7 +53,7 @@
 | `new-package` | `bun run scripts/new-package.ts <name> --layer <n> [--dom] [--tests] [--css]` | extracting code into a new package (Recipes) |
 | `check-types` | `turbo run check-types` | type errors only |
 | `lint` / `lint:fix` | `turbo run lint` / `turbo run lint:fix` | lint, or autofix |
-| `test` | `turbo run test` (`bun test` in the fourteen workspaces that have specs: web, api-core, db, logger, storage, rich-text-editor, rich-text-schema, rich-text-render, ui-utils, ui-hooks, ui-motion, ui-primitives, ui-forms, ui-carousel) | running all suites |
+| `test` | `turbo run test` (`bun test` in the fifteen workspaces that have specs: web, api-core, contracts, db, logger, storage, rich-text-editor, rich-text-schema, rich-text-render, ui-utils, ui-hooks, ui-motion, ui-primitives, ui-forms, ui-carousel) | running all suites |
 | `generate` | `bun run --filter '@byte-of-me/db' generate` (`prisma generate`) | after a Prisma schema change |
 | `postinstall` / `prepare` | `bun run generate` / `husky install` | install time; `prepare` points `core.hooksPath` at `.husky` |
 | `gen:icons` | `bun run scripts/gen-icons.ts` | after editing `brand-mark.ts` |
@@ -82,7 +83,7 @@
 - `typescript/base.json`: `strict`, `esModuleInterop`, `skipLibCheck`, `resolveJsonModule`. Extended by the presets below; `packages/db` extends it directly.
 - `typescript/nextjs.json` (extends base): ESNext modules, `moduleResolution: node`, ES2023, `jsx: preserve`, `noEmit`, `isolatedModules`, Next plugin. Used by `apps/web`, `packages/ui`.
 - `typescript/node-library.json` (extends base): `module: commonjs`, ES2019. Used by `packages/storage`, `packages/logger`.
-- `typescript/library.json` (extends base): ESNext modules, `moduleResolution: bundler`, ES2023, DOM libs, `jsx: react-jsx`, `noEmit`, `isolatedModules`; no `incremental`, no Next plugin. The preset `new-package` gives every new package; used by `packages/api-core`, `packages/ui-utils`, `packages/ui-hooks`, `packages/ui-motion`, `packages/rich-text-schema`, `packages/ui-primitives`, `packages/ui-toast`, `packages/ui-forms`, `packages/ui-carousel`, `packages/rich-text-render`, `packages/rich-text-editor`.
+- `typescript/library.json` (extends base): ESNext modules, `moduleResolution: bundler`, ES2023, DOM libs, `jsx: react-jsx`, `noEmit`, `isolatedModules`; no `incremental`, no Next plugin. The preset `new-package` gives every new package; used by `packages/api-core`, `packages/contracts`, `packages/ui-utils`, `packages/ui-hooks`, `packages/ui-motion`, `packages/rich-text-schema`, `packages/ui-primitives`, `packages/ui-toast`, `packages/ui-forms`, `packages/ui-carousel`, `packages/rich-text-render`, `packages/rich-text-editor`.
 - `boundaries.json`: `layers` (package names per layer, index = layer), `dbTypesOnly`, `noReact`. Read by `check-boundaries.ts` and rewritten by `new-package.ts`. Rules: [../architecture.md](../architecture.md) ("Package layers").
 - `test/happydom.ts`: registers happy-dom on `globalThis` and sets `IS_REACT_ACT_ENVIRONMENT`. Preloaded by `apps/web`, `packages/rich-text-editor`, `packages/ui-hooks`, `packages/ui-primitives`, `packages/ui-forms` and `packages/ui-carousel`.
 - `test/db-guard.ts`: forces `DATABASE_URL` and `DIRECT_URL` to `postgres://test:test@127.0.0.1:1/test`, then throws if either is non-local. Preloaded by `apps/web` and `packages/db`; details in [packages-db.md](packages-db.md).
@@ -112,6 +113,32 @@ The root `src/index.ts` is client-safe: it pulls neither `logger` (chalk) nor `n
 | `getClientIp` (`./server`) | `(headers)` -> the first valid IP of `x-vercel-forwarded-for`, `x-real-ip`, `x-forwarded-for`, else `'unknown'` | `client-ip.ts`, imports `node:net` |
 
 `LAYOUT_CACHE_REVALIDATE_SECONDS` and `PATHNAME_HEADER` stayed in `apps/web/src/shared/lib/constants.ts`: they are app wiring, not API.
+
+### packages/contracts public API
+
+The pure half of each entity, moved out of `apps/web/src/entities/*/model/` and `shared/lib`: 31 source files and 14 specs (118 tests, none needs a DOM; run them from `packages/contracts`). Layer 2, `sideEffects: false`, on both the `noReact` and `dbTypesOnly` lists. Dependencies are `zod`, `@byte-of-me/api-core` (root only) and the light `@byte-of-me/rich-text-schema` subpaths, so any subpath is safe in a `'use client'` file. `entities/*/model/types.ts`, the `admin-*-include.ts` files and `media-file-key.ts` (it needs `nanoid`) stay in `apps/web`.
+
+One subpath per entity that has something to export, each `src/<slice>/index.ts` an `export *` of its files:
+
+| subpath | files | exports |
+| --- | --- | --- |
+| `.` | `rich-text-doc-schema.ts`, `image-compression-config.ts`, `image-compression-rules.ts` | `richTextDocSchema`, `RichTextDoc` (blog and user-profile); `imageCompressionConfigSchema`, `IMAGE_COMPRESSION_DEFAULTS`, `ImageCompressionConfig` (the settings row embeds it, both compressors read it); `shouldSkipCompression`, `computeTargetDimensions`, `shouldKeepOriginal` |
+| `./blog` | `blog-schema.ts`, `query-keys.ts` | `blogFormSchema`, `blogTranslationSchema`, `publicBlogsParamsSchema`, `relatedPublicBlogsParamsSchema`, `MAX_RELATED_BLOGS`, `BlogFormValues`, `blogKeys` |
+| `./comment` | `comment-schema.ts`, `query-keys.ts` | `publicCommentsParamsSchema`, `commentKeys` |
+| `./company` | `company-schema.ts`, `query-keys.ts` | `companySchema` and its role, task and translation schemas, `CompanyFormValues`, `companyKeys` |
+| `./contact-message` | `contact-message-schema.ts`, `query-keys.ts` | `contactMessageSchema`, `createContactMessageSchema(t)`, `ContactMessageErrorKey`, `ContactMessageFormValues`, `MESSAGE_MIN_LENGTH`, `MESSAGE_MAX_LENGTH`, `contactMessageKeys` |
+| `./education` | `education-schema.ts`, `query-keys.ts` | `educationSchema` and its achievement and translation schemas, `EducationFormValues`, `educationKeys` |
+| `./featured-work` | `featured-work-schema.ts`, `query-keys.ts` | `featuredWorkSchema` and its link, media and translation schemas, the `FEATURED_WORK_*` limits, `FeaturedWorkFormValues`, `featuredWorkKeys` |
+| `./media` | `media-schema.ts`, `query-keys.ts`, `upload-constraints.ts` | `mediaScopeSchema`, `videoUploadRequestSchema`, `videoUploadCompletionSchema`, `mediaKeys`; the size and batch limits, `ACCEPTED_*_MIME_TYPES`, `MEDIA_SCOPES` / `MediaScope`, `findUploadViolation`, `pickUploadPath`, `detectMediaMimeType` / `resolveUploadedMimeType` (byte signatures), `sanitizeStoredFileName`, `MediaViolationError` |
+| `./project` | `project-schema.ts`, `public-project-schema.ts`, `query-keys.ts` | `projectSchema`, `ProjectFromValues`, `publicProjectsParamsSchema`, `PublicProjectFilters`, `projectKeys` |
+| `./tag` | `tag-schema.ts`, `query-keys.ts`, `revalidation.ts` | `tagSchema`, `TagFormValues`, `tagKeys`, `TAG_MUTATION_TAGS` (TAG, BLOG, PROJECT) |
+| `./tech-stack` | `tech-stack-schema.ts`, `query-keys.ts`, `revalidation.ts` | `techStackSchema`, `TechStackFormValues`, `techStackKeys`, `TECH_MUTATION_TAGS` (TECH, PROJECT) |
+| `./user-profile` | `user-profile-schema.ts`, `query-keys.ts` | `userProfileSchema`, `createUserProfileSchema(t)`, `UserProfileErrorKey`, `UserProfileFormValues`, `userProfileKeys` |
+| `./workspace-settings` | `settings-schema.ts`, `query-keys.ts` | `workspaceSettingsSchema`, `workspaceSettingsPatchSchema`, `parseWorkspaceSettings`, `WORKSPACE_SETTINGS_DEFAULTS`, `WorkspaceSettings`, `WorkspaceSettingsPatch`, `workspaceSettingsKeys` |
+
+`social-link` and `open-source` have no subpath: their `model/` holds types (and `ledger.ts`) only.
+
+Measured after the move (`next start`): the built client chunks under `.next/static` hold no `chalk` and no `node:net`, as before; `/en/blogs` and `/en/projects` show content, not skeletons, after hydration, and `/en/projects` makes no client action call because the server-prefetched query keys match.
 
 ### packages/storage public API
 
@@ -156,6 +183,7 @@ Ports bind to loopback only, so a laptop on public Wi-Fi does not expose the dat
 - Commit: `.husky/pre-commit` (check-types, lint), then `.husky/commit-msg` (strip attribution lines, commitlint). Push: `.husky/pre-push` (test, build).
 - Icons: `apps/web/src/shared/lib/brand-mark.ts` -> `scripts/gen-icons.ts` -> `apps/web/public/` (PNG, ICO), `apps/web/public/icons/` (SVG, 16/32 PNG), `scripts/icons.lock.json`. `apps/web/src/shared/lib/icon-set.spec.ts` reads the lock.
 - API core: a server action imports `parseInput` from `@byte-of-me/api-core/server` and `ApiResponse`, `CACHE_TAGS` from `@byte-of-me/api-core`; a client query imports `unwrapApiResponse` from the root. 156 files in `apps/web` import it (50 use `./server`).
+- Contracts: a server action imports its schema from `@byte-of-me/contracts/<slice>` and parses it with `parseInput`; the client form's resolver and the `<slice>Queries` `queryOptions` factory import the same subpath, so the schema and the query key have one definition.
 - Storage: `apps/web/src/shared/api/s3-storage-api.ts` (`supabaseStorage = new Storage(...)`) -> `packages/storage/src/storage.ts` -> S3 client. Callers: `apps/web/src/entities/media/api/`.
 - Logger: `packages/logger/src/index.ts` -> level gate -> `console.*`. Imported by `apps/web` and `packages/db/src/index.ts`.
 
@@ -188,6 +216,8 @@ Ports bind to loopback only, so a laptop on public Wi-Fi does not expose the dat
 - `check-types`, `lint`, `test` and `build` have no `dependsOn` on `generate`, and no `build` script runs `prisma generate` any more (the db one did). Run `bun run generate` after a schema change; `postinstall` runs it too.
 - `bun test` exits non-zero when it finds no specs, so `new-package` adds a `test` script only with `--tests` or `--dom`.
 - A client file imports `@byte-of-me/api-core` (the root) only. `./server` reaches `logger` and `node:net`; keep both out of the root, or the public bundle gets `chalk`.
+- A query-key factory in `packages/contracts` is a contract with the server prefetch that uses it: a changed shape leaves the prefetched page unhydrated, raises no error and shows skeletons. Change a factory only with every prefetch and `invalidate` that calls it; `apps/web/src/entities/admin-query-keys.spec.tsx` checks the admin ones through real TanStack behaviour.
+- `contracts` has no `@/` alias, so `Maybe<T>` and the other globals of `apps/web/src/shared/types` are not available there; write `T | null | undefined`.
 - The root package declares `typescript` (catalog) because `check-boundaries.ts` imports the compiler API; Bun's isolated linker does not hoist it from a workspace.
 - `no-explicit-any`, `no-console` (`eslint.config.mjs:98-100`) and `simple-import-sort` are `warn`; no lint script passes `--max-warnings`, so `bun run lint` passes with them.
 - Root `format` and `format:check` run the `prettier` in the root `devDependencies` (`^2.8.8`), so keep it there. `.prettierignore` excludes `packages/db/src/generated`, which `prisma generate` rewrites.

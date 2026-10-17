@@ -7,7 +7,7 @@ import {
 } from '@byte-of-me/api-core';
 import * as z from 'zod';
 
-import { richTextDocSchema } from '@/shared/lib/rich-text-doc-schema';
+import { richTextDocSchema } from '../rich-text-doc-schema';
 
 /** Lowercase words joined by single hyphens, as the public URL carries them. */
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;

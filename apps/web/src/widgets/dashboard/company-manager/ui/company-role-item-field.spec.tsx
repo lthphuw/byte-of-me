@@ -3,6 +3,7 @@
  * the answer must follow what the author types, not the state at mount.
  */
 import { useForm } from 'react-hook-form';
+import type { CompanyFormValues } from '@byte-of-me/contracts/company';
 import { Form } from '@byte-of-me/ui';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, mock } from 'bun:test';
@@ -13,8 +14,6 @@ import { NextIntlClientProvider } from 'next-intl';
 import en from '../../../../../messages/en.json';
 
 import { CompanyRoleItemField } from './company-role-item-field';
-
-import type { CompanyFormValues } from '@/entities/company/model/company-schema';
 
 type Role = CompanyFormValues['roles'][number];
 

@@ -1,13 +1,13 @@
 import { useId } from 'react';
 import { type Control, useFieldArray, useFormState } from 'react-hook-form';
+import {
+  FEATURED_WORK_LINKS_MAX,
+  type FeaturedWorkFormValues,
+} from '@byte-of-me/contracts/featured-work';
 import { Button, FormField, FormItem } from '@byte-of-me/ui';
 import { ChevronDown, ChevronUp, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import {
-  FEATURED_WORK_LINKS_MAX,
-  type FeaturedWorkFormValues,
-} from '@/entities/featured-work/model/featured-work-schema';
 import { AddButton, FieldMessage, TextField } from '@/shared/ui';
 
 /**

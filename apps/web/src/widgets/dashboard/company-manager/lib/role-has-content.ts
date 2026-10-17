@@ -1,4 +1,4 @@
-import type { CompanyFormValues } from '@/entities/company/model/company-schema';
+import type { CompanyFormValues } from '@byte-of-me/contracts/company';
 
 type Role = CompanyFormValues['roles'][number];
 

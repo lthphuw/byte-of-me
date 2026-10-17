@@ -8,6 +8,7 @@
  *
  * Prisma is replaced at the delegate, as in `get-admin-tag-options.spec.ts`.
  */
+import type { ImageCompressionConfig } from '@byte-of-me/contracts';
 import { prisma } from '@byte-of-me/db';
 import {
   afterAll,
@@ -26,7 +27,6 @@ import {
   resetTestUser,
   setTestUser,
 } from '@/shared/lib/auth/set-test-user.test-helper';
-import type { ImageCompressionConfig } from '@/shared/lib/media/image-compression-config';
 
 const SAVED: ImageCompressionConfig = {
   enabled: false,

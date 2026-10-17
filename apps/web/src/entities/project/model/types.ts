@@ -37,10 +37,3 @@ export type AdminProject = Prisma.ProjectGetPayload<{
 }>;
 
 export type PublicProject = Project;
-
-/** The public timeline's filters, as the URL carries them. */
-export type PublicProjectFilters = {
-  tagSlugs: string[];
-  techStackSlugs: string[];
-  search: string;
-};

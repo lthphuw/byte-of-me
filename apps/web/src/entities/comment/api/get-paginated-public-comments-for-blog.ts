@@ -7,10 +7,10 @@ import type {
 } from '@byte-of-me/api-core';
 import { buildPaginatedMeta, clampPagination } from '@byte-of-me/api-core';
 import { parseInput } from '@byte-of-me/api-core/server';
+import { publicCommentsParamsSchema } from '@byte-of-me/contracts/comment';
 import { prisma } from '@byte-of-me/db';
 
 import type { PublicComment } from '@/entities/comment/model';
-import { publicCommentsParamsSchema } from '@/entities/comment/model/comment-schema';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 
 /**

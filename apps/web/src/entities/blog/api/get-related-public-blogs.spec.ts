@@ -3,12 +3,11 @@
  * before Prisma; a refused call runs no query.
  */
 import { MAX_FILTER_SLUGS } from '@byte-of-me/api-core';
+import { MAX_RELATED_BLOGS } from '@byte-of-me/contracts/blog';
 import { prisma } from '@byte-of-me/db';
 import { beforeEach, describe, expect, it, mock } from 'bun:test';
 
 import { getRelatedPublicBlogs } from './get-related-public-blogs';
-
-import { MAX_RELATED_BLOGS } from '@/entities/blog/model/blog-schema';
 
 const findMany = mock();
 const findFirst = mock();

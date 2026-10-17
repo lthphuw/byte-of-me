@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import type { EducationFormValues } from '@byte-of-me/contracts/education';
 import { useTranslations } from 'next-intl';
 
 import { EducationForm } from './education-form';
 import { EducationFormLoading } from './education-form-loading';
 
 import type { AdminEducation } from '@/entities/education';
-import type { EducationFormValues } from '@/entities/education/model/education-schema';
 import { EditRecordDialog, type EditRecordDialogControls } from '@/shared/ui';
 
 const FORM_ID = 'education-form';

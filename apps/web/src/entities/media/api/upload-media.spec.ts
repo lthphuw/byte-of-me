@@ -4,12 +4,12 @@
  * Clips take the direct path (`uploadVideoDirect`). Storage and Prisma are
  * replaced so nothing real is written.
  */
+import type { MediaScope } from '@byte-of-me/contracts/media';
 import { prisma } from '@byte-of-me/db';
 import { beforeEach, describe, expect, it, mock, spyOn } from 'bun:test';
 
 import { uploadMedia } from './upload-media';
 
-import type { MediaScope } from '@/entities/media/model/upload-constraints';
 import { supabaseStorage } from '@/shared/api/s3-storage-api';
 
 const mediaCreate = mock();

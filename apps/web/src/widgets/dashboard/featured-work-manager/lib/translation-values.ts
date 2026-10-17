@@ -1,6 +1,6 @@
+import type { FeaturedWorkFormValues } from '@byte-of-me/contracts/featured-work';
 import { isRichTextBlank } from '@byte-of-me/rich-text-schema/rich-text-content';
 
-import type { FeaturedWorkFormValues } from '@/entities/featured-work/model/featured-work-schema';
 import type { AdminFeaturedWorkDetail } from '@/entities/featured-work/model/types';
 
 /** The two languages the form always shows, in the order the fields appear. */

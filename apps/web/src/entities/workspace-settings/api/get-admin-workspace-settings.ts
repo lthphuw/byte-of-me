@@ -1,10 +1,10 @@
 'use server';
 
 import type { ApiResponse } from '@byte-of-me/api-core';
+import type { WorkspaceSettings } from '@byte-of-me/contracts/workspace-settings';
 import { logger } from '@byte-of-me/logger';
 
 import { readWorkspaceSettings } from '@/entities/workspace-settings/api/get-workspace-settings';
-import type { WorkspaceSettings } from '@/entities/workspace-settings/model/settings-schema';
 import { requireAdmin } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
 

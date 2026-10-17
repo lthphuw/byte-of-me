@@ -1,7 +1,7 @@
 import type { UseFormReturn } from 'react-hook-form';
+import type { UserProfileFormValues } from '@byte-of-me/contracts/user-profile';
 
 import type { AdminUserProfile } from '@/entities/user-profile/model/types';
-import type { UserProfileFormValues } from '@/entities/user-profile/model/user-profile-schema';
 
 // The editor keeps a document as an object; legacy HTML stays a string.
 function parseAboutMe(content: unknown) {

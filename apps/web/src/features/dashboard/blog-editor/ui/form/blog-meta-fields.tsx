@@ -1,6 +1,7 @@
 'use client';
 
 import type { Control } from 'react-hook-form';
+import type { BlogFormValues } from '@byte-of-me/contracts/blog';
 import {
   Button,
   Checkbox,
@@ -18,7 +19,6 @@ import {
 } from '@byte-of-me/ui';
 import { useTranslations } from 'next-intl';
 
-import type { BlogFormValues } from '@/entities/blog/model/blog-schema';
 import type { ProjectOption } from '@/entities/project/api/get-admin-project-options';
 import type { PickerState } from '@/features/dashboard/blog-editor/lib/use-blog-reference-options';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';

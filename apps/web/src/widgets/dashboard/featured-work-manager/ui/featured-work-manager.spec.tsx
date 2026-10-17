@@ -5,6 +5,12 @@
  * Drives the real manager, dialog, form and server actions; only Prisma is replaced.
  */
 import type { ApiResponse } from '@byte-of-me/api-core';
+import { featuredWorkKeys } from '@byte-of-me/contracts/featured-work';
+import { MediaViolationError } from '@byte-of-me/contracts/media';
+import {
+  WORKSPACE_SETTINGS_DEFAULTS,
+  workspaceSettingsKeys,
+} from '@byte-of-me/contracts/workspace-settings';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -37,13 +43,9 @@ import vi from '../../../../../messages/vi.json';
 
 import { FeaturedWorkManager } from './featured-work-manager';
 
-import { featuredWorkKeys } from '@/entities/featured-work/model/query-keys';
 import type { AdminFeaturedWork } from '@/entities/featured-work/model/types';
 import * as singleUpload from '@/entities/media/api/upload-single-media';
 import * as videoDirect from '@/entities/media/api/upload-video-direct';
-import { MediaViolationError } from '@/entities/media/model/upload-constraints';
-import { workspaceSettingsKeys } from '@/entities/workspace-settings/model/query-keys';
-import { WORKSPACE_SETTINGS_DEFAULTS } from '@/entities/workspace-settings/model/settings-schema';
 import { makeQueryClient } from '@/shared/lib/query/get-query-client';
 import type { Media } from '@/shared/types/models';
 import {

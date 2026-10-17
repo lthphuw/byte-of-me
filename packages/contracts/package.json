@@ -1,0 +1,37 @@
+{
+  "name": "@byte-of-me/contracts",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./blog": "./src/blog/index.ts",
+    "./comment": "./src/comment/index.ts",
+    "./company": "./src/company/index.ts",
+    "./contact-message": "./src/contact-message/index.ts",
+    "./education": "./src/education/index.ts",
+    "./featured-work": "./src/featured-work/index.ts",
+    "./media": "./src/media/index.ts",
+    "./project": "./src/project/index.ts",
+    "./tag": "./src/tag/index.ts",
+    "./tech-stack": "./src/tech-stack/index.ts",
+    "./user-profile": "./src/user-profile/index.ts",
+    "./workspace-settings": "./src/workspace-settings/index.ts"
+  },
+  "scripts": {
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@byte-of-me/api-core": "workspace:*",
+    "@byte-of-me/rich-text-schema": "workspace:*",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "eslint": "catalog:",
+    "typescript": "catalog:"
+  },
+  "sideEffects": false
+}

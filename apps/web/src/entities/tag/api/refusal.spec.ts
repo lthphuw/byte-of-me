@@ -3,6 +3,7 @@
  * write. The guard sits above `try`, so the refusal rejects the call instead of
  * coming back as an envelope. Prisma is replaced whole, so a leaked query shows.
  */
+import type { TagFormValues } from '@byte-of-me/contracts/tag';
 import { prisma } from '@byte-of-me/db';
 import {
   afterAll,
@@ -16,7 +17,6 @@ import {
 
 import type * as TagActions from './index';
 
-import type { TagFormValues } from '@/entities/tag/model/tag-schema';
 import {
   resetTestUser,
   setTestUser,

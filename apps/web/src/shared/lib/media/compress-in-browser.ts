@@ -1,9 +1,9 @@
-import type { ImageCompressionConfig } from '@/shared/lib/media/image-compression-config';
 import {
   computeTargetDimensions,
+  type ImageCompressionConfig,
   shouldKeepOriginal,
   shouldSkipCompression,
-} from '@/shared/lib/media/image-compression-rules';
+} from '@byte-of-me/contracts';
 
 /**
  * Compresses an image FILE in the browser before it crosses the network.

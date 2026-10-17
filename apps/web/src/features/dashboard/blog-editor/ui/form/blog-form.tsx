@@ -2,6 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { type DefaultValues, useForm } from 'react-hook-form';
+import { type RichTextDoc, richTextDocSchema } from '@byte-of-me/contracts';
+import {
+  blogFormSchema,
+  type BlogFormValues,
+} from '@byte-of-me/contracts/blog';
 import { parseRichTextContent } from '@byte-of-me/rich-text-schema/rich-text-content';
 import {
   Button,
@@ -17,17 +22,9 @@ import { useTranslations } from 'next-intl';
 import { BlogMetaFields } from './blog-meta-fields';
 
 import type { AdminBlog } from '@/entities/blog';
-import {
-  blogFormSchema,
-  type BlogFormValues,
-} from '@/entities/blog/model/blog-schema';
 import { useScopedImageUploader } from '@/entities/media/query';
 import { useBlogReferenceOptions } from '@/features/dashboard/blog-editor/lib/use-blog-reference-options';
 import { useFormAutosave } from '@/shared/hooks/use-form-autosave';
-import {
-  type RichTextDoc,
-  richTextDocSchema,
-} from '@/shared/lib/rich-text-doc-schema';
 import { FieldMessage, TextField, TranslationTabs } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 

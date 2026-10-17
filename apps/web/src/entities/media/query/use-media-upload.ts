@@ -1,7 +1,8 @@
 'use client';
 
+import { mediaKeys } from '@byte-of-me/contracts/media';
+
 import { uploadMedia } from '@/entities/media/api/upload-media';
-import { mediaKeys } from '@/entities/media/model/query-keys';
 import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 
 /**

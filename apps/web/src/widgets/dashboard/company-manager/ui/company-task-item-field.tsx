@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import type { Control } from 'react-hook-form';
 import { useWatch } from 'react-hook-form';
+import type { CompanyFormValues } from '@byte-of-me/contracts/company';
 import {
   Button,
   FormControl,
@@ -14,7 +15,6 @@ import {
 import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import type { CompanyFormValues } from '@/entities/company/model/company-schema';
 import {
   ConfirmDeleteDialog,
   FieldMessage,

@@ -2,6 +2,10 @@
 
 import { useEffect, useRef } from 'react';
 import { getTranslatedContent } from '@byte-of-me/api-core';
+import {
+  type FeaturedWorkFormValues,
+  featuredWorkKeys,
+} from '@byte-of-me/contracts/featured-work';
 import { Button } from '@byte-of-me/ui';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
@@ -12,11 +16,7 @@ import { createFeaturedWork } from '@/entities/featured-work/api/create-featured
 import { deleteFeaturedWork } from '@/entities/featured-work/api/delete-featured-work';
 import { getPaginatedAdminFeaturedWorks } from '@/entities/featured-work/api/get-paginated-admin-featured-works';
 import { updateFeaturedWork } from '@/entities/featured-work/api/update-featured-work';
-import {
-  type AdminFeaturedWork,
-  type FeaturedWorkFormValues,
-  featuredWorkKeys,
-} from '@/entities/featured-work/model';
+import type { AdminFeaturedWork } from '@/entities/featured-work/model';
 import {
   featuredWorkQueries,
   useAdminFeaturedWorkById,

@@ -1,8 +1,8 @@
 'use client';
 
+import type { PublicProjectFilters } from '@byte-of-me/contracts/project';
 import { useQuery } from '@tanstack/react-query';
 
-import type { PublicProjectFilters } from '@/entities/project/model/types';
 import { projectQueries } from '@/entities/project/query/project-queries';
 import { HYDRATED_LIST_BEHAVIOR } from '@/shared/hooks/use-infinite-list-query';
 

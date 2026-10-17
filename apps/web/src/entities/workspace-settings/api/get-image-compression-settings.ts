@@ -1,11 +1,11 @@
 'use server';
 
 import type { ApiResponse } from '@byte-of-me/api-core';
+import type { ImageCompressionConfig } from '@byte-of-me/contracts';
 import { logger } from '@byte-of-me/logger';
 
 import { readWorkspaceSettings } from '@/entities/workspace-settings/api/get-workspace-settings';
 import { requireAdmin } from '@/shared/lib/auth';
-import type { ImageCompressionConfig } from '@/shared/lib/media/image-compression-config';
 import { getErrorMessage } from '@/shared/lib/utils';
 
 /**

@@ -1,7 +1,7 @@
+import { IMAGE_COMPRESSION_DEFAULTS } from '@byte-of-me/contracts';
 import { describe, expect, test } from 'bun:test';
 
 import { compressImage } from './compress-image';
-import { IMAGE_COMPRESSION_DEFAULTS } from './image-compression-config';
 
 // A real, tiny SVG — this is a vector, and `sharp` would rasterise it if
 // `compressImage` ran it through the normal pipeline, which is exactly the

@@ -3,14 +3,14 @@
 import type { ApiResponse } from '@byte-of-me/api-core';
 import { CACHE_TAGS } from '@byte-of-me/api-core';
 import { parseInput } from '@byte-of-me/api-core/server';
+import {
+  type ProjectFromValues,
+  projectSchema,
+} from '@byte-of-me/contracts/project';
 import { prisma, type Project } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
-import {
-  type ProjectFromValues,
-  projectSchema,
-} from '@/entities/project/model';
 import { requireAdmin } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
 

@@ -7,9 +7,9 @@ import {
   getTranslationLanguages,
 } from '@byte-of-me/api-core';
 import { parseInput } from '@byte-of-me/api-core/server';
+import { relatedPublicBlogsParamsSchema } from '@byte-of-me/contracts/blog';
 import { type Prisma, prisma } from '@byte-of-me/db';
 
-import { relatedPublicBlogsParamsSchema } from '@/entities/blog/model/blog-schema';
 import type { PublicBlog } from '@/entities/blog/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import { PUBLIC_MEDIA_SELECT } from '@/shared/lib/public-media';

@@ -2,23 +2,23 @@
 
 import { type ChangeEvent, useEffect, useId, useRef, useState } from 'react';
 import { type ControllerRenderProps, useFormContext } from 'react-hook-form';
-import { Button, FormItem, Input } from '@byte-of-me/ui';
-import { Loader2, Upload, X } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-import { toast } from 'sonner';
-
 import {
   FEATURED_WORK_MEDIA_LABEL_MAX_LENGTH,
   FEATURED_WORK_MEDIA_MAX,
   type FeaturedWorkFormValues,
-} from '@/entities/featured-work/model/featured-work-schema';
-import type { AdminFeaturedWorkMedia } from '@/entities/featured-work/model/types';
+} from '@byte-of-me/contracts/featured-work';
 import {
   ACCEPTED_MEDIA_MIME_TYPES,
   findUploadViolation,
   isVideoMimeType,
   MediaViolationError,
-} from '@/entities/media';
+} from '@byte-of-me/contracts/media';
+import { Button, FormItem, Input } from '@byte-of-me/ui';
+import { Loader2, Upload, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
+
+import type { AdminFeaturedWorkMedia } from '@/entities/featured-work/model/types';
 import { useMediaRecordUpload, useVideoUpload } from '@/entities/media/query';
 import { FieldMessage } from '@/shared/ui';
 

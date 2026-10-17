@@ -3,6 +3,7 @@
  * The guard sits above `try`, so the refusal rejects the call instead of coming
  * back as an envelope. Prisma is replaced whole, so a leaked query shows.
  */
+import type { WorkspaceSettingsPatch } from '@byte-of-me/contracts/workspace-settings';
 import { prisma } from '@byte-of-me/db';
 import {
   afterAll,
@@ -16,7 +17,6 @@ import {
 
 import type * as UpdateWorkspaceSettingsModule from './update-workspace-settings';
 
-import type { WorkspaceSettingsPatch } from '@/entities/workspace-settings/model/settings-schema';
 import {
   resetTestUser,
   setTestUser,

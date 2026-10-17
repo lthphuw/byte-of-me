@@ -3,6 +3,11 @@
  * of the body on open (`meta.initial`) is not an edit. A real edit still asks.
  * The option queries are primed, so no server action or database is reached.
  */
+import { mediaKeys } from '@byte-of-me/contracts/media';
+import {
+  WORKSPACE_SETTINGS_DEFAULTS,
+  workspaceSettingsKeys,
+} from '@byte-of-me/contracts/workspace-settings';
 import { QueryClientProvider } from '@tanstack/react-query';
 import {
   act,
@@ -21,11 +26,8 @@ import en from '../../../../../messages/en.json';
 import { BlogEditorDialog } from './blog-editor-dialog';
 
 import type { AdminBlog } from '@/entities/blog';
-import { mediaKeys } from '@/entities/media/model/query-keys';
 import { projectQueries } from '@/entities/project/query/project-queries';
 import { tagQueries } from '@/entities/tag/query/tag-queries';
-import { workspaceSettingsKeys } from '@/entities/workspace-settings/model/query-keys';
-import { WORKSPACE_SETTINGS_DEFAULTS } from '@/entities/workspace-settings/model/settings-schema';
 import { makeQueryClient } from '@/shared/lib/query/get-query-client';
 import { __getEditorProps } from '@/shared/ui/lazy-rich-text-editor.test-stub';
 

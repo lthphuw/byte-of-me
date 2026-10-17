@@ -92,7 +92,7 @@ Relations show the schema's `onDelete` (`cascade`, `setNull`, or `no onDelete`).
 
 ## Key flows
 
-- Import: `apps/web/src/entities/tag/api/create-tag.ts:5` uses `import { prisma } from '@byte-of-me/db'`; types come from `@byte-of-me/db/types` (e.g. `apps/web/src/entities/tech-stack/model/types.ts:1`). The root import throws when `DATABASE_URL` is unset (`packages/db/src/index.ts:8-12`).
+- Import: `apps/web/src/entities/tag/api/create-tag.ts:10` uses `import { prisma } from '@byte-of-me/db'`; types come from `@byte-of-me/db/types` (e.g. `apps/web/src/entities/tech-stack/model/types.ts:1`). The root import throws when `DATABASE_URL` is unset (`packages/db/src/index.ts:8-12`).
 - Client: `createPrismaClient(deps?)` (`packages/db/src/index.ts:23-37`) builds `new PrismaPg({ connectionString })` from `@prisma/adapter-pg` and passes it as `adapter` to `new PrismaClient`. `PrismaDeps` (`:18-21`) is the test seam. No query engine (AGENTS §1).
 - Singleton: `prisma = globalThis.prisma ?? createPrismaClient()` (`packages/db/src/index.ts:53-58`), cached on `global` outside production only.
 - Logging: `$on('query')` is attached outside production only and logs SQL, params and duration via `logger.debug` (`packages/db/src/index.ts:42-48`). Error, info and warn go to stdout (`:31-36`).
@@ -107,7 +107,7 @@ Relations show the schema's `onDelete` (`cascade`, `setNull`, or `no onDelete`).
 1. Edit the model in `packages/db/prisma/schema.prisma` (`FeaturedWorkTranslation`, lines 206-222).
 2. `cd packages/db && bun run db:migrate:dev` (read Gotcha 1 first).
 3. `bun run generate` (from root) to refresh `packages/db/src/generated/prisma`.
-4. Update the entity's schema and types, e.g. `apps/web/src/entities/featured-work/model/featured-work-schema.ts` and `apps/web/src/entities/featured-work/model/types.ts`.
+4. Update the entity's schema and types, e.g. `packages/contracts/src/featured-work/featured-work-schema.ts` and `apps/web/src/entities/featured-work/model/types.ts`.
 
 **2. Add a model with a translation table.** Example: `0f1f46f7` (`FeaturedWork` and `FeaturedWorkTranslation`).
 1. Copy the shape of `FeaturedWork` (`packages/db/prisma/schema.prisma:184-204`): cuid `id`, snake_case `@map`s, `userId` to `User` with `onDelete: Cascade`, `@@map`.
@@ -124,7 +124,7 @@ Relations show the schema's `onDelete` (`cascade`, `setNull`, or `no onDelete`).
 
 1. Local `db:migrate:*` and `db:push` connect to production: `packages/db/.env` holds production values, and only tests are guarded (AGENTS §2). Override `DATABASE_URL` for the command, or do not run them.
 2. `DIRECT_URL` is validated (`apps/web/src/shared/config/env.ts:15`), but no db code reads it outside the test guard. `prisma.config.ts` uses only `DATABASE_URL`, and the datasource has no `directUrl`. `packages/db/README.md:16` says migrations use it; they do not.
-3. `packages/db/src/generated/prisma/` is tracked in git (49 files). A schema change changes these files, so commit the regenerated output with it. Never hand-edit it. Root `postinstall` runs generate (`package.json:73`), so `bun install` rewrites them too.
+3. `packages/db/src/generated/prisma/` is tracked in git (50 files). A schema change changes these files, so commit the regenerated output with it. Never hand-edit it. Root `postinstall` runs generate (`package.json:73`), so `bun install` rewrites them too.
 4. Model name is not table name: `BlogStatisticLog` is `prisma.blogStatisticLog` and maps to `blog_view_logs` (`packages/db/prisma/schema.prisma:610`, `:637`). Search the `@@map` value too.
 5. No enums. `User.role` (`packages/db/prisma/schema.prisma:66`) and `Interaction.type` (`:750`) are plain `String`s, and the database accepts any value.
 6. `packages/db/tsconfig.json:8-9` sets `strict: false` and `noImplicitAny: false`, overriding `packages/config/typescript/base.json` (`strict: true`). `check-types` misses what strict would catch.

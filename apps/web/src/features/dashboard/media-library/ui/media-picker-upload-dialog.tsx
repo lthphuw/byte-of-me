@@ -1,10 +1,10 @@
 'use client';
 
+import type { ImageCompressionConfig } from '@byte-of-me/contracts';
 import { useTranslations } from 'next-intl';
 
 import { useMediaUpload } from '@/entities/media/query';
 import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
-import type { ImageCompressionConfig } from '@/shared/lib/media/image-compression-config';
 import { RecordDialog } from '@/shared/ui/record-dialog';
 
 export interface MediaPickerUploadDialogProps {

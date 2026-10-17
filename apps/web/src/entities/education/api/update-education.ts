@@ -3,14 +3,14 @@
 import type { ApiResponse } from '@byte-of-me/api-core';
 import { CACHE_TAGS } from '@byte-of-me/api-core';
 import { idSchema, parseInput } from '@byte-of-me/api-core/server';
+import {
+  type EducationFormValues,
+  educationSchema,
+} from '@byte-of-me/contracts/education';
 import { type Education, prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
-import {
-  type EducationFormValues,
-  educationSchema,
-} from '@/entities/education/model/education-schema';
 import { requireAdmin } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
 

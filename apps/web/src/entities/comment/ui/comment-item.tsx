@@ -1,5 +1,6 @@
 'use client';
 
+import { commentKeys } from '@byte-of-me/contracts/comment';
 import { Button, Skeleton } from '@byte-of-me/ui';
 import { EyeOff, Reply } from 'lucide-react';
 import Link from 'next/link';
@@ -7,7 +8,7 @@ import { useSession } from 'next-auth/react';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { hideComment } from '@/entities/comment/api/hide-comment';
-import { commentKeys, type PublicComment } from '@/entities/comment/model';
+import type { PublicComment } from '@/entities/comment/model';
 import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 import { getRelativeTime } from '@/shared/lib/utils';
 

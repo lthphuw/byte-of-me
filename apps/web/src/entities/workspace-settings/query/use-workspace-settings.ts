@@ -1,8 +1,8 @@
 'use client';
 
+import type { WorkspaceSettings } from '@byte-of-me/contracts/workspace-settings';
 import { useSuspenseQuery } from '@tanstack/react-query';
 
-import type { WorkspaceSettings } from '@/entities/workspace-settings/model/settings-schema';
 import { workspaceSettingsQueries } from '@/entities/workspace-settings/query/workspace-settings-queries';
 
 /**

@@ -20,6 +20,7 @@
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
     "@byte-of-me/api-core": "workspace:*",
+    "@byte-of-me/contracts": "workspace:*",
     "@byte-of-me/db": "workspace:*",
     "@byte-of-me/logger": "workspace:*",
     "@byte-of-me/rich-text-editor": "workspace:*",

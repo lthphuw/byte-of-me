@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import type { BlogFormValues } from '@byte-of-me/contracts/blog';
 import { Skeleton } from '@byte-of-me/ui';
 import { useTranslations } from 'next-intl';
 
 import { BlogForm } from './form/blog-form';
 
 import type { AdminBlog } from '@/entities/blog';
-import type { BlogFormValues } from '@/entities/blog/model/blog-schema';
 import { EditRecordDialog, type EditRecordDialogControls } from '@/shared/ui';
 
 const FORM_ID = 'blog-editor-form';

@@ -4,6 +4,7 @@
  * write is a failure. The writes are issued together, so a dropped promise
  * would skip one silently. `$transaction` runs against a fake `tx`.
  */
+import type { EducationFormValues } from '@byte-of-me/contracts/education';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import {
@@ -18,8 +19,6 @@ import {
 } from 'bun:test';
 
 import type * as UpdateEducationModule from './update-education';
-
-import type { EducationFormValues } from '@/entities/education/model/education-schema';
 
 type Row = Record<string, unknown>;
 const txFindFirst = mock<(args: unknown) => Promise<Row | null>>();

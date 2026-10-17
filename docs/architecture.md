@@ -112,6 +112,7 @@ flowchart TB
     FORMS["@byte-of-me/ui-forms<br/>form · calendar · date-picker · command · multi-select"]
     CAROUSEL["@byte-of-me/ui-carousel<br/>carousel · useEmblaState"]
     API["@byte-of-me/api-core<br/>ApiResponse · parseInput · pagination · cache tags"]
+    CONTRACTS["@byte-of-me/contracts<br/>zod schemas · query keys · upload constraints"]
     DB["@byte-of-me/db<br/>Prisma schema · client · seed"]
     ST["@byte-of-me/storage<br/>S3-compatible client"]
     LOG["@byte-of-me/logger<br/>structured logging"]
@@ -126,6 +127,7 @@ flowchart TB
     WEB --> MOTION
     WEB --> PRIMS
     WEB --> API
+    WEB --> CONTRACTS
     WEB --> DB
     WEB --> ST
     WEB --> LOG
@@ -151,6 +153,8 @@ flowchart TB
     PRIMS --> UTILS
     PRIMS --> HOOKS
     PRIMS --> MOTION
+    CONTRACTS --> API
+    CONTRACTS --> SCHEMA
     API --> LOG
     DB --> LOG
 
@@ -163,7 +167,7 @@ flowchart TB
     classDef pkg fill:#0f766e,stroke:#5eead4,color:#f0fdfa
 
     class WEB app
-    class UI,EDITOR,SCHEMA,RENDER,UTILS,HOOKS,MOTION,PRIMS,TOAST,FORMS,CAROUSEL,API,DB,ST,LOG,CFG pkg
+    class UI,EDITOR,SCHEMA,RENDER,UTILS,HOOKS,MOTION,PRIMS,TOAST,FORMS,CAROUSEL,API,CONTRACTS,DB,ST,LOG,CFG pkg
 ```
 
 Solid arrows are runtime dependencies; dashed arrows are build-time only — `@byte-of-me/config` ships no application code: `tsconfig` presets that each workspace extends by relative path, `boundaries.json` (below), and the `bun test` preloads in `test/`.
@@ -191,6 +195,7 @@ flowchart TB
         FORMS["ui-forms"]
         CAROUSEL["ui-carousel"]
         RENDER["rich-text-render"]
+        CONTRACTS["contracts"]
     end
     subgraph L1["L1"]
         API["api-core"]
@@ -219,6 +224,7 @@ flowchart TB
     WEB --> PRIMS
     WEB --> SCHEMA
     WEB --> RENDER
+    WEB --> CONTRACTS
     UI --> HOOKS
     UI --> MOTION
     UI --> PRIMS
@@ -241,11 +247,15 @@ flowchart TB
     PRIMS --> UTILS
     PRIMS --> HOOKS
     PRIMS --> MOTION
+    CONTRACTS --> API
+    CONTRACTS --> SCHEMA
     API --> LOG
     DB --> LOG
 ```
 
 `api-core` is layer 1, not 0, because `parseInput` logs through `logger` (layer 0). Its root is client-safe (no `logger`, no `node:*`) and its `./server` subpath holds `parseInput` and `getClientIp`. It is on the `noReact` list.
+
+`contracts` (layer 2) holds the pure half of each entity: the zod schemas, the TanStack query-key factories, the upload constraints, the cache-tag maps and the image-compression config. It imports only `api-core`, the light `rich-text-schema` subpaths and zod, so every export is safe in a `'use client'` file, and it is on both the `noReact` and `dbTypesOnly` lists. The Prisma-derived types (`entities/*/model/types.ts`, the `admin-*-include.ts` files) stay in `apps/web`. A query key is a contract with the server prefetch: a key that drifts hydrates nothing and raises no error.
 
 `bun run check-boundaries` (step 3 of `bun run check`) reads every source file with the TypeScript compiler API and prints `file:line  rule  message` per violation, exiting 1 on any. It runs in under a second and enforces:
 
@@ -423,7 +433,7 @@ Locales are `en` (default) and `vi`, declared once in `src/shared/i18n/routing.t
 
 ## Client reads and writes
 
-Every client read and write goes through TanStack Query. The one exception is a write that throws instead of returning an envelope (the image uploaders), which uses `useMutation` directly. A server prefetch and the client hook both call the same `queryOptions` factory (`entities/<slice>/query/<slice>-queries.ts`), so the key and the query function cannot drift apart. A mismatch raises no error: it falls through to a client fetch and leaves skeletons on screen.
+Every client read and write goes through TanStack Query. The one exception is a write that throws instead of returning an envelope (the image uploaders), which uses `useMutation` directly. A server prefetch and the client hook both call the same `queryOptions` factory (`entities/<slice>/query/<slice>-queries.ts`), built on the key factory in `@byte-of-me/contracts/<slice>`, so the key and the query function cannot drift apart. A mismatch raises no error: it falls through to a client fetch and leaves skeletons on screen.
 
 ```mermaid
 sequenceDiagram
@@ -489,6 +499,7 @@ Blog view counts deliberately sit outside all of this: `trackBlogView` writes a 
 | Add a dashboard editor | A **separate by-id read** for the form — never reuse the list row. See below |
 | Add a translatable content field | `packages/db/prisma/schema.prisma` → the `*Translation` model → migration |
 | Add a shared component | a Radix wrapper or plain element: `packages/ui-primitives/src/` + a line in its `src/index.ts`; a control that needs react-hook-form, cmdk or react-day-picker: `packages/ui-forms/src/`; one that needs embla: `packages/ui-carousel/src/`; a TipTap node both the editor and the server renderer draw: `packages/rich-text-schema/src/` (the editor's behaviour for it stays in `packages/rich-text-editor/src/`); a server-rendered piece of an article, or a client leaf that finishes one (mermaid, math): `packages/rich-text-render/src/` and a subpath in its `exports`; one that needs the editor: `packages/rich-text-editor/src/`; an app-only piece: `apps/web/src/shared/ui/` |
+| Add a form schema, query key or upload constraint | `packages/contracts/src/<slice>/` (a `<slice>-schema.ts` or `query-keys.ts` plus a line in its `index.ts`); no `@/` alias, no `react`, no database import |
 | Add a client read or write | `entities/<slice>/query/` (a `<slice>-queries.ts` factory and a `use-*.ts` hook); writes through `useServerMutation` (`shared/hooks/use-server-mutation.ts`) |
 | Change cache behaviour | `next.config.js` `headers()` for edge, `CACHE_TAGS` for data |
 | Change who can do something | `src/shared/lib/auth/session.ts` |

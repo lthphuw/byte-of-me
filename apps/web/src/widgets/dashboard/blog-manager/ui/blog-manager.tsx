@@ -1,5 +1,6 @@
 'use client';
 
+import { type BlogFormValues, blogKeys } from '@byte-of-me/contracts/blog';
 import { useTranslations } from 'next-intl';
 
 import {
@@ -9,8 +10,6 @@ import {
   getPaginatedAdminBlogs,
   updateBlog,
 } from '@/entities/blog';
-import type { BlogFormValues } from '@/entities/blog/model/blog-schema';
-import { blogKeys } from '@/entities/blog/model/query-keys';
 import { blogQueries, useAdminBlogById } from '@/entities/blog/query';
 import { BlogEditorCard } from '@/entities/blog/ui/blog-editor-card';
 import { BlogEditorDialog } from '@/features/dashboard/blog-editor';

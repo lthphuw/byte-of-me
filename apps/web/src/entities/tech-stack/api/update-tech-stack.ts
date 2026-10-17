@@ -2,15 +2,15 @@
 
 import type { ApiResponse } from '@byte-of-me/api-core';
 import { idSchema, parseInput } from '@byte-of-me/api-core/server';
+import {
+  TECH_MUTATION_TAGS,
+  type TechStackFormValues,
+  techStackSchema,
+} from '@byte-of-me/contracts/tech-stack';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { revalidateTag } from 'next/cache';
 
-import { TECH_MUTATION_TAGS } from '@/entities/tech-stack/model/revalidation';
-import {
-  type TechStackFormValues,
-  techStackSchema,
-} from '@/entities/tech-stack/model/tech-stack-schema';
 import type { AdminTechStack } from '@/entities/tech-stack/model/types';
 import { requireAdmin } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';

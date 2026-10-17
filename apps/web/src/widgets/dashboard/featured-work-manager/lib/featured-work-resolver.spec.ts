@@ -2,11 +2,10 @@
  * The form drops blank translations before validating; an error must still
  * land on the field the owner typed into, not on the one that took its index.
  */
+import type { FeaturedWorkFormValues } from '@byte-of-me/contracts/featured-work';
 import { describe, expect, it } from 'bun:test';
 
 import { featuredWorkResolver } from './featured-work-resolver';
-
-import type { FeaturedWorkFormValues } from '@/entities/featured-work/model/featured-work-schema';
 
 const run = (translations: FeaturedWorkFormValues['translations']) =>
   featuredWorkResolver({ translations }, undefined, {

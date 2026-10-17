@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useTranslations } from 'next-intl';
-
 import {
   maxUploadSizeFor,
   MediaViolationError,
   pickUploadPath,
-} from '@/entities/media/model/upload-constraints';
+} from '@byte-of-me/contracts/media';
+import { useTranslations } from 'next-intl';
+
 import { useMediaLibrary } from '@/entities/media/query';
 import { useCompressionSettings } from '@/features/dashboard/media-library/lib/use-compression-settings';
 import { CompressionSettingsPopover } from '@/features/dashboard/media-library/ui/compression-settings-popover';

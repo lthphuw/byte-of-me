@@ -3,6 +3,13 @@
  * and task, so the form may mount only once the by-id record has arrived.
  * Drives the real manager, dialog and server actions; only Prisma is replaced.
  */
+import { companyKeys } from '@byte-of-me/contracts/company';
+import { mediaKeys } from '@byte-of-me/contracts/media';
+import { techStackKeys } from '@byte-of-me/contracts/tech-stack';
+import {
+  WORKSPACE_SETTINGS_DEFAULTS,
+  workspaceSettingsKeys,
+} from '@byte-of-me/contracts/workspace-settings';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -32,11 +39,6 @@ import en from '../../../../../messages/en.json';
 
 import { CompanyManager } from './company-manager';
 
-import { companyKeys } from '@/entities/company/model/query-keys';
-import { mediaKeys } from '@/entities/media/model/query-keys';
-import { techStackKeys } from '@/entities/tech-stack/model/query-keys';
-import { workspaceSettingsKeys } from '@/entities/workspace-settings/model/query-keys';
-import { WORKSPACE_SETTINGS_DEFAULTS } from '@/entities/workspace-settings/model/settings-schema';
 import { makeQueryClient } from '@/shared/lib/query/get-query-client';
 
 const NOW = new Date('2026-01-01T00:00:00.000Z');

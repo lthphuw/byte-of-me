@@ -3,6 +3,11 @@
  * settings are not re-read per image, a dropped batch compresses a bounded few at
  * a time, and a refusal reaches the author with its reason. Dependencies injected.
  */
+import type { ImageCompressionConfig } from '@byte-of-me/contracts';
+import {
+  MAX_UPLOAD_BATCH,
+  MediaViolationError,
+} from '@byte-of-me/contracts/media';
 import { describe, expect, it, mock } from 'bun:test';
 
 import {
@@ -10,11 +15,6 @@ import {
   createSingleMediaUploader,
 } from './upload-single-media';
 
-import {
-  MAX_UPLOAD_BATCH,
-  MediaViolationError,
-} from '@/entities/media/model/upload-constraints';
-import type { ImageCompressionConfig } from '@/shared/lib/media/image-compression-config';
 import type { Media } from '@/shared/types/models';
 
 const config: ImageCompressionConfig = {

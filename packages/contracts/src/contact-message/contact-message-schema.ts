@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 /** Stable ids for the validation messages, so the public form can translate
- *  them (`contact.validation.*`) without the entity importing next-intl. */
+ *  them (`contact.validation.*`) without this package importing next-intl. */
 export type ContactMessageErrorKey =
   | 'nameTooShort'
   | 'nameTooLong'

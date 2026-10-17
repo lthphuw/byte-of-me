@@ -8,7 +8,8 @@ export const commentKeys = {
   thread: (blogId: string, limit: number) =>
     [...commentKeys.all, blogId, limit] as const,
   /** Prefix for every `thread` key of a blog, for invalidation. */
-  threads: (blogId: Maybe<string>) => [...commentKeys.all, blogId] as const,
+  threads: (blogId: string | null | undefined) =>
+    [...commentKeys.all, blogId] as const,
   adminAll: () => [...commentKeys.all, 'admin-list'] as const,
   adminList: (page: number) => [...commentKeys.adminAll(), page] as const,
 };

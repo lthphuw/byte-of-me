@@ -1,16 +1,13 @@
+import {
+  computeTargetDimensions,
+  IMAGE_COMPRESSION_DEFAULTS,
+  type ImageCompressionConfig,
+  shouldKeepOriginal,
+  shouldSkipCompression,
+} from '@byte-of-me/contracts';
 import type sharpModule from 'sharp';
 
 import 'server-only';
-
-import {
-  IMAGE_COMPRESSION_DEFAULTS,
-  type ImageCompressionConfig,
-} from '@/shared/lib/media/image-compression-config';
-import {
-  computeTargetDimensions,
-  shouldKeepOriginal,
-  shouldSkipCompression,
-} from '@/shared/lib/media/image-compression-rules';
 
 export interface CompressedImage {
   buffer: Buffer;

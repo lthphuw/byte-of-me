@@ -3,6 +3,8 @@
  * translation rows only once that post has been updated. A body is stored as
  * the JSON string the `content` column holds. Prisma is replaced whole.
  */
+import type { RichTextDoc } from '@byte-of-me/contracts';
+import type { BlogFormValues } from '@byte-of-me/contracts/blog';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import {
@@ -19,9 +21,7 @@ import {
 
 import type * as UpdateBlogModule from './update-blog';
 
-import type { BlogFormValues } from '@/entities/blog/model/blog-schema';
 import { resetTestUser } from '@/shared/lib/auth/set-test-user.test-helper';
-import type { RichTextDoc } from '@/shared/lib/rich-text-doc-schema';
 
 const blogUpdate = mock<(args: unknown) => Promise<unknown>>();
 const translationDeleteMany = mock<(args: unknown) => Promise<unknown>>();

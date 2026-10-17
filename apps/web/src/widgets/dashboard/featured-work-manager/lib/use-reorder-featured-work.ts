@@ -1,7 +1,8 @@
 'use client';
 
+import { featuredWorkKeys } from '@byte-of-me/contracts/featured-work';
+
 import { reorderFeaturedWork } from '@/entities/featured-work/api/reorder-featured-work';
-import { featuredWorkKeys } from '@/entities/featured-work/model/query-keys';
 import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 
 /**

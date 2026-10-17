@@ -1,9 +1,9 @@
 import type { ApiResponse } from '@byte-of-me/api-core';
+import type { MediaScope } from '@byte-of-me/contracts/media';
 
 import { finalizeVideoUpload } from './finalize-video-upload';
 import { prepareVideoUpload } from './prepare-video-upload';
 
-import type { MediaScope } from '@/entities/media/model/upload-constraints';
 import type { Media } from '@/shared/types/models';
 
 const defaultDeps = {

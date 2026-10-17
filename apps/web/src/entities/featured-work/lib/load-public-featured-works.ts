@@ -4,6 +4,11 @@ import {
   getTranslatedContent,
   getTranslationLanguages,
 } from '@byte-of-me/api-core';
+import {
+  FEATURED_WORK_LINKS_MAX,
+  FEATURED_WORK_MEDIA_MAX,
+} from '@byte-of-me/contracts/featured-work';
+import { ACCEPTED_VIDEO_MIME_TYPES } from '@byte-of-me/contracts/media';
 import { prisma } from '@byte-of-me/db';
 import { renderRichTextDocumentHtml } from '@byte-of-me/rich-text-render/rich-text-render';
 import {
@@ -18,16 +23,11 @@ import {
 } from '@/entities/featured-work/lib/get-featured-work-github';
 import { parseGithubPullRequestUrl } from '@/entities/featured-work/lib/parse-github-pull-request-url';
 import { safeLink } from '@/entities/featured-work/lib/safe-link';
-import {
-  FEATURED_WORK_LINKS_MAX,
-  FEATURED_WORK_MEDIA_MAX,
-} from '@/entities/featured-work/model/featured-work-schema';
 import type {
   PublicFeaturedWork,
   PublicFeaturedWorkLink,
   PublicFeaturedWorkMedia,
 } from '@/entities/featured-work/model/types';
-import { ACCEPTED_VIDEO_MIME_TYPES } from '@/entities/media/model/upload-constraints';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 
 const MAX_WORKS = 6;

@@ -1,15 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import type { FeaturedWorkFormValues } from '@byte-of-me/contracts/featured-work';
 import { useTranslations } from 'next-intl';
 
 import { FeaturedWorkForm } from './featured-work-form';
 import { FeaturedWorkFormLoading } from './featured-work-form-loading';
 
-import type {
-  AdminFeaturedWorkDetail,
-  FeaturedWorkFormValues,
-} from '@/entities/featured-work/model';
+import type { AdminFeaturedWorkDetail } from '@/entities/featured-work/model';
 import {
   ContentFade,
   EditRecordDialog,

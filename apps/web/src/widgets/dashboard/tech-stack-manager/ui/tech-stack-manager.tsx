@@ -1,6 +1,10 @@
 'use client';
 
 import { Fragment, useMemo } from 'react';
+import {
+  type TechStackFormValues,
+  techStackKeys,
+} from '@byte-of-me/contracts/tech-stack';
 import { useTranslations } from 'next-intl';
 
 import { TechStackDialog } from './tech-stack-dialog';
@@ -9,11 +13,7 @@ import { addTechStack } from '@/entities/tech-stack/api/create-tech-stack';
 import { deleteTechStack } from '@/entities/tech-stack/api/delete-tech-stack';
 import { getAllAdminTechStack } from '@/entities/tech-stack/api/get-all-admin-tech-stacks';
 import { updateTechStack } from '@/entities/tech-stack/api/update-tech-stack';
-import {
-  type AdminTechStack,
-  type TechStackFormValues,
-  techStackKeys,
-} from '@/entities/tech-stack/model';
+import type { AdminTechStack } from '@/entities/tech-stack/model';
 import { useAdminTechStackById } from '@/entities/tech-stack/query';
 import { TechStackCard } from '@/features/dashboard/tech-stack-management';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';

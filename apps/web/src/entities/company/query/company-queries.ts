@@ -1,9 +1,9 @@
 import { unwrapApiResponse } from '@byte-of-me/api-core';
+import { companyKeys } from '@byte-of-me/contracts/company';
 import { queryOptions } from '@tanstack/react-query';
 
 import { getAdminCompanyById } from '@/entities/company/api/get-admin-company-by-id';
 import { getPaginatedAdminCompanies } from '@/entities/company/api/get-paginated-admin-companies';
-import { companyKeys } from '@/entities/company/model/query-keys';
 import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 
 export const companyQueries = {

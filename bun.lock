@@ -40,6 +40,7 @@
       "dependencies": {
         "@auth/prisma-adapter": "^2.11.1",
         "@byte-of-me/api-core": "workspace:*",
+        "@byte-of-me/contracts": "workspace:*",
         "@byte-of-me/db": "workspace:*",
         "@byte-of-me/logger": "workspace:*",
         "@byte-of-me/rich-text-editor": "workspace:*",
@@ -111,6 +112,19 @@
       "version": "1.0.0",
       "devDependencies": {
         "@types/node": "catalog:",
+        "eslint": "catalog:",
+        "typescript": "catalog:",
+      },
+    },
+    "packages/contracts": {
+      "name": "@byte-of-me/contracts",
+      "version": "1.0.0",
+      "dependencies": {
+        "@byte-of-me/api-core": "workspace:*",
+        "@byte-of-me/rich-text-schema": "workspace:*",
+        "zod": "catalog:",
+      },
+      "devDependencies": {
         "eslint": "catalog:",
         "typescript": "catalog:",
       },
@@ -561,6 +575,8 @@
     "@byte-of-me/api-core": ["@byte-of-me/api-core@workspace:packages/api-core"],
 
     "@byte-of-me/config": ["@byte-of-me/config@workspace:packages/config"],
+
+    "@byte-of-me/contracts": ["@byte-of-me/contracts@workspace:packages/contracts"],
 
     "@byte-of-me/db": ["@byte-of-me/db@workspace:packages/db"],
 

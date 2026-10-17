@@ -2,6 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import {
+  IMAGE_COMPRESSION_FORMATS,
+  type ImageCompressionConfig,
+  type ImageCompressionFormat,
+} from '@byte-of-me/contracts';
+import {
   Button,
   Input,
   Label,
@@ -17,12 +22,6 @@ import {
 } from '@byte-of-me/ui';
 import { Check, Loader2, Settings2, TriangleAlert } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-
-import {
-  IMAGE_COMPRESSION_FORMATS,
-  type ImageCompressionConfig,
-  type ImageCompressionFormat,
-} from '@/shared/lib/media/image-compression-config';
 
 export interface CompressionSettingsPopoverProps {
   config: ImageCompressionConfig;

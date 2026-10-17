@@ -63,6 +63,8 @@ There is no `middleware.ts`; the locale comes from the `[locale]` segment.
   hooks in `src/entities/<slice>/query/`, writes through `useServerMutation`
   (`src/shared/hooks/use-server-mutation.ts`), and the envelope unwrap,
   `unwrapApiResponse` from `@byte-of-me/api-core`.
+- The zod schemas, query-key factories and upload constraints of each entity
+  are `@byte-of-me/contracts/<slice>`, not files under `entities/*/model/`.
 
 ## Scripts
 

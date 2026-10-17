@@ -13,6 +13,11 @@
  */
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
+import { mediaKeys } from '@byte-of-me/contracts/media';
+import {
+  WORKSPACE_SETTINGS_DEFAULTS,
+  workspaceSettingsKeys,
+} from '@byte-of-me/contracts/workspace-settings';
 import {
   Form,
   FormControl,
@@ -29,10 +34,6 @@ import { NextIntlClientProvider } from 'next-intl';
 
 import { MediaMultiSelect } from './media-multi-select';
 import { MediaSelect } from './media-select';
-
-import { mediaKeys } from '@/entities/media/model/query-keys';
-import { workspaceSettingsKeys } from '@/entities/workspace-settings/model/query-keys';
-import { WORKSPACE_SETTINGS_DEFAULTS } from '@/entities/workspace-settings/model/settings-schema';
 
 // `@testing-library/react` only auto-registers cleanup against a Jest/Vitest
 // shaped global, which `bun:test` is not — and these cases reach their control

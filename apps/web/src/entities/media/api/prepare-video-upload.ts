@@ -2,14 +2,14 @@
 
 import type { ApiResponse } from '@byte-of-me/api-core';
 import { parseInput } from '@byte-of-me/api-core/server';
-import { logger } from '@byte-of-me/logger';
-
-import { buildMediaFileKey } from '@/entities/media/model/media-file-key';
-import { videoUploadRequestSchema } from '@/entities/media/model/media-schema';
 import {
   extensionForMimeType,
   type MediaScope,
-} from '@/entities/media/model/upload-constraints';
+  videoUploadRequestSchema,
+} from '@byte-of-me/contracts/media';
+import { logger } from '@byte-of-me/logger';
+
+import { buildMediaFileKey } from '@/entities/media/model/media-file-key';
 import { supabaseStorage } from '@/shared/api';
 import { requireAdmin } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';

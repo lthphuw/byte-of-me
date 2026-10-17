@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { UseFormReturn } from 'react-hook-form';
+import type { UserProfileFormValues } from '@byte-of-me/contracts/user-profile';
 import {
   DeleteButton,
   FormControl,
@@ -15,7 +16,6 @@ import {
 import { useTranslations } from 'next-intl';
 
 import { useScopedImageUploader } from '@/entities/media/query';
-import type { UserProfileFormValues } from '@/entities/user-profile';
 import { ConfirmDeleteDialog, FieldMessage, TextField } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 

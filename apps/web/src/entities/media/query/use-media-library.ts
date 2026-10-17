@@ -1,9 +1,9 @@
 'use client';
 
+import { mediaKeys } from '@byte-of-me/contracts/media';
 import { useQuery } from '@tanstack/react-query';
 
 import { deleteMedia } from '@/entities/media/api/delete-media';
-import { mediaKeys } from '@/entities/media/model/query-keys';
 import { mediaQueries } from '@/entities/media/query/media-queries';
 import {
   type MediaUploadMessages,

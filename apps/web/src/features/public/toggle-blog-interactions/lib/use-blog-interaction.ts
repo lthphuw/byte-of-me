@@ -1,13 +1,13 @@
 'use client';
 
 import type { INTERACTION } from '@byte-of-me/api-core';
+import { blogKeys } from '@byte-of-me/contracts/blog';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 
 import type { BlogInteractionState } from '@/entities/blog/api/get-blog-interactions-for-user';
 import { toggleBlogInteraction } from '@/entities/blog/api/toggle-blog-interaction';
-import { blogKeys } from '@/entities/blog/model/query-keys';
 import { useBlogInteractionState } from '@/entities/blog/query';
 import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 

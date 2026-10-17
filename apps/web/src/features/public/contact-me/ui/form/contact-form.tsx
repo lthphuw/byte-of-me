@@ -4,6 +4,11 @@ import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { ServerActionError } from '@byte-of-me/api-core';
 import {
+  type ContactMessageFormValues,
+  createContactMessageSchema,
+  MESSAGE_MAX_LENGTH,
+} from '@byte-of-me/contracts/contact-message';
+import {
   Button,
   Form,
   FormControl,
@@ -20,12 +25,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import {
-  type ContactMessageFormValues,
-  createContactMessageSchema,
-  MESSAGE_MAX_LENGTH,
-  sendContactMessage,
-} from '@/entities/contact-message';
+import { sendContactMessage } from '@/entities/contact-message';
 import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 
 const EMPTY_VALUES: ContactMessageFormValues = {

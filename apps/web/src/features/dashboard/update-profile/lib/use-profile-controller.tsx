@@ -2,19 +2,18 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
+import {
+  createUserProfileSchema,
+  type UserProfileFormValues,
+  userProfileKeys,
+} from '@byte-of-me/contracts/user-profile';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import { rebaseAfterSave, toProfileFormValues } from './profile-form-state';
 
-import {
-  type AdminUserProfile,
-  createUserProfileSchema,
-  saveProfile,
-  type UserProfileFormValues,
-  userProfileKeys,
-} from '@/entities/user-profile';
+import { type AdminUserProfile, saveProfile } from '@/entities/user-profile';
 import { useUserProfile } from '@/entities/user-profile/query';
 import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 import { firstErroredIndex } from '@/shared/ui';

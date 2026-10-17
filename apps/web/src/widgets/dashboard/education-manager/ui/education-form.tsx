@@ -3,6 +3,10 @@
 import { useEffect, useState } from 'react';
 import { type DefaultValues, useForm } from 'react-hook-form';
 import {
+  type EducationFormValues,
+  educationSchema,
+} from '@byte-of-me/contracts/education';
+import {
   fromEditorContent,
   toEditorContent,
 } from '@byte-of-me/rich-text-schema/rich-text-content';
@@ -20,10 +24,6 @@ import { useTranslations } from 'next-intl';
 import { EducationAchievementsFieldLoading } from './education-achievements-field-loading';
 
 import type { AdminEducation } from '@/entities/education';
-import {
-  type EducationFormValues,
-  educationSchema,
-} from '@/entities/education/model/education-schema';
 import { useScopedImageUploader } from '@/entities/media/query';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
 import { LocalizedDatePicker, TextField, TranslationTabs } from '@/shared/ui';

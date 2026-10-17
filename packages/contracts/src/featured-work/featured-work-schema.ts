@@ -1,11 +1,9 @@
 import { isRichTextBlank } from '@byte-of-me/rich-text-schema/rich-text-content';
 import { z } from 'zod';
 
-// Optional in every language, English included: only the title is required.
-// `parseInput` and the client resolver both run this, so the transform is the
-// one place a blank body becomes `null`. The outer `.optional()` keeps the key
-// optional in the inferred type, so forms that do not send it still type-check.
-// Every message is a `validation.*` key, translated by the form at display time.
+// Optional in every language: only the title is required. `parseInput` and the
+// client resolver both run this, so the transform is the one place a blank body
+// becomes `null`; the outer `.optional()` keeps the key optional in the type.
 const detailsSchema = z
   .string()
   .nullable()

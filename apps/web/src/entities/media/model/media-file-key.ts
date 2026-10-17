@@ -1,4 +1,4 @@
-import type { MediaScope } from './upload-constraints';
+import type { MediaScope } from '@byte-of-me/contracts/media';
 
 import { generateFriendlyId } from '@/shared/lib/friendly-id';
 

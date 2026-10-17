@@ -3,6 +3,7 @@
  * write. The guard sits above `try`, so the refusal rejects the call instead of
  * coming back as an envelope. Prisma is replaced whole, so a leaked query shows.
  */
+import type { CompanyFormValues } from '@byte-of-me/contracts/company';
 import { prisma } from '@byte-of-me/db';
 import {
   afterAll,
@@ -20,7 +21,6 @@ import type * as GetAdminCompanyByIdModule from './get-admin-company-by-id';
 import type * as GetPaginatedAdminCompaniesModule from './get-paginated-admin-companies';
 import type * as UpdateCompanyModule from './update-company';
 
-import type { CompanyFormValues } from '@/entities/company/model/company-schema';
 import {
   resetTestUser,
   setTestUser,

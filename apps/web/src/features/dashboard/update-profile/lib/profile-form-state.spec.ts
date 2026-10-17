@@ -3,6 +3,10 @@
  * saves trimmed and clean, and a value typed mid-save stays dirty.
  */
 import { useFieldArray, useForm, type UseFormReturn } from 'react-hook-form';
+import {
+  type UserProfileFormValues,
+  userProfileSchema,
+} from '@byte-of-me/contracts/user-profile';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { act, cleanup, renderHook } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'bun:test';
@@ -10,10 +14,6 @@ import { afterEach, describe, expect, it } from 'bun:test';
 import { rebaseAfterSave, toProfileFormValues } from './profile-form-state';
 
 import type { AdminUserProfile } from '@/entities/user-profile/model/types';
-import {
-  type UserProfileFormValues,
-  userProfileSchema,
-} from '@/entities/user-profile/model/user-profile-schema';
 
 const date = new Date('2026-01-01T00:00:00.000Z');
 

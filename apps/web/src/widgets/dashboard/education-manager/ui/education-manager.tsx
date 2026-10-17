@@ -1,6 +1,10 @@
 'use client';
 
 import { getTranslatedContent } from '@byte-of-me/api-core';
+import {
+  type EducationFormValues,
+  educationKeys,
+} from '@byte-of-me/contracts/education';
 import { Badge, Button } from '@byte-of-me/ui';
 import { GraduationCap } from 'lucide-react';
 import Image from 'next/image';
@@ -12,11 +16,7 @@ import { createEducation } from '@/entities/education/api/create-education';
 import { deleteEducation } from '@/entities/education/api/delete-education';
 import { getPaginatedAdminEducations } from '@/entities/education/api/get-paginated-admin-educations';
 import { updateEducation } from '@/entities/education/api/update-education';
-import {
-  type AdminEducationListItem,
-  type EducationFormValues,
-  educationKeys,
-} from '@/entities/education/model';
+import type { AdminEducationListItem } from '@/entities/education/model';
 import {
   educationQueries,
   useAdminEducationById,

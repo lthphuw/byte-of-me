@@ -25,7 +25,7 @@ import type * as Prisma from "../internal/prismaNamespace.ts"
  * for exactly one owner.
  * 
  * The shape is not enforced here, so it is enforced at the boundary instead:
- * `entities/workspace-settings/model/settings-schema.ts` parses this with zod
+ * `contracts/src/workspace-settings/settings-schema.ts` parses this with zod
  * and merges the result over defaults. A row written by an older version of
  * the app, or a field this version has never heard of, therefore reads as the
  * default rather than breaking the dashboard.

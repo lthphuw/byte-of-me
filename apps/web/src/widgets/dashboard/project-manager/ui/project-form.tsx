@@ -3,6 +3,10 @@
 import { useEffect, useState } from 'react';
 import { type DefaultValues, useForm } from 'react-hook-form';
 import {
+  type ProjectFromValues,
+  projectSchema,
+} from '@byte-of-me/contracts/project';
+import {
   fromEditorContent,
   toEditorContent,
 } from '@byte-of-me/rich-text-schema/rich-text-content';
@@ -22,11 +26,7 @@ import { useTranslations } from 'next-intl';
 import { ProjectCoauthorFields } from './project-coauthor-fields';
 
 import { useScopedImageUploader } from '@/entities/media/query';
-import {
-  type AdminProject,
-  type ProjectFromValues,
-  projectSchema,
-} from '@/entities/project/model';
+import type { AdminProject } from '@/entities/project/model';
 import {
   ContentFade,
   FieldMessage,

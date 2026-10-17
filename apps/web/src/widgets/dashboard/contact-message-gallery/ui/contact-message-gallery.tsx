@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { contactMessageKeys } from '@byte-of-me/contracts/contact-message';
 import {
   Button,
   Card,
@@ -17,7 +18,6 @@ import { ContactMessageGridSkeleton } from './contact-message-grid-skeleton';
 
 import {
   type AdminContactMessage,
-  contactMessageKeys,
   deleteContactMessage,
 } from '@/entities/contact-message';
 import { useContactMessages } from '@/entities/contact-message/query';

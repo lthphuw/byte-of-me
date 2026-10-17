@@ -1,5 +1,9 @@
 'use client';
 
+import {
+  type CompanyFormValues,
+  companyKeys,
+} from '@byte-of-me/contracts/company';
 import { Badge, Button } from '@byte-of-me/ui';
 import { Briefcase } from 'lucide-react';
 import Image from 'next/image';
@@ -11,11 +15,7 @@ import { createCompany } from '@/entities/company/api/create-company';
 import { deleteCompany } from '@/entities/company/api/delete-company';
 import { getPaginatedAdminCompanies } from '@/entities/company/api/get-paginated-admin-companies';
 import { updateCompany } from '@/entities/company/api/update-company';
-import {
-  type AdminCompanyListItem,
-  type CompanyFormValues,
-  companyKeys,
-} from '@/entities/company/model';
+import type { AdminCompanyListItem } from '@/entities/company/model';
 import { companyQueries, useAdminCompanyById } from '@/entities/company/query';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
 import { formatDate } from '@/shared/lib/utils';

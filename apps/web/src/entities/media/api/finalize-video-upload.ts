@@ -3,12 +3,6 @@
 import type { ApiResponse } from '@byte-of-me/api-core';
 import { CACHE_TAGS } from '@byte-of-me/api-core';
 import { parseInput } from '@byte-of-me/api-core/server';
-import { prisma } from '@byte-of-me/db';
-import { logger } from '@byte-of-me/logger';
-import { revalidateTag } from 'next/cache';
-
-import { videoExtensionOfOwnKey } from '@/entities/media/model/media-file-key';
-import { videoUploadCompletionSchema } from '@/entities/media/model/media-schema';
 import {
   describeViolation,
   isVideoMimeType,
@@ -16,7 +10,13 @@ import {
   MAX_VIDEO_SIZE_MB,
   resolveUploadedMimeType,
   sanitizeStoredFileName,
-} from '@/entities/media/model/upload-constraints';
+  videoUploadCompletionSchema,
+} from '@byte-of-me/contracts/media';
+import { prisma } from '@byte-of-me/db';
+import { logger } from '@byte-of-me/logger';
+import { revalidateTag } from 'next/cache';
+
+import { videoExtensionOfOwnKey } from '@/entities/media/model/media-file-key';
 import { supabaseStorage } from '@/shared/api';
 import { env } from '@/shared/config/env';
 import { requireAdmin } from '@/shared/lib/auth';

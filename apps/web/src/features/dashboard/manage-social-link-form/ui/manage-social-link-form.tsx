@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useFieldArray, type UseFormReturn } from 'react-hook-form';
+import type { UserProfileFormValues } from '@byte-of-me/contracts/user-profile';
 import {
   Button,
   DeleteButton,
@@ -13,7 +14,6 @@ import {
 } from '@byte-of-me/ui';
 import { useTranslations } from 'next-intl';
 
-import type { UserProfileFormValues } from '@/entities/user-profile';
 import { AddButton, ConfirmDeleteDialog, FieldMessage } from '@/shared/ui';
 
 interface PendingRemoval {

@@ -1,6 +1,7 @@
 'use client';
 
 import { type Control, useFieldArray } from 'react-hook-form';
+import type { ProjectFromValues } from '@byte-of-me/contracts/project';
 import {
   Button,
   FormControl,
@@ -12,7 +13,6 @@ import {
 import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import type { ProjectFromValues } from '@/entities/project/model';
 import { AddButton, FieldMessage, TextField } from '@/shared/ui';
 
 interface ProjectCoauthorFieldsProps {

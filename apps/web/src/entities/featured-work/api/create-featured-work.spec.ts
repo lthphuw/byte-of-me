@@ -3,6 +3,7 @@
  * array order, and only for media the admin owns. Prisma's delegates are replaced
  * with in-memory fakes; no database is touched.
  */
+import type { FeaturedWorkFormValues } from '@byte-of-me/contracts/featured-work';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import {
@@ -17,7 +18,6 @@ import {
 
 import { createFeaturedWork } from './create-featured-work';
 
-import type { FeaturedWorkFormValues } from '@/entities/featured-work/model/featured-work-schema';
 import { resetTestUser } from '@/shared/lib/auth/set-test-user.test-helper';
 
 const aggregate = mock(async (_args: unknown) => ({ _max: { sortOrder: 2 } }));

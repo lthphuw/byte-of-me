@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { isImageMimeType } from '@byte-of-me/contracts/media';
 import {
   Button,
   type ButtonProps,
@@ -13,7 +14,6 @@ import { Check, ChevronDown, ImageIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
-import { isImageMimeType } from '@/entities/media/model/upload-constraints';
 import { useMediaInfiniteQuery } from '@/entities/media/query';
 import { useWorkspaceSettings } from '@/entities/workspace-settings/query';
 import { MediaPickerGrid } from '@/features/dashboard/media-library/ui/media-picker-grid';

@@ -1,12 +1,14 @@
 'use client';
 
+import type { ImageCompressionConfig } from '@byte-of-me/contracts';
+import {
+  type WorkspaceSettings,
+  workspaceSettingsKeys,
+} from '@byte-of-me/contracts/workspace-settings';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { updateWorkspaceSettings } from '@/entities/workspace-settings/api/update-workspace-settings';
-import { workspaceSettingsKeys } from '@/entities/workspace-settings/model/query-keys';
-import type { WorkspaceSettings } from '@/entities/workspace-settings/model/settings-schema';
 import { useServerMutation } from '@/shared/hooks/use-server-mutation';
-import type { ImageCompressionConfig } from '@/shared/lib/media/image-compression-config';
 
 interface ImageCompressionMessages {
   errorMessage: string;

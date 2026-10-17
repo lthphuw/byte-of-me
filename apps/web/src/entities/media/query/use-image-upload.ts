@@ -1,14 +1,13 @@
 'use client';
 
 import { useCallback } from 'react';
+import { mediaKeys, type MediaScope } from '@byte-of-me/contracts/media';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import {
   uploadSingleMedia,
   uploadSingleMediaRecord,
 } from '@/entities/media/api/upload-single-media';
-import { mediaKeys } from '@/entities/media/model/query-keys';
-import type { MediaScope } from '@/entities/media/model/upload-constraints';
 
 /**
  * One image into the library, resolving with the stored row. The uploader

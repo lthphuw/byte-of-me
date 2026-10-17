@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import type { ImageCompressionConfig } from '@byte-of-me/contracts';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
@@ -8,7 +9,6 @@ import {
   useUpdateImageCompression,
   useWorkspaceSettings,
 } from '@/entities/workspace-settings/query';
-import type { ImageCompressionConfig } from '@/shared/lib/media/image-compression-config';
 
 /**
  * The compression popover's state, read from the settings query. A change shows

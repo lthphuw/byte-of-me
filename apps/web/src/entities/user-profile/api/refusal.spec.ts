@@ -3,6 +3,7 @@
  * call, not by returning a failure envelope, and never reach the database.
  * The Prisma delegate and the transaction are replaced, as in the blog specs.
  */
+import type { UserProfileFormValues } from '@byte-of-me/contracts/user-profile';
 import { prisma } from '@byte-of-me/db';
 import { afterAll, beforeEach, describe, expect, it, mock } from 'bun:test';
 
@@ -10,7 +11,6 @@ import { getUserProfile } from './get-user-profile';
 import { getAdminUserProfile } from './get-user-profile-with-translations';
 import { saveProfile } from './save-profile';
 
-import type { UserProfileFormValues } from '@/entities/user-profile/model/user-profile-schema';
 import {
   resetTestUser,
   setTestUser,

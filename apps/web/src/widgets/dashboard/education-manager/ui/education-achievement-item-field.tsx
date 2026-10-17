@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { type Control, useWatch } from 'react-hook-form';
+import type { EducationFormValues } from '@byte-of-me/contracts/education';
 import {
   fromEditorContent,
   toEditorContent,
@@ -26,7 +27,6 @@ import {
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import type { EducationFormValues } from '@/entities/education/model/education-schema';
 import { useScopedImageUploader } from '@/entities/media/query';
 import { MediaMultiSelect } from '@/features/dashboard/media-library/ui/media-multi-select';
 import { useRevealOnInvalidSubmit } from '@/shared/hooks/use-reveal-on-invalid-submit';

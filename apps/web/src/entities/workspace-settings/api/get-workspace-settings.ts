@@ -1,14 +1,14 @@
 import { cache } from 'react';
 import { CACHE_TAGS } from '@byte-of-me/api-core';
+import {
+  parseWorkspaceSettings,
+  type WorkspaceSettings,
+} from '@byte-of-me/contracts/workspace-settings';
 import { prisma } from '@byte-of-me/db';
 import { unstable_cache } from 'next/cache';
 
 import 'server-only';
 
-import {
-  parseWorkspaceSettings,
-  type WorkspaceSettings,
-} from '@/entities/workspace-settings/model/settings-schema';
 import { requireAdmin } from '@/shared/lib/auth';
 import { LAYOUT_CACHE_REVALIDATE_SECONDS } from '@/shared/lib/constants';
 

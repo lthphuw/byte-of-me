@@ -3,6 +3,10 @@
 import { useEffect, useState } from 'react';
 import { type DefaultValues, useFieldArray, useForm } from 'react-hook-form';
 import {
+  type CompanyFormValues,
+  companySchema,
+} from '@byte-of-me/contracts/company';
+import {
   Button,
   Form,
   FormControl,
@@ -16,10 +20,6 @@ import { useTranslations } from 'next-intl';
 
 import { CompanyRoleItemField } from './company-role-item-field';
 
-import {
-  type CompanyFormValues,
-  companySchema,
-} from '@/entities/company/model/company-schema';
 import type { AdminCompany } from '@/entities/company/model/types';
 import type { TechStackOptionsResult } from '@/entities/tech-stack/query';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';

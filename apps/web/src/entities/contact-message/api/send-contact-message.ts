@@ -3,6 +3,10 @@
 import type { ApiResponse } from '@byte-of-me/api-core';
 import { CACHE_TAGS } from '@byte-of-me/api-core';
 import { getClientIp, parseInput } from '@byte-of-me/api-core/server';
+import {
+  type ContactMessageFormValues,
+  contactMessageSchema,
+} from '@byte-of-me/contracts/contact-message';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import { escapeHtml } from '@byte-of-me/rich-text-schema/sanitize';
@@ -10,10 +14,6 @@ import { revalidateTag } from 'next/cache';
 import { headers } from 'next/headers';
 import { after } from 'next/server';
 
-import {
-  type ContactMessageFormValues,
-  contactMessageSchema,
-} from '@/entities/contact-message/model/contact-message-schema';
 import type { ContactMessageFailureCode } from '@/entities/contact-message/model/types';
 import { mailer } from '@/shared/api';
 import { env } from '@/shared/config/env';

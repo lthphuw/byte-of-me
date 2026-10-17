@@ -1,5 +1,6 @@
 'use client';
 
+import { type TagFormValues, tagKeys } from '@byte-of-me/contracts/tag';
 import { Button } from '@byte-of-me/ui';
 import { useLocale, useTranslations } from 'next-intl';
 
@@ -11,8 +12,6 @@ import {
   deleteTag,
   getPaginatedAdminTags,
   tagDisplayName,
-  type TagFormValues,
-  tagKeys,
   updateTag,
 } from '@/entities/tag';
 import { useAdminTagById } from '@/entities/tag/query';

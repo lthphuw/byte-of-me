@@ -1,5 +1,9 @@
 'use client';
 
+import {
+  type ProjectFromValues,
+  projectKeys,
+} from '@byte-of-me/contracts/project';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { ProjectDialog } from './project-dialog';
@@ -8,12 +12,7 @@ import { createProject } from '@/entities/project/api/create-project';
 import { deleteProject } from '@/entities/project/api/delete-project';
 import { getPaginatedAdminProjects } from '@/entities/project/api/get-paginated-admin-projects';
 import { updateProject } from '@/entities/project/api/update-project';
-import {
-  type AdminProject,
-  adminProjectTitle,
-  type ProjectFromValues,
-  projectKeys,
-} from '@/entities/project/model';
+import { type AdminProject, adminProjectTitle } from '@/entities/project/model';
 import { projectQueries, useAdminProjectById } from '@/entities/project/query';
 import { ProjectEditorCard } from '@/entities/project/ui/project-editor-card';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';

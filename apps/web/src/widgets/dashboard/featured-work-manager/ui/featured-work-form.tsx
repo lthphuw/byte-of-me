@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { type DefaultValues, useForm } from 'react-hook-form';
+import type { FeaturedWorkFormValues } from '@byte-of-me/contracts/featured-work';
 import {
   fromEditorContent,
   toEditorContent,
@@ -15,7 +16,6 @@ import {
 } from '@byte-of-me/ui';
 import { useTranslations } from 'next-intl';
 
-import type { FeaturedWorkFormValues } from '@/entities/featured-work/model/featured-work-schema';
 import type { AdminFeaturedWorkDetail } from '@/entities/featured-work/model/types';
 import { useScopedImageUploader } from '@/entities/media/query';
 import { FieldMessage, TextField, TranslationTabs } from '@/shared/ui';

@@ -7,6 +7,7 @@
  * the stored pair and only an explicit `[]` clears it. The transaction runs
  * against a fake `tx`; no database is touched.
  */
+import type { FeaturedWorkFormValues } from '@byte-of-me/contracts/featured-work';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
 import {
@@ -21,7 +22,6 @@ import {
 
 import { updateFeaturedWork } from './update-featured-work';
 
-import type { FeaturedWorkFormValues } from '@/entities/featured-work/model/featured-work-schema';
 import { resetTestUser } from '@/shared/lib/auth/set-test-user.test-helper';
 
 const DETAILS = JSON.stringify({

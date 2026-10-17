@@ -3,12 +3,6 @@
 import type { ApiResponse } from '@byte-of-me/api-core';
 import { CACHE_TAGS } from '@byte-of-me/api-core';
 import { parseInput } from '@byte-of-me/api-core/server';
-import { prisma } from '@byte-of-me/db';
-import { logger } from '@byte-of-me/logger';
-import { revalidateTag } from 'next/cache';
-
-import { buildMediaFileKey } from '@/entities/media/model/media-file-key';
-import { mediaScopeSchema } from '@/entities/media/model/media-schema';
 import {
   type AcceptedMediaMimeType,
   describeViolation,
@@ -17,9 +11,15 @@ import {
   isVideoMimeType,
   maxUploadSizeFor,
   type MediaScope,
+  mediaScopeSchema,
   resolveUploadedMimeType,
   sanitizeStoredFileName,
-} from '@/entities/media/model/upload-constraints';
+} from '@byte-of-me/contracts/media';
+import { prisma } from '@byte-of-me/db';
+import { logger } from '@byte-of-me/logger';
+import { revalidateTag } from 'next/cache';
+
+import { buildMediaFileKey } from '@/entities/media/model/media-file-key';
 import { getWorkspaceSettings } from '@/entities/workspace-settings/api/get-workspace-settings';
 import { supabaseStorage } from '@/shared/api';
 import { env } from '@/shared/config/env';

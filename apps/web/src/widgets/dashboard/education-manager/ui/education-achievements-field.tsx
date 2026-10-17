@@ -2,13 +2,13 @@
 
 import { useState } from 'react';
 import { type Control, useFieldArray } from 'react-hook-form';
+import type { EducationFormValues } from '@byte-of-me/contracts/education';
 import { Button } from '@byte-of-me/ui';
 import { Trophy } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { EducationAchievementItemField } from './education-achievement-item-field';
 
-import type { EducationFormValues } from '@/entities/education/model/education-schema';
 import { AddButton } from '@/shared/ui';
 
 interface EducationAchievementsFieldProps {

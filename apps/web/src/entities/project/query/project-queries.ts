@@ -1,12 +1,14 @@
 import { unwrapApiResponse } from '@byte-of-me/api-core';
+import {
+  projectKeys,
+  type PublicProjectFilters,
+} from '@byte-of-me/contracts/project';
 import { queryOptions } from '@tanstack/react-query';
 
 import { getAdminProjectById } from '@/entities/project/api/get-admin-project-by-id';
 import { getAdminProjectOptions } from '@/entities/project/api/get-admin-project-options';
 import { getPaginatedAdminProjects } from '@/entities/project/api/get-paginated-admin-projects';
 import { getPaginatedPublicProjects } from '@/entities/project/api/get-paginated-public-projects';
-import { projectKeys } from '@/entities/project/model/query-keys';
-import type { PublicProjectFilters } from '@/entities/project/model/types';
 import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 
 /**

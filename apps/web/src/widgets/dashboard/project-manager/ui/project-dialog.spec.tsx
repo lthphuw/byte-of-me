@@ -3,6 +3,8 @@
  * empty even right after an edit; the seeded values must survive validation on
  * save. The form is seeded once at mount, no longer reset by an effect.
  */
+import { tagKeys } from '@byte-of-me/contracts/tag';
+import { techStackKeys } from '@byte-of-me/contracts/tech-stack';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   cleanup,
@@ -21,8 +23,6 @@ import en from '../../../../../messages/en.json';
 import { ProjectDialog } from './project-dialog';
 
 import type { AdminProject } from '@/entities/project/model';
-import { tagKeys } from '@/entities/tag/model/query-keys';
-import { techStackKeys } from '@/entities/tech-stack/model/query-keys';
 
 afterEach(cleanup);
 

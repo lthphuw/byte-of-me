@@ -1,4 +1,9 @@
-import type { PublicProjectFilters } from './types';
+/** The public timeline's filters, as the URL carries them. */
+export type PublicProjectFilters = {
+  tagSlugs: string[];
+  techStackSlugs: string[];
+  search: string;
+};
 
 export const projectKeys = {
   all: ['project'] as const,

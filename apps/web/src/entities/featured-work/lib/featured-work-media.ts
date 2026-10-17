@@ -1,7 +1,6 @@
+import type { FeaturedWorkFormValues } from '@byte-of-me/contracts/featured-work';
+import { ACCEPTED_VIDEO_MIME_TYPES } from '@byte-of-me/contracts/media';
 import type { Prisma } from '@byte-of-me/db/types';
-
-import type { FeaturedWorkFormValues } from '@/entities/featured-work/model/featured-work-schema';
-import { ACCEPTED_VIDEO_MIME_TYPES } from '@/entities/media/model/upload-constraints';
 
 /** The join rows for a validated `media` array: a slot is its position in the array. */
 export function toMediaRows(

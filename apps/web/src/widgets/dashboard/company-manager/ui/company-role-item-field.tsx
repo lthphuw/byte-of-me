@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { type Control, useFieldArray, useWatch } from 'react-hook-form';
+import type { CompanyFormValues } from '@byte-of-me/contracts/company';
 import {
   Button,
   Collapsible,
@@ -17,7 +18,6 @@ import { useTranslations } from 'next-intl';
 
 import { CompanyTaskItemField } from './company-task-item-field';
 
-import type { CompanyFormValues } from '@/entities/company/model/company-schema';
 import { useRevealOnInvalidSubmit } from '@/shared/hooks/use-reveal-on-invalid-submit';
 import { cn } from '@/shared/lib/utils';
 import {

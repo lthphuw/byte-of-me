@@ -4,6 +4,7 @@
  * than returning an envelope, and Prisma is never reached. Prisma is replaced
  * at the delegate, as in `get-admin-project-options.spec.ts`.
  */
+import type { ProjectFromValues } from '@byte-of-me/contracts/project';
 import { prisma } from '@byte-of-me/db';
 import {
   afterAll,
@@ -15,7 +16,6 @@ import {
   mock,
 } from 'bun:test';
 
-import type { ProjectFromValues } from '@/entities/project/model';
 import {
   resetTestUser,
   setTestUser,
