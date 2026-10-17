@@ -291,6 +291,8 @@ declare const messages: {
     "present": "Present",
     "ongoing": "Ongoing",
     "moreAchievements": "{count, plural, one {# more achievement} other {# more achievements}}",
+    "achievementCount": "{count, plural, one {# achievement} other {# achievements}}",
+    "educationViewLabel": "Education view",
     "showLess": "Show less",
     "profileUnavailableTitle": "Profile Not Set Up",
     "profileUnavailableDescription": "The public profile you are looking for is currently unavailable or hasn't been configured yet.",

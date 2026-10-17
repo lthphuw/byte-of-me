@@ -22,7 +22,7 @@ export function AchievementItem({
 }: AchievementItemProps) {
   return (
     <div className="space-y-2">
-      <h4 className="text-sm font-medium leading-snug md:text-base">
+      <h4 className="text-sm font-medium leading-5 md:text-base md:leading-[22px]">
         {a.title}
       </h4>
 

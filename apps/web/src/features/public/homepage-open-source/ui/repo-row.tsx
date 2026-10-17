@@ -1,4 +1,3 @@
-import type { CSSProperties } from 'react';
 import type { OpenSourceRepo } from '@byte-of-me/github';
 import { Button } from '@byte-of-me/ui';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
@@ -11,6 +10,7 @@ import { RepoSummary, type RepoSummaryLabels } from './repo-summary';
 
 import { openSourceHref } from '@/entities/open-source/model/open-source-url';
 import { Link } from '@/shared/i18n/navigation';
+import { TreeStub } from '@/shared/ui/tree';
 
 export interface RepoRowLabels
   extends RepoSummaryLabels,
@@ -25,13 +25,11 @@ export interface RepoRowLabels
 const SLIM_BUTTON =
   'relative h-[26px] min-h-0 gap-1.5 px-2.5 can-hover:min-h-0 before:absolute before:-inset-y-[9px] before:inset-x-0 [&_svg]:size-3.5';
 
-// The tree's trunk from just under the avatar (28px, 14px down) to the PR list, Details only.
-// The fade and the hover colour are two elements, so the colour keeps the 150ms every segment
-// of the path uses and does not take the fade's 250ms.
-const TRUNK_STUB =
-  'pointer-events-none absolute bottom-0 left-[30px] top-[45px] w-px opacity-0 transition-opacity duration-200 ease-exit group-data-[view=details]/os:opacity-100 group-data-[view=details]/os:duration-250 group-data-[view=details]/os:ease-enter group-data-[view=details]/os:[transition-delay:var(--tree-delay)] md:left-[34px]';
-const TRUNK_STUB_LINE =
-  'block h-full w-px bg-muted-foreground/45 transition-colors duration-150 can-hover:group-has-[li:hover]/tree:bg-merged';
+// The tree's geometry (phone / from md), read by `TreeItem` and `TreeStub`: the trunk on the
+// avatar's axis, a node 14 / 16px on, a one-line row's middle at 18px / 50%, the trunk leaving the
+// avatar 3px under it.
+const TREE_VARS =
+  'group/tree [--cy:18px] [--nx:44px] [--r:10px] [--stub-top:45px] [--tx:30px] md:[--cy:50%] md:[--nx:50px] md:[--tx:34px]';
 
 /**
  * A home-page repo: its summary, two buttons, then its newest PRs in Details. `Contributions`
@@ -51,15 +49,9 @@ export function RepoRow({
   formatDate: (iso: string) => string;
 }) {
   return (
-    <div className="group/tree">
+    <div className={TREE_VARS}>
       <div className="relative flex flex-col gap-3 px-4 py-3 md:flex-row md:items-center md:justify-between md:gap-6 md:px-5">
-        <span
-          aria-hidden
-          style={{ '--tree-delay': `${index * 50}ms` } as CSSProperties}
-          className={TRUNK_STUB}
-        >
-          <span className={TRUNK_STUB_LINE} />
-        </span>
+        <TreeStub tone="merged" delay={index * 50} />
         <div className="min-w-0 flex-1">
           <RepoSummary repo={repo} labels={labels} />
         </div>

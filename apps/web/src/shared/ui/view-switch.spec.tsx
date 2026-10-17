@@ -1,25 +1,25 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'bun:test';
 
-import { OpenSourceView } from './open-source-view';
+import { ViewSwitch, ViewSwitchRoot } from './view-switch';
 
 afterEach(cleanup);
 
 function renderView() {
   return render(
-    <OpenSourceView
-      intro={<h2>Open source</h2>}
-      link={<a href="/projects">All contributions</a>}
-      labels={{
-        group: 'Contributions view',
-        compact: 'Compact',
-        details: 'Details',
-      }}
-    >
+    <ViewSwitchRoot id="section">
+      <h2>Open source</h2>
+      <ViewSwitch
+        labels={{
+          group: 'Contributions view',
+          compact: 'Compact',
+          details: 'Details',
+        }}
+      />
       <ul>
         <li>repo</li>
       </ul>
-    </OpenSourceView>
+    </ViewSwitchRoot>
   );
 }
 
@@ -30,7 +30,7 @@ function pressed() {
     .map((button) => button.getAttribute('aria-label'));
 }
 
-describe('OpenSourceView', () => {
+describe('ViewSwitch', () => {
   it('starts in Compact, the view the server HTML shows', () => {
     const { container } = renderView();
 
@@ -62,5 +62,11 @@ describe('OpenSourceView', () => {
 
     const group = screen.getByRole('group', { name: 'Contributions view' });
     expect(group.querySelectorAll('button')).toHaveLength(2);
+  });
+
+  it('carries the section id the page links to', () => {
+    const { container } = renderView();
+
+    expect(container.querySelector('section')?.id).toBe('section');
   });
 });

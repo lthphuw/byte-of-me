@@ -2,26 +2,25 @@ import type { ReactNode } from 'react';
 
 import { cn } from '@/shared/lib/utils';
 
-// A part of a repo row that exists in one view only. `OpenSourceView` puts `data-view` and
-// `group/os` on the section, so these stay server markup and the switch ships no row JS.
-// Open is 250ms ease-out, close 200ms ease-in (motion rules); `invisible` takes a closed
-// part out of tab order and the a11y tree, and flips at the end of a close, not the start.
+// A part of a row that exists in one view only. `ViewSwitchRoot` puts `data-view` and `group/view`
+// on the section, so these stay server markup. Open is 250ms ease-out, close 200ms ease-in;
+// `invisible` takes a closed part out of tab order and flips at the end of a close.
 const TRANSITION =
   'motion-reduce:[transition-property:opacity,visibility] transition-[grid-template-rows,grid-template-columns,opacity,visibility]';
 
 const ROWS = {
   details:
-    'grid grid-rows-[0fr] opacity-0 invisible duration-200 ease-exit group-data-[view=details]/os:grid-rows-[1fr] group-data-[view=details]/os:opacity-100 group-data-[view=details]/os:visible group-data-[view=details]/os:duration-250 group-data-[view=details]/os:ease-enter',
+    'grid grid-rows-[0fr] opacity-0 invisible duration-200 ease-exit group-data-[view=details]/view:grid-rows-[1fr] group-data-[view=details]/view:opacity-100 group-data-[view=details]/view:visible group-data-[view=details]/view:duration-250 group-data-[view=details]/view:ease-enter',
   compact:
-    'grid grid-rows-[1fr] opacity-100 duration-250 ease-enter group-data-[view=details]/os:grid-rows-[0fr] group-data-[view=details]/os:opacity-0 group-data-[view=details]/os:invisible group-data-[view=details]/os:duration-200 group-data-[view=details]/os:ease-exit',
+    'grid grid-rows-[1fr] opacity-100 duration-250 ease-enter group-data-[view=details]/view:grid-rows-[0fr] group-data-[view=details]/view:opacity-0 group-data-[view=details]/view:invisible group-data-[view=details]/view:duration-200 group-data-[view=details]/view:ease-exit',
 };
 
 // 50ms between the repos, on the open only; a close leaves all of them at once. An arbitrary
 // property, because `delay-[50ms]` emitted no rule here (computed delay stayed 0s).
 const STAGGER = [
   '',
-  'group-data-[view=details]/os:[transition-delay:50ms]',
-  'group-data-[view=details]/os:[transition-delay:100ms]',
+  'group-data-[view=details]/view:[transition-delay:50ms]',
+  'group-data-[view=details]/view:[transition-delay:100ms]',
 ];
 
 /** Height `0fr -> 1fr` with no measuring: the `DisclosureRegion` technique, keyed on the view. */
@@ -59,7 +58,7 @@ export function ViewInline({ children }: { children: ReactNode }) {
     <div
       className={cn(
         TRANSITION,
-        'inline-grid grid-cols-[1fr] opacity-100 duration-250 ease-enter group-data-[view=details]/os:grid-cols-[0fr] group-data-[view=details]/os:opacity-0 group-data-[view=details]/os:invisible group-data-[view=details]/os:duration-200 group-data-[view=details]/os:ease-exit'
+        'inline-grid grid-cols-[1fr] opacity-100 duration-250 ease-enter group-data-[view=details]/view:grid-cols-[0fr] group-data-[view=details]/view:opacity-0 group-data-[view=details]/view:invisible group-data-[view=details]/view:duration-200 group-data-[view=details]/view:ease-exit'
       )}
     >
       <div className="flex min-w-0 items-center overflow-clip whitespace-nowrap">

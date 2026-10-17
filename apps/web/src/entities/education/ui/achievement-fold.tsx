@@ -1,57 +1,76 @@
 'use client';
 
-import { type ReactNode, useId, useState } from 'react';
+import {
+  createContext,
+  type ReactNode,
+  useContext,
+  useMemo,
+  useState,
+} from 'react';
 import { ChevronDown } from 'lucide-react';
 
 import { cn } from '@/shared/lib/utils';
-import { DisclosureRegion } from '@/shared/ui/disclosure-region';
 
-interface AchievementFoldProps {
-  /** The folded achievements, rendered by the server parent. */
-  children: ReactNode;
-  /** "2 more achievements": copy comes in, an entity must not pick a namespace. */
-  showMoreLabel: string;
-  showLessLabel: string;
+interface FoldState {
+  open: boolean;
+  toggle: () => void;
 }
 
+const FoldContext = createContext<FoldState | null>(null);
+
 /**
- * Achievements past the first few, opening downward with the toggle at the list end. Carousels and
- * expandable text have heights known only after layout, so the reveal is `DisclosureRegion` (no
- * measuring); rows stay in the DOM so carousels size while collapsed.
+ * Wraps the achievement tree. The folded rows are server markup that stay in the tree as
+ * siblings of the shown ones, so the trunk and the hover path run through them; they read the
+ * fold as `data-fold` through `group/fold` (`TreeItem` `fold`). Rows stay in the DOM while shut,
+ * so carousels and expandable text size while collapsed.
  */
-export function AchievementFold({
-  children,
-  showMoreLabel,
-  showLessLabel,
-}: AchievementFoldProps) {
+export function AchievementFold({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
-  const regionId = useId();
+  const state = useMemo(
+    () => ({ open, toggle: () => setOpen((value) => !value) }),
+    [open]
+  );
 
   return (
-    <div>
-      {/* This fold never opens on load, so its transitions are always armed. */}
-      <DisclosureRegion id={regionId} open={open} animated>
+    <FoldContext.Provider value={state}>
+      <div data-fold={open ? 'open' : 'closed'} className="group/fold">
         {children}
-      </DisclosureRegion>
+      </div>
+    </FoldContext.Provider>
+  );
+}
 
-      <button
-        type="button"
-        aria-expanded={open}
-        aria-controls={regionId}
-        onClick={() => setOpen((value) => !value)}
-        className="flex w-full items-center justify-between gap-3 border-t px-4 py-3 text-left text-sm text-primary transition-colors hover:bg-accent/50 focus-visible:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring md:px-5"
-      >
-        <span>{open ? showLessLabel : showMoreLabel}</span>
-        <ChevronDown
-          aria-hidden
-          className={cn(
-            'h-4 w-4 shrink-0 transition-transform motion-reduce:transition-none',
-            open
-              ? 'rotate-180 duration-250 ease-enter'
-              : 'duration-200 ease-exit'
-          )}
-        />
-      </button>
-    </div>
+/** The last row of the tree: "2 more achievements" / "Show less". Copy comes in from the feature. */
+export function AchievementFoldToggle({
+  showMoreLabel,
+  showLessLabel,
+}: {
+  showMoreLabel: string;
+  showLessLabel: string;
+}) {
+  const state = useContext(FoldContext);
+  if (!state) {
+    throw new Error('AchievementFoldToggle must sit inside an AchievementFold');
+  }
+  const { open, toggle } = state;
+
+  return (
+    <button
+      type="button"
+      aria-expanded={open}
+      onClick={toggle}
+      className="relative inline-flex items-center gap-1.5 rounded-sm text-[13px] leading-5 text-primary underline underline-offset-4 before:absolute before:-inset-y-3.5 before:inset-x-0 hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <span>{open ? showLessLabel : showMoreLabel}</span>
+      <ChevronDown
+        aria-hidden
+        className={cn(
+          'size-3.5 shrink-0 transition-transform motion-reduce:transition-none',
+          open
+            ? 'rotate-180 duration-250 ease-enter'
+            : 'duration-200 ease-exit'
+        )}
+      />
+    </button>
   );
 }

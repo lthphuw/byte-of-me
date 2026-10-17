@@ -291,6 +291,8 @@ declare const messages: {
     "present": "Hiện tại",
     "ongoing": "Đang học",
     "moreAchievements": "Xem thêm {count} thành tựu",
+    "achievementCount": "{count} thành tựu",
+    "educationViewLabel": "Chế độ xem học vấn",
     "showLess": "Thu gọn",
     "profileUnavailableTitle": "Chưa thiết lập hồ sơ",
     "profileUnavailableDescription": "Hồ sơ công khai bạn đang tìm hiện chưa khả dụng hoặc chưa được thiết lập.",

@@ -1,40 +1,20 @@
-import type { CSSProperties } from 'react';
 import type { OpenSourceRepo } from '@byte-of-me/github';
 import { ArrowRight, Ellipsis, GitPullRequest } from 'lucide-react';
-
-import { ViewRegion } from './view-region';
 
 import { openSourceHref } from '@/entities/open-source/model/open-source-url';
 import { Diffstat } from '@/entities/open-source/ui/diffstat';
 import { PullRequestLink } from '@/entities/open-source/ui/pull-request-link';
 import { Link } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
+import { TREE_NODE, TreeItem } from '@/shared/ui/tree';
+import { ViewRegion } from '@/shared/ui/view-region';
 
 /** The newest PRs a repo lists on the home page; the rest are one link away in the ledger. */
 const PRS_PER_REPO = 3;
 
-// The tree, phone / from md: trunk on the avatar's axis (30 / 34px), a rounded branch (14 / 16px)
-// into a 16px node, text 8px on. `RepoRow` draws the trunk from the avatar to the first row.
-// The trunk runs through every junction and a branch is only its 10px curve: a branch that
-// carried its own vertical left a 10px gap in the trunk at each one (PRs looked apart).
-const ROW = 'relative py-2 pl-[68px] pr-4 md:pl-[74px] md:pr-5';
-// A row's own trunk is the part above its curve (8px on a phone, half a row less 10 from md);
-// `TRUNK_BELOW` is the part that goes on to the next row. Lines are `muted-foreground/45`, not
-// `--border` (about 1.5:1), which read as disconnected.
-const TRUNK =
-  'before:absolute before:left-[30px] before:top-0 before:h-2 before:w-px before:bg-muted-foreground/45 before:transition-colors before:duration-150 md:before:left-[34px] md:before:h-[calc(50%-10px)]';
-const BRANCH =
-  'after:absolute after:left-[30px] after:top-2 after:h-2.5 after:w-[14px] after:rounded-bl-[10px] after:border-b after:border-l after:border-muted-foreground/45 after:transition-colors after:duration-150 md:after:left-[34px] md:after:top-[calc(50%-10px)] md:after:w-4';
-const TRUNK_BELOW =
-  'absolute bottom-0 left-[30px] top-2 w-px bg-muted-foreground/45 transition-colors duration-150 md:left-[34px] md:top-[calc(50%-10px)]';
-// Hover lights the path from the avatar to that PR in the node's own colour: the trunk of every
-// row above (a later row hovered), this row's trunk and branch. The row below it stays grey.
-const LIT_SELF = 'hover:before:bg-merged hover:after:border-merged';
-const LIT_ABOVE = 'can-hover:has-[~li:hover]:before:bg-merged';
-const LIT_BELOW = 'can-hover:group-has-[~li:hover]/pr:bg-merged';
-// A row fades in on its own `--tree-delay`, so the tree grows down as the list opens.
-const GROW =
-  'opacity-0 transition-opacity duration-200 ease-exit group-data-[view=details]/os:opacity-100 group-data-[view=details]/os:duration-250 group-data-[view=details]/os:ease-enter group-data-[view=details]/os:[transition-delay:var(--tree-delay)]';
+// Text sits a step right of the repo name: 68px on a phone, 74px from md (the tree's node ends
+// at 60 / 66px). `RepoRow` sets the tree's variables and draws the trunk from the avatar down.
+const ROW = 'py-2 pl-[68px] pr-4 md:pl-[74px] md:pr-5';
 
 export interface RepoPullRequestsLabels {
   merged: string;
@@ -45,8 +25,8 @@ export interface RepoPullRequestsLabels {
 
 /**
  * A repo's newest merged PRs, Details view only: the repo's tree. Each PR hangs off the trunk on
- * a rounded branch that ends in its merged node, and the text sits a step right of the repo name.
- * A repo with more PRs ends in a dashed branch to the ledger link, a row as tall as the others.
+ * a rounded branch that ends in its merged node. A repo with more PRs ends in a dashed branch to
+ * the ledger link, a row as tall as the others.
  */
 export function RepoPullRequests({
   repo,
@@ -61,34 +41,23 @@ export function RepoPullRequests({
 }) {
   const shown = repo.pullRequests.slice(0, PRS_PER_REPO);
   const hidden = repo.prCount - shown.length;
-  const delay = (row: number) =>
-    ({ '--tree-delay': `${index * 50 + 80 + row * 40}ms` }) as CSSProperties;
+  const delay = (row: number) => index * 50 + 80 + row * 40;
 
   return (
     <ViewRegion show="details" index={index}>
       <ul className="pb-1">
         {shown.map((pr, row) => (
-          <li
+          <TreeItem
             key={pr.url}
-            style={delay(row)}
-            className={cn(
-              'group/pr',
-              ROW,
-              BRANCH,
-              TRUNK,
-              LIT_SELF,
-              LIT_ABOVE,
-              GROW
-            )}
+            tone="merged"
+            delay={delay(row)}
+            through={row < shown.length - 1 || hidden > 0}
+            className={ROW}
           >
-            {(row < shown.length - 1 || hidden > 0) && (
-              <span aria-hidden className={cn(TRUNK_BELOW, LIT_BELOW)} />
-            )}
-
             <GitPullRequest
               role="img"
               aria-label={labels.merged}
-              className="absolute left-[44px] top-2.5 size-4 text-merged md:left-[50px] md:top-1/2 md:-mt-2"
+              className={cn(TREE_NODE, 'text-merged')}
             />
 
             <div className="flex flex-col gap-1.5 md:flex-row md:items-center md:gap-4">
@@ -118,27 +87,21 @@ export function RepoPullRequests({
                 />
               </div>
             </div>
-          </li>
+          </TreeItem>
         ))}
 
         {hidden > 0 && (
           // 36px, the height `min-h-9` fixes, puts the branch's line at the row's middle (18px):
           // the link and the ellipsis are centred on it, which a padded row put 1-2px low.
-          <li
-            style={delay(shown.length)}
-            className={cn(
-              'relative flex min-h-9 items-center pl-[68px] pr-4 md:pl-[74px] md:pr-5',
-              BRANCH,
-              'after:border-dashed',
-              TRUNK,
-              LIT_SELF,
-              LIT_ABOVE,
-              GROW
-            )}
+          <TreeItem
+            tone="merged"
+            dashed
+            delay={delay(shown.length)}
+            className="flex min-h-9 items-center pl-[68px] pr-4 md:pl-[74px] md:pr-5"
           >
             <Ellipsis
               aria-hidden
-              className="absolute left-[44px] top-2.5 size-4 text-muted-foreground md:left-[50px]"
+              className={cn(TREE_NODE, 'text-muted-foreground')}
             />
             <Link
               href={openSourceHref(repo.nameWithOwner)}
@@ -147,7 +110,7 @@ export function RepoPullRequests({
               {labels.more(hidden)}
               <ArrowRight aria-hidden className="size-3.5" />
             </Link>
-          </li>
+          </TreeItem>
         )}
       </ul>
     </ViewRegion>

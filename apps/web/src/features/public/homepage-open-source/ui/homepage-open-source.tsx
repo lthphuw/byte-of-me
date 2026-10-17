@@ -1,13 +1,13 @@
 import { Button, ContentFade } from '@byte-of-me/ui';
 import { getFormatter, getTranslations } from 'next-intl/server';
 
-import { OpenSourceView } from './open-source-view';
 import { RepoRow, type RepoRowLabels } from './repo-row';
 
 import { getOpenSourceContributions } from '@/entities/open-source/api/get-open-source-contributions';
 import { openSourceHref } from '@/entities/open-source/model/open-source-url';
 import { Link } from '@/shared/i18n/navigation';
 import { SectionLoadError } from '@/shared/ui';
+import { ViewSwitch, ViewSwitchRoot } from '@/shared/ui/view-switch';
 
 const TOP_REPOS = 3;
 
@@ -59,8 +59,10 @@ export async function HomepageOpenSource() {
 
   return (
     <ContentFade>
-      <OpenSourceView
-        intro={
+      <ViewSwitchRoot id="open-source" className="space-y-6 md:space-y-8">
+        {/* The right column is as tall as the title and summary beside it: link on top, switch
+            below. On a phone it is one row under them. */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-stretch sm:justify-between md:gap-8">
           <div className="space-y-2">
             <h2 className="text-xl font-semibold md:text-3xl">
               {t('openSourceTitle')}
@@ -69,25 +71,29 @@ export async function HomepageOpenSource() {
               {tOss('summary', { prs: totalPrs, repos: repos.length })}
             </p>
           </div>
-        }
-        // `asChild`, not <Link><Button>: the nested form renders <a><button>, which is invalid
-        // and costs two tab stops. Slim like the switch under it: `min-h-0` drops the 44px
-        // touch floor, `before:` keeps it as a hit area.
-        link={
-          <Button
-            variant="link"
-            className="relative h-auto min-h-0 p-0 text-sm before:absolute before:-inset-y-3 before:inset-x-0 can-hover:min-h-0 md:mt-1.5 md:text-base"
-            asChild
-          >
-            <Link href={openSourceHref()}>{t('viewAllContributions')}</Link>
-          </Button>
-        }
-        labels={{
-          group: t('viewSwitchLabel'),
-          compact: t('viewCompact'),
-          details: t('viewDetails'),
-        }}
-      >
+
+          <div className="flex items-center justify-between sm:flex-col sm:items-end">
+            {/* `asChild`, not <Link><Button>: the nested form renders <a><button>, which is
+                invalid and costs two tab stops. Slim like the switch under it: `min-h-0` drops the
+                44px touch floor, `before:` keeps it as a hit area. */}
+            <Button
+              variant="link"
+              className="relative h-auto min-h-0 p-0 text-sm before:absolute before:-inset-y-3 before:inset-x-0 can-hover:min-h-0 md:mt-1.5 md:text-base"
+              asChild
+            >
+              <Link href={openSourceHref()}>{t('viewAllContributions')}</Link>
+            </Button>
+
+            <ViewSwitch
+              labels={{
+                group: t('viewSwitchLabel'),
+                compact: t('viewCompact'),
+                details: t('viewDetails'),
+              }}
+            />
+          </div>
+        </div>
+
         <ul className="divide-y overflow-hidden rounded-xl border bg-card">
           {repos.slice(0, TOP_REPOS).map((repo, index) => (
             <li key={repo.nameWithOwner}>
@@ -100,7 +106,7 @@ export async function HomepageOpenSource() {
             </li>
           ))}
         </ul>
-      </OpenSourceView>
+      </ViewSwitchRoot>
     </ContentFade>
   );
 }
