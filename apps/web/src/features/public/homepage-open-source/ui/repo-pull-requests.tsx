@@ -60,32 +60,29 @@ export function RepoPullRequests({
               className={cn(TREE_NODE, 'text-merged')}
             />
 
-            <div className="flex flex-col gap-1.5 md:flex-row md:items-center md:gap-4">
-              <p className="line-clamp-2 min-w-0 flex-1 text-sm font-medium leading-snug md:line-clamp-1">
+            {/* A phone has 227px here: the title and `View` (an icon) share line one, the date and
+                diffstat get line two to themselves. From md all three sit on one line. */}
+            <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-3 gap-y-1.5 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-center md:gap-x-4">
+              <p className="col-start-1 row-start-1 line-clamp-2 text-sm font-medium leading-snug md:line-clamp-1">
                 {pr.title}{' '}
                 <span className="whitespace-nowrap font-normal tabular-nums text-muted-foreground">
                   #{pr.number}
                 </span>
               </p>
 
-              {/* A phone has 227px here: date and diffstat, then `View` on a second line when they
-                  do not fit together; `ml-auto` keeps it on the right edge either way. */}
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground md:shrink-0 md:flex-nowrap md:text-[13px]">
-                <span className="inline-flex flex-wrap items-center gap-x-2 gap-y-1">
-                  <time dateTime={pr.mergedAt} className="whitespace-nowrap">
-                    {formatDate(pr.mergedAt)}
-                  </time>
-                  <Diffstat
-                    additions={pr.additions}
-                    deletions={pr.deletions}
-                  />
-                </span>
-                <PullRequestLink
-                  href={pr.url}
-                  label={labels.view}
-                  className="ml-auto md:ml-0"
-                />
-              </div>
+              <span className="col-span-2 row-start-2 inline-flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground md:col-span-1 md:col-start-2 md:row-start-1 md:flex-nowrap md:text-[13px]">
+                <time dateTime={pr.mergedAt} className="whitespace-nowrap">
+                  {formatDate(pr.mergedAt)}
+                </time>
+                <Diffstat additions={pr.additions} deletions={pr.deletions} />
+              </span>
+
+              <PullRequestLink
+                iconOnly
+                href={pr.url}
+                label={labels.view}
+                className="col-start-2 row-start-1 md:col-start-3"
+              />
             </div>
           </TreeItem>
         ))}
