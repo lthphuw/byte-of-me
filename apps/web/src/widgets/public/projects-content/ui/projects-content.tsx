@@ -25,12 +25,9 @@ import {
 } from '@/features/public/project-filters';
 import { usePathname, useRouter } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
-import { ListPageHeader } from '@/shared/ui';
+import { ListPageHeader, SegmentPill } from '@/shared/ui';
 import { ProjectsShell } from '@/widgets/public/projects-content/ui/projects-shell';
 import { ProjectsTimeline } from '@/widgets/public/projects-content/ui/projects-timeline';
-
-const TAB_PILL =
-  'pointer-events-none absolute inset-y-1 left-1 -z-10 w-[calc(50%-0.25rem)] rounded-md bg-background shadow motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-sleek';
 
 // Applied to the panel that has just become active. Only after the first switch:
 // on load the active panel is already in the server HTML, and fading it in
@@ -125,13 +122,7 @@ export function ProjectsContent({ openSource }: ProjectsContentProps) {
   // The triggers drop their own active background so only the pill paints it.
   const tabs = openSource && (
     <TabsList className="relative isolate inline-grid grid-cols-2 self-start">
-      <span
-        aria-hidden
-        className={cn(
-          TAB_PILL,
-          isOpenSourceView ? 'translate-x-full' : 'translate-x-0'
-        )}
-      />
+      <SegmentPill end={isOpenSourceView} />
       <TabsTrigger
         value="projects"
         className="data-[state=active]:bg-transparent data-[state=active]:shadow-none"

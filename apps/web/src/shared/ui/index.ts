@@ -17,3 +17,4 @@ export * from './motion';
 export * from './record-dialog';
 export * from './record-list';
 export * from './section-load-error';
+export * from './segment-pill';

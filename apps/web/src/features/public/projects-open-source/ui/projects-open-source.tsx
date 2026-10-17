@@ -10,13 +10,8 @@ import {
   resolveLedgerRepo,
   toLedger,
 } from '@byte-of-me/github';
-import {
-  badgeVariants,
-  Pagination,
-  useHydrated,
-  useMediaQuery,
-} from '@byte-of-me/ui';
-import { ArrowUpRight, GitPullRequest } from 'lucide-react';
+import { Pagination, useHydrated, useMediaQuery } from '@byte-of-me/ui';
+import { GitPullRequest } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 
@@ -27,8 +22,8 @@ import {
   openSourceHref,
 } from '@/entities/open-source/model/open-source-url';
 import { Diffstat } from '@/entities/open-source/ui/diffstat';
+import { PullRequestLink } from '@/entities/open-source/ui/pull-request-link';
 import { useRouter } from '@/shared/i18n/navigation';
-import { cn } from '@/shared/lib/utils';
 import { FilterSearchInput } from '@/shared/ui';
 
 // Hidden for now: the repo picker covers the list today. Set to `true` to show
@@ -168,19 +163,11 @@ export function ProjectsOpenSource({ repos }: { repos: OpenSourceRepo[] }) {
                             additions={item.additions}
                             deletions={item.deletions}
                           />
-                          {/* `before:` is a 44px hit area around the 22px chip; it adds no height. */}
-                          <a
+                          <PullRequestLink
                             href={item.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={cn(
-                              badgeVariants({ variant: 'outline', interactive: true }),
-                              'relative shrink-0 gap-1 text-primary transition-colors hover:bg-primary/10 before:absolute before:inset-x-0 before:-inset-y-3 md:ml-auto'
-                            )}
-                          >
-                            {t('view')}
-                            <ArrowUpRight aria-hidden className="size-3" />
-                          </a>
+                            label={t('view')}
+                            className="md:ml-auto"
+                          />
                         </div>
                       </div>
                     </li>
