@@ -1,9 +1,8 @@
 'use client';
 
-// Subpath import, not the `@byte-of-me/ui` barrel: the barrel reaches the
-// TipTap editor, and the whole point of the print route is that no editor
-// JavaScript loads on it.
-import { Button } from '@byte-of-me/ui/button';
+// The leaf package, not the `@byte-of-me/ui` facade: the print route must load
+// no editor JavaScript, and this import has no path to it.
+import { Button } from '@byte-of-me/ui-primitives';
 import { Printer } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 

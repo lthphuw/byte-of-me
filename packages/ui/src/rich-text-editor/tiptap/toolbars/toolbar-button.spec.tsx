@@ -1,8 +1,7 @@
+import { TooltipProvider } from '@byte-of-me/ui-primitives';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, mock } from 'bun:test';
 import { Bold } from 'lucide-react';
-
-import { TooltipProvider } from '../../../tooltip';
 
 import { formatShortcut, ToolbarButton } from './toolbar-button';
 

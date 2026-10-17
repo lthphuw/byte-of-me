@@ -1,11 +1,10 @@
 'use client';
 
 import * as React from 'react';
+import { Button, Textarea } from '@byte-of-me/ui-primitives';
 import type { Editor } from '@tiptap/core';
 import { AlertTriangle, ClipboardPaste, X } from 'lucide-react';
 
-import { Button } from '../../../../button';
-import { Textarea } from '../../../../textarea';
 import type { EditorLabels } from '../../editor-labels';
 
 import { parseBibtex } from './bibtex';

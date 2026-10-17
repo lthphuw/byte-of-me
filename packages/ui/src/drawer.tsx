@@ -1,10 +1,10 @@
 'use client';
 
 import * as React from 'react';
+import { MODAL_TITLE, SCRIM_FILL } from '@byte-of-me/ui-primitives';
 import { cn } from '@byte-of-me/ui-utils';
 import { Drawer as DrawerPrimitive } from 'vaul';
 
-import { MODAL_TITLE, SCRIM_FILL } from './lib/surface-classes';
 
 const Drawer = DrawerPrimitive.Root;
 

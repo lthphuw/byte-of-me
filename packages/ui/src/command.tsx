@@ -1,11 +1,11 @@
 'use client';
 
 import * as React from 'react';
+import { MENU_ITEM } from '@byte-of-me/ui-primitives';
 import { cn } from '@byte-of-me/ui-utils';
 import { Command as CommandPrimitive } from 'cmdk';
 import { Search } from 'lucide-react';
 
-import { MENU_ITEM } from './lib/surface-classes';
 
 const Command = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive>,

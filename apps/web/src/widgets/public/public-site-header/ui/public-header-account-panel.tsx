@@ -1,6 +1,6 @@
 'use client';
 
-import { Skeleton } from '@byte-of-me/ui/skeleton';
+import { Skeleton } from '@byte-of-me/ui-primitives';
 import { LogOut } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 

@@ -1,7 +1,7 @@
 {
   "layers": [
     ["logger", "storage", "ui-hooks", "ui-motion", "ui-utils"],
-    ["db"],
+    ["db", "ui-primitives", "ui-toast"],
     [],
     [],
     ["ui"]

@@ -1,11 +1,16 @@
 'use client';
 
+import {
+  Button,
+  type ButtonProps,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@byte-of-me/ui-primitives';
 import { cn } from '@byte-of-me/ui-utils';
 import { CalendarIcon } from 'lucide-react';
 
-import { Button, type ButtonProps } from './button';
 import { Calendar } from './calendar';
-import { Popover, PopoverContent, PopoverTrigger } from './popover';
 
 type DatePickerProps = Omit<
   ButtonProps,

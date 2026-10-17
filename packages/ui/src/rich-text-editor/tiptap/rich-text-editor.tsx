@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useMediaQuery } from '@byte-of-me/ui-hooks';
+import { EditorSkeleton } from '@byte-of-me/ui-primitives';
 import { cn } from '@byte-of-me/ui-utils';
 import type { EditorProps } from '@tiptap/pm/view';
 import {
@@ -12,8 +13,6 @@ import {
   type JSONContent,
   useEditor,
 } from '@tiptap/react';
-
-import { EditorSkeleton } from '../../editor-skeleton';
 
 import { createExtensions } from './create-extensions';
 import type { EditorLabels } from './editor-labels';

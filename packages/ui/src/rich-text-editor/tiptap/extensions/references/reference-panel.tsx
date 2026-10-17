@@ -1,14 +1,11 @@
 'use client';
 
 import * as React from 'react';
+import { Button, ConfirmDialog, Input, Label } from '@byte-of-me/ui-primitives';
 import type { Editor } from '@tiptap/core';
 import { useEditorState } from '@tiptap/react';
 import { Pencil, Plus, Quote, Trash2 } from 'lucide-react';
 
-import { Button } from '../../../../button';
-import { ConfirmDialog } from '../../../../confirm-dialog';
-import { Input } from '../../../../input';
-import { Label } from '../../../../label';
 import type { EditorLabels } from '../../editor-labels';
 
 import { BibtexImport } from './bibtex-import';

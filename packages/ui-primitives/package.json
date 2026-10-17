@@ -1,0 +1,50 @@
+{
+  "name": "@byte-of-me/ui-primitives",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "test": "bun test"
+  },
+  "peerDependencies": {
+    "framer-motion": "catalog:",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.0"
+  },
+  "dependencies": {
+    "@byte-of-me/ui-hooks": "workspace:*",
+    "@byte-of-me/ui-motion": "workspace:*",
+    "@byte-of-me/ui-utils": "workspace:*",
+    "@radix-ui/react-alert-dialog": "catalog:",
+    "@radix-ui/react-avatar": "catalog:",
+    "@radix-ui/react-checkbox": "catalog:",
+    "@radix-ui/react-collapsible": "catalog:",
+    "@radix-ui/react-dialog": "catalog:",
+    "@radix-ui/react-dropdown-menu": "catalog:",
+    "@radix-ui/react-label": "catalog:",
+    "@radix-ui/react-popover": "catalog:",
+    "@radix-ui/react-scroll-area": "catalog:",
+    "@radix-ui/react-select": "catalog:",
+    "@radix-ui/react-separator": "catalog:",
+    "@radix-ui/react-slot": "catalog:",
+    "@radix-ui/react-switch": "catalog:",
+    "@radix-ui/react-tabs": "catalog:",
+    "@radix-ui/react-tooltip": "catalog:",
+    "class-variance-authority": "catalog:",
+    "lucide-react": "catalog:"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "eslint": "catalog:",
+    "framer-motion": "catalog:",
+    "typescript": "catalog:"
+  },
+  "sideEffects": false
+}

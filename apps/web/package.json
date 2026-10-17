@@ -25,6 +25,7 @@
     "@byte-of-me/ui": "workspace:*",
     "@byte-of-me/ui-hooks": "workspace:*",
     "@byte-of-me/ui-motion": "workspace:*",
+    "@byte-of-me/ui-primitives": "workspace:*",
     "@byte-of-me/ui-utils": "workspace:*",
     "@hookform/resolvers": "^5.2.2",
     "@next/third-parties": "^16.3.8",

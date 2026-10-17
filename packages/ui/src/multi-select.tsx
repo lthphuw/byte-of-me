@@ -1,10 +1,16 @@
 'use client';
 
 import * as React from 'react';
+import {
+  Badge,
+  Popover,
+  PopoverAnchor,
+  PopoverContent,
+  PopoverTrigger,
+} from '@byte-of-me/ui-primitives';
 import { cn } from '@byte-of-me/ui-utils';
 import { Check, ChevronsUpDown, X } from 'lucide-react';
 
-import { Badge } from './badge';
 import {
   Command,
   CommandEmpty,
@@ -13,12 +19,6 @@ import {
   CommandItem,
   CommandList,
 } from './command';
-import {
-  Popover,
-  PopoverAnchor,
-  PopoverContent,
-  PopoverTrigger,
-} from './popover';
 
 export interface MultiSelectOption {
   label: string;

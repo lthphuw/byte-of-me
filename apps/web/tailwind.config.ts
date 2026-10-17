@@ -76,7 +76,7 @@ export default {
           '950': 'hsl(var(--brand-950))',
         },
       },
-      // `motionEase` (packages/ui/src/motion/tokens.ts) for the CSS-only motion;
+      // `motionEase` (packages/ui-motion/src/tokens.ts) for the CSS-only motion;
       // named tokens keep `animate-in` + `ease-*` unambiguous, and `enter` /
       // `exit` do not shadow Tailwind's own `ease-out` / `ease-in`.
       transitionTimingFunction: {

@@ -81,7 +81,7 @@ every slice: index.ts -> ui/index.ts -> ui/*.tsx (+ lib/, model/); *.spec.ts(x) 
 ### 2. New public section (model: `homepage-content`)
 
 1. `apps/web/src/widgets/public/<x>-content/ui/<x>-content.tsx`: no `'use client'`; wrap each data block in `<Suspense>` with a `*Loading` fallback from `@/features/public`. Model: `apps/web/src/widgets/public/homepage-content/ui/homepage-content.tsx`.
-2. `ui/<x>-shell.tsx`: wraps `ShellBase` from `@byte-of-me/ui`. Model: `apps/web/src/widgets/public/homepage-content/ui/homepage-shell.tsx`.
+2. `ui/<x>-shell.tsx`: wraps `ShellBase` from `@/shared/ui/shell`. Model: `apps/web/src/widgets/public/homepage-content/ui/homepage-shell.tsx`.
 3. Barrels: `ui/index.ts`, `index.ts`, and `export * from './<x>-content';` in `apps/web/src/widgets/public/index.ts`.
 4. Route `apps/web/src/app/[locale]/(public)/<path>/page.tsx` renders the widget; `loading.tsx` renders the shell. Model: `apps/web/src/app/[locale]/(public)/page.tsx` and `loading.tsx` beside it.
 5. Client code only in leaves that hold state, e.g. `apps/web/src/widgets/public/blog-details-content/ui/blog-reader-nav.tsx`.

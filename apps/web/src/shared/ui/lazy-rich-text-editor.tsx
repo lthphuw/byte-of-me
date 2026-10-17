@@ -1,7 +1,7 @@
 'use client';
 
 import { type ComponentProps, createContext, useContext } from 'react';
-import { EditorSkeleton } from '@byte-of-me/ui/editor-skeleton';
+import { EditorSkeleton } from '@byte-of-me/ui-primitives';
 import dynamic from 'next/dynamic';
 
 import { useEditorLabels } from '@/shared/hooks/use-editor-labels';

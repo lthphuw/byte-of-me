@@ -1,10 +1,10 @@
 'use client';
 
-import { Pencil } from 'lucide-react';
+import { Loader2, Trash2 } from 'lucide-react';
 
 import { Button } from './button';
 
-export interface EditButtonProps {
+interface DeleteButtonProps {
   isSubmitting?: boolean;
   onClick?: () => void;
   /**
@@ -15,21 +15,27 @@ export interface EditButtonProps {
   label?: string;
 }
 
-export function EditButton({
+export function DeleteButton({
   onClick,
   isSubmitting,
-  label = 'Edit',
-}: EditButtonProps) {
+  label = 'Delete',
+}: DeleteButtonProps) {
   return (
     <Button
-      size="icon"
       type={'button'}
+      size="icon"
       variant="ghost"
+      // 44px on touch; 36px only with a fine pointer, under `can-hover:`.
+      className="hover:text-destructive-text"
       disabled={isSubmitting}
       onClick={onClick}
       aria-label={label}
     >
-      <Pencil className="h-3.5 w-3.5" />
+      {isSubmitting ? (
+        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+      ) : (
+        <Trash2 className="h-3.5 w-3.5" />
+      )}
     </Button>
   );
 }

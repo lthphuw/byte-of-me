@@ -1,10 +1,8 @@
 'use client';
 
 import * as React from 'react';
+import { Button, Input, Label } from '@byte-of-me/ui-primitives';
 
-import { Button } from '../../../../button';
-import { Input } from '../../../../input';
-import { Label } from '../../../../label';
 import type { EditorLabels } from '../../editor-labels';
 
 import { createReferenceId, type ReferenceItem } from './types';
