@@ -1,11 +1,10 @@
 // The `/server` entry is the node build — same output, no DOM requirement.
+import { renderExtensions } from '@byte-of-me/rich-text-schema';
+import { sanitizeHtml } from '@byte-of-me/rich-text-schema/sanitize';
 import { generateHTML } from '@tiptap/html/server';
 import { describe, expect, it } from 'bun:test';
 
-import { renderExtensions } from '../rich-text-editor/tiptap/render-extensions';
-import { renderRichTextHtml } from '../rich-text-render';
-
-import { sanitizeHtml } from './sanitize';
+import { renderRichTextHtml } from './rich-text-render';
 
 /**
  * Guards the invariant behind docs-style posts: every node the editor can

@@ -2,7 +2,7 @@ import { prisma } from '@byte-of-me/db';
 import {
   collectImageSources,
   parseRichTextContent,
-} from '@byte-of-me/ui/lib/rich-text-content';
+} from '@byte-of-me/rich-text-schema/rich-text-content';
 
 export type BodyImageSizes = Record<string, { width: number; height: number }>;
 

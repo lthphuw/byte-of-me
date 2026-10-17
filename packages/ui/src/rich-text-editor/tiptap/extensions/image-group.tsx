@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import { IMAGE_GROUP_NAME, ImageGroupBase } from '@byte-of-me/rich-text-schema';
 import { Button } from '@byte-of-me/ui-primitives';
 import { cn } from '@byte-of-me/ui-utils';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
@@ -14,7 +15,6 @@ import { ImagePlus, Loader2, Trash } from 'lucide-react';
 
 import { type EditorLabels, EMPTY_EDITOR_LABELS } from '../editor-labels';
 
-import { IMAGE_GROUP_NAME, ImageGroupBase } from './image-base';
 import { ImageCaption } from './image-caption';
 import {
   imageFilesFrom,

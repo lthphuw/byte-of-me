@@ -1,6 +1,11 @@
 'use client';
 
 import React from 'react';
+import {
+  formatReferenceLabel,
+  readReferencesFromDoc,
+  type ReferenceItem,
+} from '@byte-of-me/rich-text-schema';
 import { cn } from '@byte-of-me/ui-utils';
 import { useEditorState } from '@tiptap/react';
 import { Plus, Quote } from 'lucide-react';
@@ -15,10 +20,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '../../../index';
-import { formatReferenceLabel } from '../extensions/references/format';
-import { readReferencesFromDoc } from '../extensions/references/numbering';
 import { ReferenceForm } from '../extensions/references/reference-form';
-import type { ReferenceItem } from '../extensions/references/types';
 
 import { useToolbar } from './toolbar-provider';
 

@@ -3,6 +3,10 @@
 import { useState } from 'react';
 import { type Control, useWatch } from 'react-hook-form';
 import {
+  fromEditorContent,
+  toEditorContent,
+} from '@byte-of-me/rich-text-schema/rich-text-content';
+import {
   Badge,
   Button,
   Collapsible,
@@ -12,8 +16,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  fromEditorContent,
-  toEditorContent,
 } from '@byte-of-me/ui';
 import {
   ArrowDown,

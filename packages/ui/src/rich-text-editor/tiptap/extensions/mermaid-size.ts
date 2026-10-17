@@ -2,16 +2,12 @@ import { Extension } from '@tiptap/core';
 import { type EditorState, Plugin, PluginKey } from '@tiptap/pm/state';
 import type { EditorView } from '@tiptap/pm/view';
 
-import {
-  formatMermaidSize,
-  MERMAID_SIZE_ATTR,
-  svgNaturalSize,
-} from '../../../mermaid-size';
+import { formatMermaidSize, svgNaturalSize } from '../../../mermaid-size';
 
 /**
- * Stores each mermaid diagram's natural size on its code block, so the public page reserves
- * the box before the library draws it. Measured in the editor on a focused doc change, so
- * old posts gain it on their author's next edit.
+ * Measures each mermaid diagram into the code block's `mermaidSize` (`MermaidSizeAttribute`,
+ * rich-text-schema), so the public page reserves its box. Runs on a focused doc change: old
+ * posts gain it on their author's next edit.
  */
 
 /** Diagram text → its `WxH`. Shared by every editor on the page: one render per text. */
@@ -126,26 +122,8 @@ function measureView(view: EditorView) {
   };
 }
 
-export const MermaidSize = Extension.create({
-  name: 'mermaidSize',
-
-  addGlobalAttributes() {
-    return [
-      {
-        types: ['codeBlock'],
-        attributes: {
-          mermaidSize: {
-            default: null,
-            parseHTML: (element) => element.getAttribute(MERMAID_SIZE_ATTR),
-            renderHTML: (attributes) =>
-              attributes.mermaidSize
-                ? { [MERMAID_SIZE_ATTR]: attributes.mermaidSize }
-                : {},
-          },
-        },
-      },
-    ];
-  },
+export const MermaidSizeMeasure = Extension.create({
+  name: 'mermaidSizeMeasure',
 
   addProseMirrorPlugins() {
     return [

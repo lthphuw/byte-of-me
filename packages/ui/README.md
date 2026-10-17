@@ -1,11 +1,12 @@
 # @byte-of-me/ui
 
 Shared UI for byte-of-me apps: the TipTap rich-text editor and its renderer, and
-the drawer. The class-name helper, the hooks, the motion tokens, the Radix
-primitives, the toaster, the form controls and the carousel live in
-`@byte-of-me/ui-utils`, `ui-hooks`, `ui-motion`, `ui-primitives`, `ui-toast`,
-`ui-forms` and `ui-carousel`; the root barrel re-exports all of them except
-`ui-utils`. Consumed as **TypeScript source**
+the drawer. The schema the editor and the renderer share, with `sanitizeHtml` and the
+rich-text content helpers, is `@byte-of-me/rich-text-schema`. The class-name helper, the
+hooks, the motion tokens, the Radix primitives, the toaster, the form controls and the
+carousel live in `@byte-of-me/ui-utils`, `ui-hooks`, `ui-motion`, `ui-primitives`,
+`ui-toast`, `ui-forms` and `ui-carousel`; the root barrel re-exports all of them except
+`ui-utils` (and `rich-text-schema`, which is imported by name). Consumed as **TypeScript source**
 (no build step) through Next.js `transpilePackages`; see
 `apps/web/next.config.js`.
 
@@ -16,7 +17,8 @@ only what a consuming app has to do.
 ## Consuming app checklist
 
 1. `"@byte-of-me/ui": "workspace:*"` in dependencies. The app declares only what
-   it imports itself; TipTap and the rest belong to this package, the Radix
+   it imports itself; the editor's TipTap packages belong to this package, the render
+   schema's to `rich-text-schema`, the Radix
    libraries to `ui-primitives`, the form and carousel libraries to `ui-forms` and
    `ui-carousel`.
 2. `transpilePackages` needs no entry: `next.config.js` lists every workspace

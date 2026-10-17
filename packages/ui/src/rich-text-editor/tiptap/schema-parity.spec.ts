@@ -3,12 +3,15 @@
  * published page can draw, with the same names, or `generateHTML` throws and the
  * content falls back to escaped text. Compared as schemas, not as lists.
  */
+import {
+  renderExtensions,
+  sharedExtensions,
+} from '@byte-of-me/rich-text-schema';
 import { getSchema } from '@tiptap/core';
 import { describe, expect, it } from 'bun:test';
 
 import { createExtensions } from './create-extensions';
 import { testEditorLabels } from './editor-labels.test-fixture';
-import { renderExtensions, sharedExtensions } from './render-extensions';
 
 const editorSchema = getSchema(
   createExtensions({ uploadFailedText: 'x', labels: testEditorLabels })

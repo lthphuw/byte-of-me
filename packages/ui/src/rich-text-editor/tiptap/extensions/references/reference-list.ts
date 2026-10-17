@@ -1,16 +1,16 @@
+import {
+  CITATION_NAME,
+  DEFAULT_REFERENCES_TITLE,
+  normalizeReferenceItems,
+  REFERENCE_LIST_NAME,
+  type ReferenceItem,
+  ReferenceListBase,
+} from '@byte-of-me/rich-text-schema';
 import type { Node as ProseMirrorNode } from '@tiptap/pm/model';
 
 import { type EditorLabels, EMPTY_EDITOR_LABELS } from '../../editor-labels';
 
-import { normalizeReferenceItems } from './numbering';
-import { ReferenceListBase } from './reference-list-base';
 import { createReferenceListNodeView } from './reference-list-view';
-import {
-  CITATION_NAME,
-  DEFAULT_REFERENCES_TITLE,
-  REFERENCE_LIST_NAME,
-  type ReferenceItem,
-} from './types';
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {

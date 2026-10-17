@@ -1,6 +1,11 @@
 'use client';
 
 import * as React from 'react';
+import {
+  formatReferenceLabel,
+  readReferencesFromDoc,
+  type ReferenceItem,
+} from '@byte-of-me/rich-text-schema';
 import { Button, Textarea } from '@byte-of-me/ui-primitives';
 import type { Editor } from '@tiptap/core';
 import { AlertTriangle, ClipboardPaste, X } from 'lucide-react';
@@ -8,9 +13,6 @@ import { AlertTriangle, ClipboardPaste, X } from 'lucide-react';
 import type { EditorLabels } from '../../editor-labels';
 
 import { parseBibtex } from './bibtex';
-import { formatReferenceLabel } from './format';
-import { readReferencesFromDoc } from './numbering';
-import type { ReferenceItem } from './types';
 
 const PLACEHOLDER = `@article{faster-rcnn,
   title   = {Faster R-CNN: Towards Real-Time Object Detection},

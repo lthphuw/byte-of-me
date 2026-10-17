@@ -1,7 +1,7 @@
 'use server';
 
 import { prisma } from '@byte-of-me/db';
-import { richTextToPlainText } from '@byte-of-me/ui/lib/rich-text-content';
+import { richTextToPlainText } from '@byte-of-me/rich-text-schema/rich-text-content';
 
 import type { PublicProject } from '@/entities/project/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';

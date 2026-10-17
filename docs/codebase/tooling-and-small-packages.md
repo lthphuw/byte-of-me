@@ -28,6 +28,7 @@
     ├── ui-utils/         layer 0: cn, link and scroll helpers (packages-ui.md)
     ├── ui-hooks/         layer 0: React hooks (packages-ui.md)
     ├── ui-motion/        layer 0: MotionProvider, tokens, variants (packages-ui.md)
+    ├── rich-text-schema/ layer 1: the TipTap render schema, sanitize, rich-text-content (packages-ui.md)
     ├── ui-primitives/    layer 1: Radix wrappers, composites, surface classes (packages-ui.md)
     ├── ui-toast/         layer 1: the sonner Toaster (packages-ui.md)
     ├── ui-forms/         layer 2: form, calendar, date picker, command, multi-select (packages-ui.md)
@@ -47,7 +48,7 @@
 | `new-package` | `bun run scripts/new-package.ts <name> --layer <n> [--dom] [--tests] [--css]` | extracting code into a new package (Recipes) |
 | `check-types` | `turbo run check-types` | type errors only |
 | `lint` / `lint:fix` | `turbo run lint` / `turbo run lint:fix` | lint, or autofix |
-| `test` | `turbo run test` (`bun test` in the eleven workspaces that have specs: web, db, logger, storage, ui, ui-utils, ui-hooks, ui-motion, ui-primitives, ui-forms, ui-carousel) | running all suites |
+| `test` | `turbo run test` (`bun test` in the twelve workspaces that have specs: web, db, logger, storage, ui, rich-text-schema, ui-utils, ui-hooks, ui-motion, ui-primitives, ui-forms, ui-carousel) | running all suites |
 | `generate` | `bun run --filter '@byte-of-me/db' generate` (`prisma generate`) | after a Prisma schema change |
 | `postinstall` / `prepare` | `bun run generate` / `husky install` | install time; `prepare` points `core.hooksPath` at `.husky` |
 | `gen:icons` | `bun run scripts/gen-icons.ts` | after editing `brand-mark.ts` |
@@ -77,7 +78,7 @@
 - `typescript/base.json`: `strict`, `esModuleInterop`, `skipLibCheck`, `resolveJsonModule`. Extended by the presets below; `packages/db` extends it directly.
 - `typescript/nextjs.json` (extends base): ESNext modules, `moduleResolution: node`, ES2023, `jsx: preserve`, `noEmit`, `isolatedModules`, Next plugin. Used by `apps/web`, `packages/ui`.
 - `typescript/node-library.json` (extends base): `module: commonjs`, ES2019. Used by `packages/storage`, `packages/logger`.
-- `typescript/library.json` (extends base): ESNext modules, `moduleResolution: bundler`, ES2023, DOM libs, `jsx: react-jsx`, `noEmit`, `isolatedModules`; no `incremental`, no Next plugin. The preset `new-package` gives every new package; used by `packages/ui-utils`, `packages/ui-hooks`, `packages/ui-motion`, `packages/ui-primitives`, `packages/ui-toast`, `packages/ui-forms`, `packages/ui-carousel`.
+- `typescript/library.json` (extends base): ESNext modules, `moduleResolution: bundler`, ES2023, DOM libs, `jsx: react-jsx`, `noEmit`, `isolatedModules`; no `incremental`, no Next plugin. The preset `new-package` gives every new package; used by `packages/ui-utils`, `packages/ui-hooks`, `packages/ui-motion`, `packages/rich-text-schema`, `packages/ui-primitives`, `packages/ui-toast`, `packages/ui-forms`, `packages/ui-carousel`.
 - `boundaries.json`: `layers` (package names per layer, index = layer), `dbTypesOnly`, `noReact`. Read by `check-boundaries.ts` and rewritten by `new-package.ts`. Rules: [../architecture.md](../architecture.md) ("Package layers").
 - `test/happydom.ts`: registers happy-dom on `globalThis` and sets `IS_REACT_ACT_ENVIRONMENT`. Preloaded by `apps/web`, `packages/ui`, `packages/ui-hooks`, `packages/ui-primitives`, `packages/ui-forms` and `packages/ui-carousel`.
 - `test/db-guard.ts`: forces `DATABASE_URL` and `DIRECT_URL` to `postgres://test:test@127.0.0.1:1/test`, then throws if either is non-local. Preloaded by `apps/web` and `packages/db`; details in [packages-db.md](packages-db.md).

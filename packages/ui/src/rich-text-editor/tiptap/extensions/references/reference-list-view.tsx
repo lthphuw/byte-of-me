@@ -2,6 +2,10 @@
 
 import * as React from 'react';
 import {
+  formatReferenceText,
+  readReferencesFromDoc,
+} from '@byte-of-me/rich-text-schema';
+import {
   NodeViewWrapper,
   type ReactNodeViewProps,
   ReactNodeViewRenderer,
@@ -9,9 +13,6 @@ import {
 } from '@tiptap/react';
 
 import type { EditorLabels } from '../../editor-labels';
-
-import { formatReferenceText } from './format';
-import { readReferencesFromDoc } from './numbering';
 
 type ReferenceListViewProps = ReactNodeViewProps & {
   /** The editor's labels; `createReferenceListNodeView` hands them in. */

@@ -1,8 +1,8 @@
+import { eachScopedHeader } from '@byte-of-me/rich-text-schema';
 import { Extension } from '@tiptap/core';
 import type { Node as ProseMirrorNode } from '@tiptap/pm/model';
 import { Decoration } from '@tiptap/pm/view';
 
-import { eachScopedHeader } from './header-scopes';
 import {
   incrementalTableDecorations,
   tableDecorationPlugin,

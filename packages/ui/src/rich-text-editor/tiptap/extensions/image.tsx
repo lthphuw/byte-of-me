@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { ImageBase, type ImageUploadFn } from '@byte-of-me/rich-text-schema';
 import { cn } from '@byte-of-me/ui-utils';
 import type { ImageOptions } from '@tiptap/extension-image';
 import {
@@ -34,7 +35,6 @@ import {
 } from '../../../index';
 import { type EditorLabels, EMPTY_EDITOR_LABELS } from '../editor-labels';
 
-import { ImageBase, type ImageUploadFn } from './image-base';
 import { ImageCaption } from './image-caption';
 import { imageUploadFn } from './upload-images';
 import { useImageUpload } from './use-image-upload';

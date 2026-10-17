@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { readReferencesFromDoc } from '@byte-of-me/rich-text-schema';
 import { cn } from '@byte-of-me/ui-utils';
 import {
   NodeViewWrapper,
@@ -10,8 +11,6 @@ import {
 } from '@tiptap/react';
 
 import type { EditorLabels } from '../../editor-labels';
-
-import { readReferencesFromDoc } from './numbering';
 
 type CitationViewProps = ReactNodeViewProps & {
   /** The editor's labels; `createCitationNodeView` hands them in. */

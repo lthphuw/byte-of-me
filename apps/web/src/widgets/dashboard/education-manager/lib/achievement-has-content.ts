@@ -1,4 +1,4 @@
-import { isRichTextBlank } from '@byte-of-me/ui/lib/rich-text-content';
+import { isRichTextBlank } from '@byte-of-me/rich-text-schema/rich-text-content';
 
 import type { EducationFormValues } from '@/entities/education/model/education-schema';
 

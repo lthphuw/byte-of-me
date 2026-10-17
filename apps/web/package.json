@@ -21,6 +21,7 @@
     "@auth/prisma-adapter": "^2.11.1",
     "@byte-of-me/db": "workspace:*",
     "@byte-of-me/logger": "workspace:*",
+    "@byte-of-me/rich-text-schema": "workspace:*",
     "@byte-of-me/storage": "workspace:*",
     "@byte-of-me/ui": "workspace:*",
     "@byte-of-me/ui-hooks": "workspace:*",

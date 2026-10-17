@@ -1,7 +1,8 @@
 'use client';
 
 import { useMemo } from 'react';
-import { Badge, CardTitle, Icons, richTextToPlainText } from '@byte-of-me/ui';
+import { richTextToPlainText } from '@byte-of-me/rich-text-schema/rich-text-content';
+import { Badge, CardTitle, Icons } from '@byte-of-me/ui';
 import { ExternalLink } from 'lucide-react';
 import { useLocale } from 'next-intl';
 

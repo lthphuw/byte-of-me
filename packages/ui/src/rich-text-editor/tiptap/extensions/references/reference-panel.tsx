@@ -1,6 +1,12 @@
 'use client';
 
 import * as React from 'react';
+import {
+  CITATION_NAME,
+  formatReferenceLabel,
+  readReferencesFromDoc,
+  type ReferenceItem,
+} from '@byte-of-me/rich-text-schema';
 import { Button, ConfirmDialog, Input, Label } from '@byte-of-me/ui-primitives';
 import type { Editor } from '@tiptap/core';
 import { useEditorState } from '@tiptap/react';
@@ -9,10 +15,7 @@ import { Pencil, Plus, Quote, Trash2 } from 'lucide-react';
 import type { EditorLabels } from '../../editor-labels';
 
 import { BibtexImport } from './bibtex-import';
-import { formatReferenceLabel } from './format';
-import { readReferencesFromDoc } from './numbering';
 import { ReferenceForm } from './reference-form';
-import { CITATION_NAME, type ReferenceItem } from './types';
 
 type PanelState =
   | { mode: 'idle' }

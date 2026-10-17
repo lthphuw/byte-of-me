@@ -1,10 +1,9 @@
+import { renderExtensions } from '@byte-of-me/rich-text-schema';
 import { getSchema, type JSONContent } from '@tiptap/core';
 import { Node } from '@tiptap/pm/model';
 import { EditorState, type Transaction } from '@tiptap/pm/state';
 import type { DecorationSet } from '@tiptap/pm/view';
 import { beforeAll, describe, expect, it } from 'bun:test';
-
-import { renderExtensions } from '../render-extensions';
 
 import { numericDecorations } from './numeric-columns-plugin';
 

@@ -3,13 +3,15 @@
 import { useEffect, useState } from 'react';
 import { type DefaultValues, useForm } from 'react-hook-form';
 import {
+  fromEditorContent,
+  toEditorContent,
+} from '@byte-of-me/rich-text-schema/rich-text-content';
+import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  fromEditorContent,
-  toEditorContent,
 } from '@byte-of-me/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
 import dynamic from 'next/dynamic';

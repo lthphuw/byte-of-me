@@ -32,12 +32,12 @@ import {
   TabsList,
   TabsTrigger,
 } from '../../../index';
+import { type EditorLabels, EMPTY_EDITOR_LABELS } from '../editor-labels';
+
 import {
   isValidUrl,
   NODE_HANDLES_SELECTED_STYLE_CLASSNAME,
-} from '../../../lib/tiptap-utils';
-import { type EditorLabels, EMPTY_EDITOR_LABELS } from '../editor-labels';
-
+} from './tiptap-utils';
 import {
   imageFilesFrom,
   imageUploadFailedText,

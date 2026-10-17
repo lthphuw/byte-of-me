@@ -1,8 +1,7 @@
+import type { ImageUploadFn } from '@byte-of-me/rich-text-schema';
 import type { Editor } from '@tiptap/core';
 import type { EditorView } from '@tiptap/pm/view';
 import { toast } from 'sonner';
-
-import type { ImageUploadFn } from './image-base';
 
 /** An uploaded file, as the `image` node's attributes. */
 type UploadedImage = { src: string; alt: string };

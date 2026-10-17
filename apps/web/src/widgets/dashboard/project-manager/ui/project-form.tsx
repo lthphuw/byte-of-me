@@ -3,16 +3,18 @@
 import { useEffect, useState } from 'react';
 import { type DefaultValues, useForm } from 'react-hook-form';
 import {
+  fromEditorContent,
+  toEditorContent,
+} from '@byte-of-me/rich-text-schema/rich-text-content';
+import {
   Checkbox,
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  fromEditorContent,
   type MultiSelectOption,
   Skeleton,
-  toEditorContent,
 } from '@byte-of-me/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';

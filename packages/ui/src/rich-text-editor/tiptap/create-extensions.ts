@@ -1,3 +1,5 @@
+// Shared with the server-side render schema so both stay identical.
+import { sharedExtensions } from '@byte-of-me/rich-text-schema';
 import type { AnyExtension } from '@tiptap/core';
 import Placeholder from '@tiptap/extension-placeholder';
 import { TableKit } from '@tiptap/extension-table';
@@ -10,14 +12,13 @@ import { TableHeaderScopes } from './extensions/header-scopes-plugin';
 import { ImageExtension, type ImageUploadFn } from './extensions/image';
 import { ImageGroup } from './extensions/image-group';
 import { ImagePlaceholder } from './extensions/image-placeholder';
+import { MermaidSizeMeasure } from './extensions/mermaid-size';
 import { NumericTableColumns } from './extensions/numeric-columns-plugin';
 import { Citation } from './extensions/references/citation';
 import { ReferenceList } from './extensions/references/reference-list';
 import { SearchAndReplace } from './extensions/search-and-replace';
-// Shared with the server-side render schema so both stay identical.
-import { sharedExtensions } from './render-extensions';
 
-/** The editor's schema and behaviour. `render-extensions.ts` mirrors it for the public page. */
+/** The editor's schema and behaviour. `renderExtensions` (rich-text-schema) mirrors it for the public page. */
 export function createExtensions(options: {
   uploadImage?: ImageUploadFn;
   /** Shown when an upload is refused. Required, so no editor can drop it. */
@@ -48,6 +49,8 @@ export function createExtensions(options: {
     // written as it does once published.
     NumericTableColumns,
     TableHeaderScopes,
+    // The schema half (`MermaidSizeAttribute`) is in `sharedExtensions`; this stores the size.
+    MermaidSizeMeasure,
     // Pasting a README-style document becomes real blocks, not flat text.
     Markdown,
     Citation.configure({ labels: options.labels }),

@@ -1,4 +1,4 @@
-import { isRichTextBlank } from '@byte-of-me/ui/lib/rich-text-content';
+import { isRichTextBlank } from '@byte-of-me/rich-text-schema/rich-text-content';
 
 import type { FeaturedWorkFormValues } from '@/entities/featured-work/model/featured-work-schema';
 import type { AdminFeaturedWorkDetail } from '@/entities/featured-work/model/types';

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { type DefaultValues, useForm } from 'react-hook-form';
+import { parseRichTextContent } from '@byte-of-me/rich-text-schema/rich-text-content';
 import {
   Button,
   Form,
@@ -10,7 +11,6 @@ import {
   FormItem,
   FormLabel,
 } from '@byte-of-me/ui';
-import { parseRichTextContent } from '@byte-of-me/ui/lib/rich-text-content';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 

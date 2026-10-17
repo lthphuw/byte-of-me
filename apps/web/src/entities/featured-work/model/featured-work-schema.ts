@@ -1,4 +1,4 @@
-import { isRichTextBlank } from '@byte-of-me/ui/lib/rich-text-content';
+import { isRichTextBlank } from '@byte-of-me/rich-text-schema/rich-text-content';
 import { z } from 'zod';
 
 // Optional in every language, English included: only the title is required.

@@ -1,14 +1,19 @@
 // Server-side only: pulls in `generateHTML` and the full extension schema (tiptap + prosemirror +
-// lowlight ≈ 1 MB). The schema is imported by direct path, never `./rich-text-editor`: that entry
+// lowlight ≈ 1 MB). The schema comes from rich-text-schema, never `./rich-text-editor`: that entry
 // is 'use client' and would ship the whole editor (~380 KB) with every page that renders rich text.
+import {
+  applyCitationNumbering,
+  type ImageSizes,
+  markNumericTableColumns,
+  renderExtensions,
+  withImageRatios,
+} from '@byte-of-me/rich-text-schema';
+import { parseRichTextContent } from '@byte-of-me/rich-text-schema/rich-text-content';
+import {
+  escapeHtml,
+  sanitizeHtml,
+} from '@byte-of-me/rich-text-schema/sanitize';
 import { generateHTML } from '@tiptap/html';
-
-import { type ImageSizes, withImageRatios } from './lib/image-ratios';
-import { parseRichTextContent } from './lib/rich-text-content';
-import { escapeHtml, sanitizeHtml } from './lib/sanitize';
-import { markNumericTableColumns } from './rich-text-editor/tiptap/extensions/numeric-columns';
-import { applyCitationNumbering } from './rich-text-editor/tiptap/extensions/references/numbering';
-import { renderExtensions } from './rich-text-editor/tiptap/render-extensions';
 
 /**
  * Tiptap JSON (stored string or parsed object) to unsanitized HTML, or null when the render

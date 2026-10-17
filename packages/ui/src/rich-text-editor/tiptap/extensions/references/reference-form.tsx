@@ -1,11 +1,13 @@
 'use client';
 
 import * as React from 'react';
+import {
+  createReferenceId,
+  type ReferenceItem,
+} from '@byte-of-me/rich-text-schema';
 import { Button, Input, Label } from '@byte-of-me/ui-primitives';
 
 import type { EditorLabels } from '../../editor-labels';
-
-import { createReferenceId, type ReferenceItem } from './types';
 
 type ReferenceFormProps = {
   /** Entry being edited, or `null`/undefined when adding a new one. */

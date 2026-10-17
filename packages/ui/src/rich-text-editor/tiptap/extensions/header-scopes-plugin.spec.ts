@@ -1,11 +1,10 @@
+import { renderExtensions } from '@byte-of-me/rich-text-schema';
 import { getSchema, type JSONContent } from '@tiptap/core';
 import { Node } from '@tiptap/pm/model';
 import { EditorState, TextSelection, type Transaction } from '@tiptap/pm/state';
 import { addColumnAfter, addRowAfter, deleteRow } from '@tiptap/pm/tables';
 import type { DecorationSet } from '@tiptap/pm/view';
 import { beforeAll, describe, expect, it } from 'bun:test';
-
-import { renderExtensions } from '../render-extensions';
 
 import { headerScopeDecorations } from './header-scopes-plugin';
 

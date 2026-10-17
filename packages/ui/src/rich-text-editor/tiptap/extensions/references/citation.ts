@@ -1,8 +1,8 @@
+import { CITATION_NAME, CitationBase } from '@byte-of-me/rich-text-schema';
+
 import { type EditorLabels, EMPTY_EDITOR_LABELS } from '../../editor-labels';
 
-import { CitationBase } from './citation-base';
 import { createCitationNodeView } from './citation-view';
-import { CITATION_NAME } from './types';
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {

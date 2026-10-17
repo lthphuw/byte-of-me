@@ -1,10 +1,10 @@
+import type { ImageUploadFn } from '@byte-of-me/rich-text-schema';
 import { Extension } from '@tiptap/core';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 
 import { isMarkdownPaste } from '../paste-markdown';
 import { stripPastedPresentation } from '../paste-presentation';
 
-import type { ImageUploadFn } from './image-base';
 import { imageFilesFrom, insertImagesAt } from './upload-images';
 
 interface ClipboardImportOptions {

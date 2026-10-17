@@ -1,0 +1,42 @@
+{
+  "name": "@byte-of-me/rich-text-schema",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./sanitize": "./src/sanitize.ts",
+    "./rich-text-content": "./src/rich-text-content.ts"
+  },
+  "scripts": {
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@byte-of-me/ui-utils": "workspace:*",
+    "@tiptap/core": "catalog:",
+    "@tiptap/extension-code-block-lowlight": "catalog:",
+    "@tiptap/extension-color": "catalog:",
+    "@tiptap/extension-heading": "catalog:",
+    "@tiptap/extension-highlight": "catalog:",
+    "@tiptap/extension-image": "catalog:",
+    "@tiptap/extension-link": "catalog:",
+    "@tiptap/extension-subscript": "catalog:",
+    "@tiptap/extension-superscript": "catalog:",
+    "@tiptap/extension-table": "catalog:",
+    "@tiptap/extension-text-align": "catalog:",
+    "@tiptap/extension-text-style": "catalog:",
+    "@tiptap/extension-typography": "catalog:",
+    "@tiptap/extension-underline": "catalog:",
+    "@tiptap/pm": "catalog:",
+    "@tiptap/starter-kit": "catalog:",
+    "lowlight": "catalog:"
+  },
+  "devDependencies": {
+    "eslint": "catalog:",
+    "typescript": "catalog:"
+  },
+  "sideEffects": false
+}

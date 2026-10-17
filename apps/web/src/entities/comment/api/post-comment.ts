@@ -2,7 +2,7 @@
 
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
-import { escapeHtml } from '@byte-of-me/ui';
+import { escapeHtml } from '@byte-of-me/rich-text-schema/sanitize';
 import { revalidateTag } from 'next/cache';
 import { after } from 'next/server';
 import { getLocale } from 'next-intl/server';

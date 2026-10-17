@@ -23,11 +23,11 @@ import type { DOMOutputSpec, Node as ProseMirrorNode } from '@tiptap/pm/model';
 import StarterKit from '@tiptap/starter-kit';
 import { common, createLowlight } from 'lowlight';
 
-import { eachScopedHeader, type HeaderScope } from './extensions/header-scopes';
-import { ImageBase, ImageGroupBase } from './extensions/image-base';
-import { MermaidSize } from './extensions/mermaid-size';
-import { CitationBase } from './extensions/references/citation-base';
-import { ReferenceListBase } from './extensions/references/reference-list-base';
+import { eachScopedHeader, type HeaderScope } from './header-scopes';
+import { ImageBase, ImageGroupBase } from './image-base';
+import { MermaidSizeAttribute } from './mermaid-size-attribute';
+import { CitationBase } from './references/citation-base';
+import { ReferenceListBase } from './references/reference-list-base';
 
 // `common` registers ~37 languages; this renders on the server, so no grammar reaches the
 // client bundle. Unknown languages (mermaid) stay plain text with `language-*` intact,
@@ -114,7 +114,7 @@ const NumericTableHeader = TableHeader.extend({
 });
 
 /** Heading with a persistent `id`, the anchor targets for tables of contents. */
-export const CustomHeading = Heading.extend({
+const CustomHeading = Heading.extend({
   addAttributes() {
     return {
       ...this.parent?.(),
@@ -129,7 +129,7 @@ export const CustomHeading = Heading.extend({
   },
 });
 
-// The image nodes come from `extensions/image-base.ts`, which the editor's `ImageExtension`
+// The image nodes come from `image-base.ts`, which the editor's `ImageExtension`
 // and `ImageGroup` extend too, so a captioned image renders a <figcaption> and a row a
 // <figure> on the published page and in print, not only in the editor.
 
@@ -216,7 +216,7 @@ export const sharedExtensions: AnyExtension[] = [
     underline: false,
   }),
   CodeBlockLowlight.configure({ lowlight }),
-  MermaidSize,
+  MermaidSizeAttribute,
   CustomHeading,
   TextAlign.configure({ types: ['heading', 'paragraph'] }),
   TextStyle,

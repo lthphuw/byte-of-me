@@ -4,8 +4,6 @@
 
 import { isPixelSize, type PixelSize } from '@byte-of-me/ui-utils';
 
-export const MERMAID_SIZE_ATTR = 'data-mermaid-size';
-
 export type MermaidSize = PixelSize;
 
 /** The viewBox of a rendered mermaid SVG, rounded to whole pixels; null without one. */

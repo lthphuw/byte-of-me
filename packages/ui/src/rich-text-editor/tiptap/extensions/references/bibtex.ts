@@ -1,6 +1,8 @@
+import {
+  createReferenceId,
+  type ReferenceItem,
+} from '@byte-of-me/rich-text-schema';
 import { SAFE_SCHEMES, schemeOf } from '@byte-of-me/ui-utils';
-
-import { createReferenceId, type ReferenceItem } from './types';
 
 /**
  * A BibTeX reader scoped to what a `ReferenceItem` shows, hand-written because a full one
