@@ -1,11 +1,7 @@
 /**
- * `getAdminTagOptions` feeds two pickers (the blog form and the project
- * dialog) that used to read `getPaginatedAdminTags(1, 100)`, which
- * `clampPagination` silently cut to 50. What this defends: a flat
- * id/slug/name option per tag, an explicit row ceiling, and the admin gate.
- *
- * Prisma is replaced at the delegate, as in `get-paginated-public-blogs.spec.ts`;
- * the identity comes from the preload's auth stub.
+ * `getAdminTagOptions` feeds two pickers that read `getPaginatedAdminTags(1, 100)`, which
+ * `clampPagination` silently cut to 50. Defends: flat id/slug/name options, an explicit row
+ * ceiling, the admin gate. Prisma delegate replaced as in `get-paginated-public-blogs.spec.ts`.
  */
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';

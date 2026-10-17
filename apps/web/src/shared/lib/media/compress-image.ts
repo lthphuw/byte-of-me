@@ -16,36 +16,14 @@ interface CompressedImage {
   height: number;
 }
 
-// `sharp`'s own types are exported as `export = sharp` with a merged
-// `declare function` + `declare namespace`, which a default import does not
-// re-expose as a `sharp.Sharp` type reference. `ReturnType<typeof sharp>` is
-// the standard workaround — same instance type, derived instead of named.
+// sharp's types are `export =` with a merged function and namespace, so a default import does not
+// expose `sharp.Sharp`; ReturnType<typeof sharp> derives the same instance type.
 type SharpInstance = ReturnType<typeof sharpModule>;
 
 /**
- * `sharp` is loaded on FIRST COMPRESSION, never at module load.
- *
- * It used to be a top-level `import sharp from 'sharp'`. `sharp` is a native
- * addon, so Turbopack compiles it as an external — and a module that awaits an
- * external is an ASYNC MODULE, whose await runs while every importer is still
- * evaluating. That turned "this route contains a photo-upload action" into
- * "this route dlopens libvips before it renders a single element", and on
- * Vercel, where `@img/sharp-libvips-linux-x64` was missing, the dlopen threw:
- *
- *   Failed to load external module sharp-edea96869fc6cbfe:
- *   ERR_DLOPEN_FAILED: libvips-cpp.so.8.18.3: cannot open shared object file
- *
- * That throw happens BEFORE React renders, which is why it produced Next's
- * bare 500 rather than `error.tsx` — an error boundary can only catch what
- * fails inside a render. A page that merely imported the module was the
- * casualty: the encoder was in its graph even though the page never encodes
- * anything.
- *
- * Behind a function, the cost lands on the one call that actually needs it.
- * A broken sharp then fails the upload it belongs to — which the action
- * already reports as a failed upload — instead of taking down every page that
- * merely links to one. The promise is cached so repeated compressions in one
- * request share a single load.
+ * `sharp` loads on first compression, never at module load: it is a native addon, so a top-level
+ * import makes every importing route dlopen libvips before render (ERR_DLOPEN_FAILED, bare 500,
+ * no error.tsx). Lazy, a broken sharp fails only the upload; the cached promise shares one load.
  */
 let sharpPromise: Promise<typeof sharpModule> | null = null;
 
@@ -94,33 +72,9 @@ function encoderForMimeType(mimeType: string): EncodableFormat | null {
 }
 
 /**
- * Compresses an uploaded image on the server — the guarantee behind the
- * client-side pass in `compress-in-browser.ts`. A client check is bypassable
- * by calling the server action directly, and canvas encoding differs between
- * Safari and Chrome, so this is what every stored byte actually goes through.
- *
- * SVG and GIF are returned untouched, for the same reason
- * `shouldSkipCompression` gives: SVG is a vector `sharp` would rasterise, and
- * `sharp` reads only the first frame of a GIF unless told otherwise, which
- * would silently destroy an animation. There is no `{ animated: true }`
- * opt-in here, deliberately — this IS the guarantee layer, so introducing
- * animated re-encoding only on this side would make the two passes disagree
- * about what "compressed" means for the same file.
- *
- * `.rotate()` with no arguments reads the EXIF orientation tag and bakes the
- * rotation into the pixel data before anything else runs — this is the fix
- * for the single most likely bug in this feature: skip it and a portrait
- * phone photo (stored sensor-native, rotated only by an EXIF tag) uploads
- * sideways, because `sharp` does not auto-orient by default. `.metadata()`
- * reports the PRE-rotation physical dimensions regardless, so a 90/270°
- * orientation (EXIF values 5-8) has its width and height swapped below before
- * they are used to compute the longest-edge target — otherwise a portrait
- * photo's cap would be applied to the wrong axis.
- *
- * `sharp` does not preserve metadata unless `withMetadata()` is called, so
- * every other EXIF field (GPS, camera model, capture time) is dropped as a
- * side effect of encoding. That is intentional for a public asset host, not
- * an oversight worth "fixing" with `withMetadata()`.
+ * Server guarantee behind the client pass; SVG and GIF pass through (sharp rasterises SVG, keeps
+ * one GIF frame). `.rotate()` bakes EXIF orientation; `.metadata()` is pre-rotation, so 5-8 swap axes.
+ * Other EXIF (GPS, camera) is dropped on purpose: do not add `withMetadata()`.
  */
 export async function compressImage(
   input: Buffer,
@@ -153,10 +107,8 @@ export async function compressImage(
     originalHeight > 0 &&
     (target.width !== originalWidth || target.height !== originalHeight)
   ) {
-    // `fit: 'fill'` because `target` is already computed to preserve aspect
-    // ratio and never enlarge — asking sharp to re-derive that with `inside`
-    // would just risk a one-pixel disagreement with what this function
-    // reports as the output dimensions.
+    // `fit: 'fill'`: `target` already preserves aspect ratio and never enlarges, and `inside` could
+    // disagree with the reported output dimensions by a pixel.
     pipeline = pipeline.resize({
       width: target.width,
       height: target.height,

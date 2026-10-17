@@ -10,10 +10,9 @@ import { requireAdmin } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
 
 /**
- * The editor dialog's source of truth. The list row omits `details`, so the
- * dialog loads the full row here: reusing a list row as `initialData` would open
- * the editor with an empty body and let the next save clear the stored one.
- * It also carries the demo pair, flattened and in slot order.
+ * The editor dialog's source of truth: the list row omits `details`, and reusing it as
+ * `initialData` would open an empty body that the next save stores. Also carries the demo pair,
+ * flattened in slot order.
  */
 export async function getAdminFeaturedWorkById(
   id: string

@@ -4,10 +4,8 @@ import { ContactInfosLoading } from '@/features/public';
 import { ContactShell } from '@/widgets/public/contact-content/ui/contact-shell';
 
 /**
- * Mirrors `ContactContent`'s classes, not just its colours. The previous
- * `<Skeleton className="size-full" />` resolved `h-full` against `ShellBase`'s
- * content-derived height, collapsed to nothing, and made this route's loading
- * state a blank page.
+ * Mirrors `ContactContent`'s classes, not just its colours: a `size-full` Skeleton resolved `h-full`
+ * against `ShellBase`'s content-derived height and collapsed, leaving a blank page while loading.
  */
 export default function ContactLoading() {
   return (

@@ -3,7 +3,7 @@
 import { Skeleton } from '@byte-of-me/ui';
 import { useTranslations } from 'next-intl';
 
-/** Stands in for the `TechStackDialog` form while its record loads. Same grid and field sizes as the form. */
+/** Stands in for the `TechStackDialog` form while its record loads: same grid and field sizes. */
 export function TechStackFormLoading() {
   const t = useTranslations('dashboard.shared.managerListState');
 

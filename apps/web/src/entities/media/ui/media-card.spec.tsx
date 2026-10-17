@@ -1,8 +1,7 @@
 /**
- * What the media library shows for entries that are not images: a clip is a muted
- * metadata-only `<video>` thumbnail (never a broken `<img>`), and anything else is
- * a type placeholder. Renders the real card. The image branch is `next/image`,
- * which needs Next's runtime config and cannot render under `bun test`.
+ * What the library shows for non-images: a clip is a muted metadata-only `<video>` thumbnail (never
+ * a broken `<img>`), anything else a type placeholder. The image branch is `next/image`, which
+ * cannot render under `bun test`.
  */
 import { cleanup, render } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'bun:test';

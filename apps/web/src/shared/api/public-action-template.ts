@@ -64,22 +64,14 @@ export async function withPublicActionHandler<TData>(
 }
 
 /**
- * Every failure this template can report — one code, because a caught throw
- * is all it can distinguish. A Prisma outage, a malformed row and a bug in the
- * handler arrive here identically; which one it was belongs in the log, not in
- * a vocabulary the client would have to translate. `'unknown'` is deliberately
- * the same id the contact form already renders (`contact.form.errors.unknown`).
+ * One failure code: a caught throw is all this template can distinguish (outage, bad row, bug); the
+ * cause goes in the log. `'unknown'` matches `contact.form.errors.unknown`.
  */
 type PublicActionFailureCode = 'unknown';
 
 /**
- * What a visitor is told when a public read fails.
- *
- * This template has ~20 consumers across the public site, and it used to
- * return `getErrorMessage(error)` verbatim — so a Postgres error naming a
- * table, a column or a host could be forwarded to whatever rendered the
- * failure. The message a visitor reads is now fixed; the caught message still
- * reaches the log below, unchanged.
+ * Fixed message for a failed public read: forwarding `getErrorMessage(error)` could leak a table,
+ * column or host name from a Postgres error. The caught message still reaches the log.
  */
 export const PUBLIC_ACTION_FAILURE_MESSAGE =
   'Something went wrong. Please try again.';

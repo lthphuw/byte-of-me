@@ -9,11 +9,8 @@ import { buildIconSet } from './metadata';
 const ICONS_DIR = path.join(import.meta.dir, '../../../public/icons');
 
 /**
- * These tests exist because of a measured Next.js behaviour, not a hypothetical
- * one: a nested layout's `icons` replaces the parent's outright. Adding
- * `icons: { icon: '…' }` to a nested layout on Next 16.2.3 dropped the root's
- * `shortcut` and `apple-touch-icon` links entirely. A layer that forgets one
- * entry ships a page with that icon missing, and nothing fails loudly.
+ * Measured on Next 16.2.3: a nested layout's `icons` replaces the parent's outright (it dropped the
+ * root's `shortcut` and `apple-touch-icon`), so a layer that forgets an entry silently ships without it.
  */
 describe('buildIconSet', () => {
   it('gives every layer the full set, so no override can drop an entry', () => {
@@ -88,10 +85,8 @@ describe('buildIconSet', () => {
 });
 
 /**
- * The generation step is manual (`bun run gen:icons`) and nothing in the build
- * enforces it, so editing the mark and forgetting to re-run it would otherwise
- * ship stale assets with every file still present and no failure. These two
- * tests cover the two halves of that gap.
+ * Generation is manual (`bun run gen:icons`) and unenforced by the build, so editing the mark without
+ * re-running it would ship stale assets with every file present. These two tests cover both halves.
  */
 describe('generated icon assets', () => {
   it('match what brand-mark.ts currently describes', () => {
@@ -105,10 +100,8 @@ describe('generated icon assets', () => {
   });
 
   it('have rasters built from those SVGs, not an earlier run', () => {
-    // Digests, not re-rasterised bytes: sharp's PNG output is not guaranteed
-    // identical across platforms or versions, a sha256 of the source is. The
-    // lockfile is written by the same run that writes the PNGs, so a match
-    // proves the two came from the same source text.
+    // Digests, not re-rasterised bytes: sharp's PNG output varies across platforms and versions. The
+    // lockfile is written by the same run as the PNGs, so a sha256 match proves one source text.
     const lockPath = path.join(
       import.meta.dir,
       '../../../../../scripts/icons.lock.json'

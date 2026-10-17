@@ -12,14 +12,9 @@ import {
 import { getErrorMessage } from '@/shared/lib/utils';
 
 /**
- * The providers the sign-in page may start an admin OAuth flow with.
- *
- * The mapping is here, server-side, rather than letting the caller name a
- * provider id directly. A server action is an addressable endpoint (AGENTS §5),
- * so a client-supplied id would let anyone start a flow with any registered
- * provider — including the ungated public `github` / `google` ones, which would
- * route straight around the owner-only check in the `signIn` callback. Callers
- * choose from this key set; the server decides what that means.
+ * The providers the sign-in page may start an admin OAuth flow with. The mapping is server-side
+ * because an action is addressable (AGENTS §5): a client-supplied id could start a flow with the
+ * ungated public `github`/`google` providers, bypassing the owner-only `signIn` callback check.
  */
 const ADMIN_OAUTH_PROVIDERS = {
   github: ADMIN_OAUTH_PROVIDER_IDS.GITHUB,
@@ -29,11 +24,9 @@ const ADMIN_OAUTH_PROVIDERS = {
 type AdminOAuthProvider = keyof typeof ADMIN_OAUTH_PROVIDERS;
 
 /**
- * Starts an admin OAuth sign-in and redirects to the provider.
- *
- * Whether the resulting identity is actually allowed in is decided by the
- * `signIn` callback in `@/shared/lib/auth/auth.ts`, and again by
- * `getAuthenticatedAdmin()` when the destination renders.
+ * Starts an admin OAuth sign-in and redirects to the provider. Whether the identity is allowed in
+ * is decided by the `signIn` callback in `@/shared/lib/auth/auth.ts` and again by
+ * `getAuthenticatedAdmin()`.
  */
 export async function logInToDashboardWithOAuth(
   provider: AdminOAuthProvider,
@@ -62,11 +55,8 @@ export async function logInToDashboardWithOAuth(
         // `log-in-to-dashboard.ts` for what Auth.js v5 does with the old name.
         redirectTo: destination,
       },
-      // Third positional argument, not a key inside the options object.
-      // `signIn(provider, options, authorizationParams, config)` spreads this
-      // into the provider's authorize URL; passing it inside `options` instead
-      // sweeps it into `...rest` and POSTs it as the literal string
-      // `[object Object]`, so the prompt never reaches the provider.
+      // Third positional argument: inside `options` it is swept into `...rest` and POSTed as
+      // the literal `[object Object]`, so the prompt never reaches the provider.
       { prompt: 'login' }
     );
     return { success: true, data: null };

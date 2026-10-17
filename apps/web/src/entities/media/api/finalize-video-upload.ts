@@ -25,12 +25,9 @@ import { getErrorMessage } from '@/shared/lib/utils';
 import type { Media } from '@/shared/types/models';
 
 /**
- * Step 2 of a clip upload: the browser has PUT the file, now vouch for it.
- *
- * The signed URL cannot bound the size or the content, so the stored object is
- * read back here and held to the same rules as `uploadMedia`: at most 15 MB, and
- * its bytes must be the mp4/webm its key says. Anything else is deleted, never
- * recorded, so a stray object cannot be served as a library item.
+ * Step 2 of a clip upload: the browser has PUT the file, now vouch for it. A signed URL cannot
+ * bound size or content, so the stored object is read back: at most 15 MB, bytes matching its
+ * mp4/webm key (as `uploadMedia`). Anything else is deleted and never recorded.
  */
 export async function finalizeVideoUpload(input: {
   fileKey: string;

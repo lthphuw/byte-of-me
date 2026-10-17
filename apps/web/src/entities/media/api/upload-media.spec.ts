@@ -1,8 +1,7 @@
 /**
- * `scope` and `file.type` come from the caller and must not be trusted: a bad
- * scope, bytes that are not an image, and any video are refused before storage.
- * Clips take the direct path (`uploadVideoDirect`). Storage and Prisma are
- * replaced so nothing real is written.
+ * `scope` and `file.type` come from the caller and are not trusted: a bad scope, non-image bytes
+ * and any video are refused before storage (clips take `uploadVideoDirect`). Storage and Prisma are
+ * replaced.
  */
 import type { MediaScope } from '@byte-of-me/contracts/media';
 import { prisma } from '@byte-of-me/db';

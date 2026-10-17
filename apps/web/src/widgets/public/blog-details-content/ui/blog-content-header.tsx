@@ -34,23 +34,15 @@ export async function BlogContentHeader({ blog }: { blog: PublicBlog }) {
   ]);
   const author = blog.author;
 
-  // `Blog.updatedAt`, not `BlogTranslation.updatedAt`. `updateBlog` replaces
-  // the translation rows wholesale (deleteMany + createMany) on every save,
-  // so a translation's timestamp is its INSERT time — identical for every
-  // locale and reset even when that locale's text did not change. The blog
-  // row's `@updatedAt` is the only stamp that means "this post was revised",
-  // and it is already what the page's JSON-LD reports as `dateModified`.
-  //
-  // Compared against the date actually printed below (published, falling back
-  // to created) so the two can never disagree on screen.
+  // `Blog.updatedAt`, not `BlogTranslation.updatedAt`: `updateBlog` replaces translation rows
+  // (deleteMany + createMany) on every save, so theirs is an INSERT time, equal across locales.
+  // Compared with the printed date (published, else created) so they never disagree.
   const publishedOn = blog.publishedDate ?? blog.createdAt;
   const showUpdated = isMeaningfullyUpdated(publishedOn, blog.updatedAt);
 
   return (
-    // One rhythm for the header instead of five hand-tuned margins: the parts
-    // are "elements inside a block" and the title/description pair is
-    // "title → subtitle" (AGENTS.md §14, the public rhythm). The margins this
-    // replaces were 32/16/12/20/16px — no two of them a step apart.
+    // One header rhythm instead of five hand-tuned margins: elements inside a block, and
+    // title → subtitle (AGENTS.md §14, the public rhythm).
     <header className="w-full space-y-4 md:space-y-6">
       {blog.coverImage && (
         <div className="relative aspect-[2/1] w-full overflow-hidden rounded-2xl border bg-muted">
@@ -104,19 +96,9 @@ export async function BlogContentHeader({ blog }: { blog: PublicBlog }) {
           <Separator orientation="vertical" className="hidden h-4 md:block" />
         )}
 
-        {/* One date cluster, not two.
-
-            The revision stamp used to sit beside this as a separate
-            `.meta-label` — 11px and letter-spaced against the published date's
-            14px, and printed "1 Aug 2026" against the other's "Apr 2026". Two
-            sizes and two formats for one piece of information, which read as
-            something bolted on rather than as part of the byline. Both dates
-            now share the icon, the size and the format, joined by a middle dot,
-            so the line says one thing: when this was written, and when it last
-            changed.
-
-            Localised, like every other date on the site (see `blog-card.tsx`):
-            this was formatting to en-US on the Vietnamese page. */}
+        {/* One date cluster, not two: published and revised share the icon, size and format,
+            joined by a middle dot (a separate 11px `.meta-label` read as bolted on).
+            Localised like every other date (see `blog-card.tsx`), not en-US. */}
         {blog.publishedDate && (
           <div className="flex items-center gap-1.5 text-muted-foreground">
             <Calendar className="h-4 w-4 shrink-0" />

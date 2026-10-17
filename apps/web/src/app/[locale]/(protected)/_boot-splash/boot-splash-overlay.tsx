@@ -1,19 +1,9 @@
 import { BrandMark } from '@/shared/ui/brand-mark';
 
 /**
- * The full-screen "app is booting" splash.
- *
- * Always in the tree, in both the server and the client render — nothing
- * here is conditional on `sessionStorage` or any other client-only signal.
- * Visibility is entirely driven by the `data-booting` attribute
- * `BootSplashScript` sets on `<html>` before first paint and `BootSplashReady`
- * clears once the app is ready, through the `.app-boot-splash` rules in
- * `globals.css`. No React state controls it, so there is nothing for
- * hydration to disagree about, and nothing here can flash.
- *
- * Decorative and self-dismissing: `aria-hidden` keeps it out of the
- * accessibility tree entirely, and it holds no focusable element, so it
- * cannot trap keyboard focus.
+ * The "app is booting" splash, always in the tree on server and client. Visibility comes only from the
+ * `data-booting` attribute (set by BootSplashScript, cleared by BootSplashReady) via `.app-boot-splash`
+ * in globals.css, so hydration has nothing to disagree about. `aria-hidden` and no focusable element.
  */
 export function BootSplashOverlay() {
   return (

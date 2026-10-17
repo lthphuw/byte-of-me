@@ -18,15 +18,9 @@ import {
 import { usePathname, useRouter } from '@/shared/i18n/navigation';
 
 /**
- * Project list filters and pagination backed by the URL query
- * (`?tags=a,b&tech=x,y&q=...&page=2`). The URL is the single source of
- * truth, so filtered/paginated views are shareable/bookmarkable and survive
- * refresh and back/forward. Same shape as `useBlogFilters`, with the extra
- * tech-stack facet projects have and page folded in as a fourth param.
- *
- * The state shape, defaults and the URL parse/serialise pair live in
- * `./project-filter-params` — a module without `'use client'`, so the server
- * page can share the defaults without them turning into a client reference.
+ * Project filters and pagination in the URL query (`?tags=a,b&tech=x,y&q=...&page=2`), the source
+ * of truth. Same shape as `useBlogFilters` plus the tech-stack facet. Defaults and parse/serialise
+ * live in `./project-filter-params` (no `'use client'`), so the server page can share them.
  */
 export function useProjectFilters() {
   const searchParams = useSearchParams();

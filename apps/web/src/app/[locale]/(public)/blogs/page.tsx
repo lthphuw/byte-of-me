@@ -9,10 +9,8 @@ import { routing } from '@/shared/i18n/routing';
 import type { LocaleType } from '@/shared/types';
 import { BlogsContent } from '@/widgets/public';
 
-// No `force-dynamic`: the prefetched list now goes through a tagged
-// `unstable_cache` entry (CACHE_TAGS.BLOG), so publishing or editing a post
-// purges both the data cache and this prerendered page. Rendering the list on
-// every request would only re-run the same cached query.
+// No `force-dynamic`: the prefetched list goes through a tagged `unstable_cache` (CACHE_TAGS.BLOG), so
+// publishing or editing purges both the data cache and this prerendered page.
 
 interface BlogsPageProps {
   params: Promise<{ locale: string }>;
@@ -27,22 +25,9 @@ export default async function BlogsPage({ params }: BlogsPageProps) {
 
   setRequestLocale(locale as LocaleType);
 
-  // Server-render the default (unfiltered) first page so its data is in the
-  // initial HTML — the client hydrates it instantly instead of relying on a
-  // first client-side fetch (which was leaving the default list stuck on
-  // skeletons). Filtering changes the query key and falls through to a live
-  // client fetch. `DEFAULT_BLOG_FILTERS` is the exact shape `useBlogFilters`
-  // produces when the URL carries no filter params, so the prefetch key and
-  // the client key stay structurally identical instead of drifting as two
-  // hand-kept literals. It resolves to `blog-filters/lib/blog-filter-params`,
-  // which carries no `'use client'` directive — imported out of the hook file
-  // it arrived here as a client-reference proxy and the hash drifted.
-  //
-  // The filter bar's tag chips are prefetched in the same pass, with the same
-  // key and limit as `useTagInfiniteQuery` in `BlogFilters`; otherwise they
-  // are a second client action after hydration and pop in under the header.
-  // The factory unwraps the envelope, so a refused read throws inside
-  // prefetchQuery and nothing is hydrated: the client then reads it itself.
+  // Prefetch the default first page and the tag chips (same key/limit as `BlogFilters`) so the client
+  // hydrates instead of fetching. DEFAULT_BLOG_FILTERS lives in a module without 'use client':
+  // imported from the hook it arrived as a client-reference proxy and the key hash drifted.
   const queryClient = getQueryClient();
   await Promise.all([
     queryClient.prefetchQuery(blogQueries.publicList(1, DEFAULT_BLOG_FILTERS)),

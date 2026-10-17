@@ -10,22 +10,9 @@
   }
 
   /**
-   * The four `env(safe-area-inset-*)` values, one utility per edge.
-   *
-   * `viewportFit: 'cover'` (`app/[locale]/layout.tsx`) extends every surface
-   * into the notch, the home indicator, and — in landscape — the sensor
-   * housing on whichever side it lands. Before these existed, each surface
-   * that needed one wrote its own inline `env()` (`dashboard/layout.tsx`,
-   * `public-site-header.tsx`, the bottom bars…), which is fine for the handful of spots that also need to
-   * `calc()` the inset against something else, but is not a pattern to keep
-   * repeating for a plain edge pad. These are that one obvious way, for
-   * everything else.
-   *
-   * Bare `env()`, no `max()` floor — a structural gutter that stacks with
-   * whatever padding an element already has, not a touch target's minimum.
-   * A bottom bar that also needs a floor (`pb-[max(0.5rem,env(...))]`) still
-   * writes that inline; these utilities are for the common case of "pad this
-   * edge by the inset and nothing else."
+   * `env(safe-area-inset-*)` utilities (`viewportFit: 'cover'` extends surfaces under the notch). Bare
+   * `env()`, no `max()` floor: a gutter that stacks with existing padding. A bar needing a floor
+   * writes `pb-[max(0.5rem,env(...))]` inline.
    */
   .pt-safe {
     padding-top: env(safe-area-inset-top);
@@ -46,18 +33,9 @@
 }
 
 /**
- * A subtree pinned to the light palette regardless of the theme on <html>.
- *
- * Built for the print view. Paper has no dark mode: an author writing at
- * night has `.dark` on <html>, which sets `--foreground` to near-white, and
- * every heading and bold run inside the exported article then renders white on
- * white — invisible on screen and blank in the PDF.
- *
- * The values are the `:root` block's, repeated because `.dark` is set on an
- * ANCESTOR: custom properties cascade, so the only way to win for a subtree
- * is to redeclare them on it. Only the tokens that reach rendered prose are
- * listed; keep this in step with `:root` below (except `--background`, which
- * stays pure white) if the palette changes.
+ * A subtree pinned to the light palette whatever `.dark` is on <html> (the print view: white-on-white
+ * headings otherwise). Values repeat `:root` because custom properties cascade from an ANCESTOR `.dark`;
+ * keep in step with `:root` below (except `--background`, which stays pure white).
  */
 .force-light-surface {
   color-scheme: light;
@@ -118,10 +96,9 @@
     --destructive: 0 84.2% 48%;
     --destructive-foreground: 0 0% 98%;
 
-    /* Error TEXT, not the destructive button fill. `--destructive` is tuned as
-       a fill behind a white label (4.65:1) and is only ~4.6:1 as text on the page;
-       this one clears 6.10:1 light / 8.60:1 dark. Keep the two apart —
-       retuning `--destructive` would repaint every destructive button. */
+    /* Error TEXT, not the destructive button fill: `--destructive` is tuned as a fill behind a white
+       label (4.65:1) and is ~4.6:1 as text; this clears 6.10:1 light / 8.60:1 dark. Keep the two apart
+       (retuning `--destructive` repaints every destructive button). */
     --destructive-text: 0 74% 42%;
 
     --ring: 237.6 73.9% 61%;
@@ -133,10 +110,8 @@
 
     --radius: 0.5rem;
 
-    /* Scrollbars. Neutral alpha rather than a palette token: a thumb sits on
-       whatever the pane behind it happens to be — a card, the page, a muted
-       toolbar — and only a translucent grey reads the same on all of them.
-       `--border` was the obvious candidate and is far too faint to find. */
+    /* Scrollbars: neutral alpha, not a palette token: a thumb sits on cards, the page and toolbars,
+       and only translucent grey reads on all of them. `--border` is far too faint to find. */
     --scrollbar-thumb: hsl(240 20% 8% / 0.22);
     --scrollbar-thumb-hover: hsl(240 20% 8% / 0.38);
 
@@ -220,55 +195,12 @@
   }
 }
 
-/* ---------------------------------------------------------------------------
- * Scrollbars
- *
- * Every pane in the app scrolls with the operating system's own bar, and the
- * handful that use Radix `ScrollArea` draw a slim one of their own — so the
- * a pane and the one beside it were wearing two different scrollbars.
- * These rules give the native ones the same shape as the Radix thumb
- * (`scroll-area.tsx`, kept in step with the token above).
- *
- * The STANDARD properties only, and that is a performance decision rather than
- * a stylistic one. Defining ANY `::-webkit-scrollbar` rule moves a scroller off
- * Chromium's compositor `SolidColorScrollbarLayer` and onto a main-thread
- * PAINTED scrollbar, which Blink re-records every time the thumb moves — once
- * per scroll frame. The block that used to live here was unscoped, so the note
- * editor's scroll column and every one of the thirty `.tableWrapper`s on a long
- * research note was carrying one. `scrollbar-width` and `scrollbar-color` are
- * honoured by current Chromium and Firefox and buy the same slim themed bar
- * from the compositor, for nothing.
- *
- * The selector is a LIST of panes rather than the `:where(body *)` it replaced,
- * for the second half of the same reason. `*` as the rightmost compound cannot
- * be bucketed by tag, class or id, so Blink files the rule in its universal set
- * and tests it against EVERY element on EVERY style recalc — five rules deep,
- * each walking ancestors to find `body`, on a ~10,000-node document. Every
- * selector below is a single bucketable compound instead, so matching one is a
- * class or tag check with no tree walk.
- *
- * `.slim-scroll` is the utility to reach for on a new pane. The rest name the
- * scrollers that already exist and cannot be given a class from a stylesheet:
- * Tailwind's own overflow utilities mark every pane in the app that scrolls,
- * `.tableWrapper` is written by prosemirror-tables' node view, and a `pre` takes
- * its `overflow-x` from `editor-surface.css`.
- *
- * Still `:where()`, and still on purpose, twice over:
- *
- *  - It excludes `html` and `body`, so the BROWSER'S OWN page scrollbar stays
- *    native. That bar is chrome, not content; people aim at it by muscle
- *    memory, and it is also what `use-lock-body` measures.
- *  - It contributes no specificity, so Radix's viewport — which hides the
- *    native bar to draw its own — still wins without an `!important`.
- *
- * What this gives up: on a platform with OVERLAY scrollbars (a trackpad Mac) a
- * pane no longer grows a permanent classic bar, because forcing one was a side
- * effect of the `::-webkit-scrollbar` block rather than something the standard
- * properties can ask for. So a wide table's "there are columns off to the
- * right" cue now rests entirely on the pinned first column's edge in
- * `editor-surface.css` — which is what that edge is for, and why it is not
- * decoration to be tidied away.
- * ------------------------------------------------------------------------ */
+/* Scrollbars: STANDARD properties only. Any `::-webkit-scrollbar` rule moves a scroller off Chromium's
+ * compositor bar onto a main-thread painted one, re-recorded every scroll frame. The selector is a list
+ * of bucketable compounds: `:where(body *)` was tested on every element each recalc (~10,000 nodes). */
+/* `:where()` keeps html/body out (the page scrollbar stays native; use-lock-body measures it) and adds
+ * no specificity, so Radix's viewport wins without !important. Overlay-scrollbar platforms get no
+ * classic bar: the wide-table cue rests on the pinned first column's edge (editor-surface.css). */
 
 :where(
     .slim-scroll,
@@ -286,15 +218,9 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Smooth scrolling is a vestibular trigger (WCAG 2.3.3), and this rule applies
-   to every anchor jump and every `scrollIntoView()` that does not name a
-   behavior of its own.
-
-   It does NOT cover a call that passes `behavior: 'smooth'` explicitly — CSS
-   only decides the behavior when the caller says `'auto'` or stays silent. Those
-   call sites go through `scrollIntoViewBehavior()` in
-   `@byte-of-me/ui-utils` instead. Both halves are needed;
-   neither one covers the other. */
+/* Smooth scrolling is a vestibular trigger (WCAG 2.3.3). This covers anchor jumps and calls to
+   `scrollIntoView()` with no behavior; an explicit `behavior: 'smooth'` goes through
+   `scrollIntoViewBehavior()` in `@byte-of-me/ui-utils`. Both halves are needed. */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -310,25 +236,9 @@ html {
   background-repeat: no-repeat !important;
 }
 
-/* -----------------------------------------------------------------------
- * App-boot splash (`(protected)/_boot-splash/`) — the once-per-session
- * "app is starting" overlay shown on first entry into
- * `/dashboard`.
- *
- * `BootSplashOverlay`'s markup is always in the tree, in both the server and
- * client render. Visibility lives entirely in the `data-booting` attribute
- * on `<html>`: present, it is shown, at once, with no fade-in — the inline
- * script in `BootSplashScript` sets it before first paint, so there is never
- * a frame where the attribute changes while the page is visible. Absent
- * (the common case: every navigation after the first, and every reload once
- * the session flag is set), `.app-boot-splash` is hidden by the default
- * rule below, no attribute selector needed to hide it.
- *
- * `BootSplashReady` removes the attribute once the app is ready, and THAT
- * transition — matched rule to default rule — is what plays the fade: the
- * `transition` on the default (hidden) rule is what the browser uses when
- * interpolating away from the attribute-selected (visible) state.
- * ------------------------------------------------------------------------ */
+/* App-boot splash (`(protected)/_boot-splash/`): shown only while `<html data-booting>` is set, no
+ * fade-in (BootSplashScript sets it before first paint). Absent, the default rule hides it, and its
+ * `transition` is what plays the fade when BootSplashReady removes the attribute. */
 .app-boot-splash {
   position: fixed;
   inset: 0;
@@ -389,10 +299,8 @@ html[data-booting] .app-boot-splash {
     margin: 18mm 16mm;
   }
 
-  /* Chrome drops backgrounds when printing. In these three places the fill
-     carries meaning rather than decoration — an unfilled code block and its
-     surrounding prose become indistinguishable, and a highlight disappears
-     entirely. */
+  /* Chrome drops backgrounds when printing. Here the fill carries meaning: an unfilled code block
+     merges with prose and a highlight disappears. */
   pre,
   mark,
   th {
@@ -426,20 +334,13 @@ html[data-booting] .app-boot-splash {
     word-break: break-word;
   }
 
-  /* Tables, for the same reason: the scroll container that makes a wide table
-     readable on screen would simply clip its right-hand columns off the sheet.
-     On paper the table goes back to fitting the page and wrapping — every
-     column visible, none of them reachable any other way.
-
-     `position: static` on the pinned first column is part of that: a sticky
-     element inside a print box pins to the wrong thing, and there is nothing
-     to scroll past it anyway. */
+  /* Tables: a scroll container would clip right-hand columns off the sheet, so on paper the table
+     fits the page and wraps. `position: static` on the pinned first column: sticky pins to the wrong
+     thing in a print box and there is nothing to scroll past. */
   .tableWrapper {
     overflow: visible !important;
-    /* On screen this element skips laying out its contents until they are
-       near the viewport. A print job has no viewport to be near, and a
-       skipped table prints as its `contain-intrinsic-size` placeholder — a
-       400px blank. `visible` forces every table to lay out for real. */
+    /* On screen this skips layout until near the viewport; a print job has none, so a skipped table
+       prints as its 400px `contain-intrinsic-size` placeholder. `visible` forces real layout. */
     content-visibility: visible !important;
   }
 
@@ -457,14 +358,9 @@ html[data-booting] .app-boot-splash {
     white-space: normal !important;
   }
 
-  /* The row-label column, the one band that still pins. Sticky inside a print
-     box pins to the wrong thing, and there is nothing to scroll past it anyway.
-     Its edge goes with it: that hairline says "this column is covering
-     something", and on paper it is covering nothing.
-
-     The header row used to be listed here too. It no longer pins on screen —
-     see the note above the header-row rule in `editor-surface.css` — so there
-     is nothing left to undo. */
+  /* The row-label column, the one band that still pins: sticky pins to the wrong thing in a print box,
+     and its edge hairline ("this column covers something") covers nothing on paper. The header row
+     no longer pins on screen (see editor-surface.css), so there is nothing to undo. */
   .tableWrapper tr > :first-child {
     position: static !important;
     box-shadow: none !important;

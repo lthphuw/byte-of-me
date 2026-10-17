@@ -158,10 +158,9 @@ export function ContactMessageGallery() {
                   <p className="line-clamp-3 whitespace-pre-wrap break-words text-sm leading-7">
                     {msg.message}
                   </p>
-                  {/* A real button rather than `onClick` on the card: the
-                      pseudo-element stretches the hit area over the whole card
-                      while keyboard and screen-reader users get one named,
-                      focusable control per message. */}
+                  {/* A real button, not `onClick` on the card: the pseudo-element stretches the
+                      hit area over the whole card while keyboard and screen-reader users get one
+                      named, focusable control per message. */}
                   <button
                     type="button"
                     aria-label={t('readMessageFrom', { name: msg.name })}

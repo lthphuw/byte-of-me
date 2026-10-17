@@ -50,10 +50,8 @@ export function CommentItem({
 
       {/* HEADER */}
       <div className="flex min-w-0 items-center justify-between gap-2">
-        {/* Flat `gap-2`: 8px is the "label → value" step and the public
-            rhythm keeps anything at or below 8px off the breakpoints, so the
-            name/timestamp pair no longer collapses to 0 on narrow screens
-            purely because it stacks there. */}
+        {/* Flat `gap-2` (8px): the public rhythm keeps anything at or below 8px off the
+            breakpoints, so name and timestamp do not collapse to 0 when stacked. */}
         <div className="flex min-w-0 flex-col gap-2 text-sm md:flex-row md:items-center">
           <span className="truncate font-medium">
             {comment.user.name || 'Anonymous'}

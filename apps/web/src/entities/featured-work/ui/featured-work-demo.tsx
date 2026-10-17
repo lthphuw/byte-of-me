@@ -119,13 +119,9 @@ function ControlButton({
 }
 
 /**
- * One clip. The frame is a play/pause button; it plays while it is on screen unless
- * the visitor asked for reduced motion or paused it themselves. A second button
- * beside it (never inside: a button may not hold a button) takes the clip full screen,
- * with sound and a zoom toolbar; a double tap on the frame does the same. With a mouse
- * that button shows only while the clip is hovered or focused; on a touch screen, which has
- * no hover, it is always there. Where the browser refuses element full screen, the
- * same box is pinned to the viewport instead (iPhone Safari has no element full screen).
+ * One clip: a play/pause frame that plays on screen unless reduced motion or paused. A sibling
+ * button (never nested) or a double tap goes full screen (hover/focus with a mouse, always on
+ * touch); iPhone Safari lacks element full screen, so the box is pinned to the viewport.
  */
 function DemoVideo({
   src,
@@ -401,7 +397,7 @@ function DemoFigure({
   return (
     <figure className="relative min-w-0">
       {media}
-      {/* On the frame, not under it: the carousel's dots sit at the bottom of the slide, and the full-screen button opposite, top right. */}
+      {/* On the frame: the dots sit at the slide bottom, the full-screen button top right. */}
       {item.caption && (
         <figcaption className="pointer-events-none absolute left-2 top-2 max-w-[calc(100%-1rem)] rounded-full bg-background/80 px-2 py-1 font-mono text-xs leading-none text-foreground [overflow-wrap:anywhere]">
           {item.caption}
@@ -419,10 +415,8 @@ interface FeaturedWorkDemoProps {
 }
 
 /**
- * The demo of a featured work, always on show: a clip plays while it is on screen, an image
- * loads lazily, and each sits in a reserved 16:9 frame. The media are one carousel, as the
- * education gallery is: the next one only partly in view, dragged or swiped into place. A lone
- * clip fills the row.
+ * The demo of a featured work: a clip plays while on screen, an image loads lazily, each in a
+ * reserved 16:9 frame. One carousel with the next item partly in view; a lone clip fills the row.
  */
 export function FeaturedWorkDemo({
   media,

@@ -5,12 +5,9 @@ import type { EditorLabels } from '@byte-of-me/rich-text-editor';
 import { useTranslations } from 'next-intl';
 
 /**
- * The rich-text editor's text, in the reader's language.
- *
- * Memoised per locale: the editor reads its labels when it mounts, so a fresh
- * object on every render would only rebuild the extension list for nothing.
- * Upload, Delete and Cancel reuse strings the media library and the confirm
- * dialogs already carry; every other label lives under `dashboard.media.editor`.
+ * The rich-text editor's labels. Memoised per locale: the editor reads them at mount, so a fresh object
+ * per render would rebuild the extension list. Upload/Delete/Cancel reuse the media and confirm-dialog
+ * strings; the rest live under `dashboard.media.editor`.
  */
 export function useEditorLabels(): EditorLabels {
   const t = useTranslations('dashboard.media.editor');

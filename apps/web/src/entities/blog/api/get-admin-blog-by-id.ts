@@ -10,11 +10,9 @@ import { requireAdmin } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
 
 /**
- * The editor dialog's source of truth. `getPaginatedAdminBlogs` deliberately
- * drops `translations[].content` from its list rows (see `AdminBlogListItem`),
- * so the dialog fetches the full post here instead of reusing the list item
- * as `initialData` — reusing it is exactly how an empty `content` field would
- * silently overwrite a published post on save.
+ * The editor dialog's source of truth: list rows drop `translations[].content`
+ * (`AdminBlogListItem`), and reusing one as `initialData` would let an empty `content` overwrite a
+ * published post on save.
  */
 export async function getAdminBlogById(
   id: string

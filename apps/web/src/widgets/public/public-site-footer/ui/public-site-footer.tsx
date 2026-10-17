@@ -7,10 +7,8 @@ import {
 } from '@/features/public/public-site-footer/ui';
 
 /**
- * Suspense boundary around the data-fetching footer feature, so a slow
- * profile/social-link read never blocks the rest of the page. The footer is the
- * last thing on every public page, so its swap from the skeleton is the one a
- * visitor who reaches the bottom sees: it fades in rather than popping.
+ * Suspense boundary around the data-fetching footer: a slow profile/social-link read never
+ * blocks the page. The skeleton swap is seen by whoever reaches the bottom, so it fades in.
  */
 export function PublicSiteFooterSection() {
   return (

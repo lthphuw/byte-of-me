@@ -1,11 +1,7 @@
 /**
- * Enforces the package layers declared in packages/config/boundaries.json.
- *
- *   bun run check-boundaries
- *
- * Prints `file:line  rule  message` per violation and exits 1 if there is one.
- * Rules 1-6 of docs/architecture.md ("Package layers"). Parsing is syntactic,
- * with no type-check, so a full run takes a fraction of a second.
+ * Enforces packages/config/boundaries.json (rules 1-6, docs/architecture.md "Package layers").
+ * `bun run check-boundaries` prints `file:line  rule  message` per violation, exits 1 on any.
+ * Syntactic parse, no type-check: a full run takes a fraction of a second.
  */
 import fs from 'node:fs';
 import path from 'node:path';

@@ -1,12 +1,7 @@
 /**
- * The displayed size of an MP4's video track, read from its `tkhd` box.
- *
- * Only the box headers are walked, no decoder runs: the server already holds the
- * file's bytes, and a layout hint needs nothing more. A track's `tkhd` carries its
- * size as 16.16 fixed-point numbers, and a 90° or 270° rotation (a phone held upright)
- * is stored in the matrix, so the width and height are swapped to match what a
- * reader sees. Returns null for anything that is not a readable MP4 with a video
- * track; the caller then keeps the size the browser measures.
+ * Displayed size of an MP4's video track from its `tkhd` box (16.16 fixed point), walking headers only.
+ * A 90/270 degree rotation lives in the matrix, so width and height are swapped to match the display.
+ * Returns null for anything that is not a readable MP4 with a video track.
  */
 
 interface VideoDimensions {

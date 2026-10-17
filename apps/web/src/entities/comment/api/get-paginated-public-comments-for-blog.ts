@@ -76,11 +76,9 @@ export async function getPaginatedPublicCommentsForBlog(
 
         const rootIds = roots.map((c) => c.id);
 
-        // Replies can nest arbitrarily deep, so walk the thread level by
-        // level — but only under this page's roots, never the blog's whole
-        // reply table. MAX_DEPTH bounds both the query count and any cycle a
-        // corrupt parentId chain could create; the two reply ceilings bound
-        // how many rows each query and the whole page may load.
+        // Replies nest arbitrarily deep, so walk level by level, only under this page's roots.
+        // MAX_DEPTH bounds the query count and any cycle a corrupt parentId chain could create; the
+        // two reply ceilings bound rows per query and per page.
         const MAX_DEPTH = 20;
         const descendants: (typeof roots)[number][] = [];
         let parentIds = rootIds;
@@ -168,11 +166,9 @@ export async function getPaginatedPublicCommentsForBlog(
         };
       },
       {
-        // Deliberately uncached. Every comment mutation revalidates COMMENT
-        // with the `'max'` profile (stale-while-revalidate), and the client
-        // refetches this list right after posting or hiding: a cached copy
-        // could answer that refetch without the change and make the new
-        // comment vanish. The reply ceilings above bound the cost instead.
+        // Uncached on purpose: comment mutations revalidate COMMENT with the `'max'` profile
+        // (stale-while-revalidate) and the client refetches right after, so a cached copy could
+        // drop the new comment. The reply ceilings above bound the cost instead.
         cache: false,
       }
     );

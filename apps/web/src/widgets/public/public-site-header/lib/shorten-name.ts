@@ -3,18 +3,14 @@
  */
 interface ShortenNameOptions {
   /**
-   * The variation of the shortened name:
-   * - 'initials': First letter of the first and last word (e.g., "John Doe" -> "JD").
-   * - 'compact': Primary name + Initial of the secondary name.
-   * - 'truncate': Truncates the string and appends an ellipsis.
+   * 'initials': first letters of first and last word ("John Doe" -> "JD"); 'compact': primary
+   * name + secondary initial; 'truncate': cut at `maxLength` and append an ellipsis.
    */
   variant?: 'initials' | 'compact' | 'truncate';
 
   /**
-   * Determines the structural order of the name to handle 'compact' logic correctly:
-   * - 'last-first': Asian style (e.g., "Luong Thanh Hoang Phu" -> Last: Luong, First: Phu).
-   * - 'first-last': Western style (e.g., "John William Doe" -> First: John, Last: Doe).
-   * Defaults to 'last-first'.
+   * Name order for 'compact': 'last-first' (Asian, "Luong Thanh Hoang Phu" -> Last: Luong,
+   * First: Phu) or 'first-last' (Western, "John William Doe"). Defaults to 'last-first'.
    */
   nameOrder?: 'first-last' | 'last-first';
 
@@ -26,12 +22,7 @@ interface ShortenNameOptions {
 }
 
 /**
- * Safely shortens a given name based on the provided configuration options.
- * Handles extensive edge cases including Unicode, extra spaces, and missing data.
- *
- * @param name - The full name string to be shortened.
- * @param options - Configuration options.
- * @returns The shortened name string.
+ * Safely shortens a name per `options`; handles Unicode, extra spaces and missing data.
  */
 export const shortenName = (
   name?: string | null,

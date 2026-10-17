@@ -1,14 +1,7 @@
 /**
- * What this defends is the comment thread's own lifecycle, driven through the
- * real `getPaginatedPublicCommentsForBlog` action with only the Prisma
- * `comment` delegate replaced: the list is not requested until the reader
- * scrolls within reach of it, and a failed load says so with a way to retry
- * rather than passing for "No comments yet".
- *
- * The action reaches `env.ts`, which refuses to load when `window` exists, so
- * the section is imported with the DOM bindings dropped and put back after —
- * the same dance, and the same reasons, as
- * `src/entities/blog/api/get-paginated-public-blogs.spec.ts`.
+ * Thread lifecycle via the real `getPaginatedPublicCommentsForBlog` (Prisma `comment` replaced): no
+ * request until the reader scrolls near, and a failed load offers retry. `env.ts` rejects a global
+ * `window`: DOM bindings are dropped as in `get-paginated-public-blogs.spec.ts`.
  */
 import type { ReactNode } from 'react';
 import { prisma } from '@byte-of-me/db';

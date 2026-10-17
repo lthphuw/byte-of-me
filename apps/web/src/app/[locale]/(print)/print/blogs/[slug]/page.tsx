@@ -2,12 +2,8 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 
-// The PUBLIC read, by deep path exactly as `(public)/blogs/[slug]/page.tsx`
-// imports it. `getPublicBlogBySlug` queries
-// `blog.findUniqueOrThrow({ where: { slug, isPublished: true } })`, so a draft
-// is not "found and then hidden" — it is outside the query's result set, and
-// the throw is caught into `{ success: false }` by `handlePublicAction`.
-// There is deliberately no admin equivalent reachable from this route.
+// The PUBLIC read by deep path, as `(public)/blogs/[slug]/page.tsx` imports it: its query filters
+// `isPublished: true`, so a draft is never in the result set. No admin read is reachable from here.
 import { getPublicBlogBySlug } from '@/entities/blog/api/get-public-blog-by-slug';
 import { BlogPrintTrigger } from '@/features/public/blog-print';
 import { formatDate, isMeaningfullyUpdated } from '@/shared/lib/utils';
@@ -31,15 +27,9 @@ const BASE_METADATA: Metadata = {
 };
 
 /**
- * The title becomes the PDF's default filename in Chrome's save dialog, so it
- * is worth getting right — "Blog" for every export would be useless.
- *
- * `absolute`, so the locale layout's `%s | Byte of me` template does not end
- * up in the filename of every exported article.
- *
- * Resolving it here leaks nothing: the only titles reachable are those of
- * published posts, which are already on the public site. An unpublished or
- * unknown slug falls through to the generic label and the page below 404s.
+ * The title is Chrome's default PDF filename; `absolute` skips the layout's `%s | Byte of me` template.
+ * Leaks nothing: only published titles resolve; an unknown or unpublished slug gets the generic label
+ * while the page below 404s.
  */
 export async function generateMetadata({
   params,

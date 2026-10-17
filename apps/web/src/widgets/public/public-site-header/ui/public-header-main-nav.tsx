@@ -45,11 +45,9 @@ export function PublicHeaderMainNav({
 
       {navItems.length > 0 && (
         <nav className="hidden items-center gap-2 md:flex">
-          {/* `asChild`, not <Link><Button>: the nested form renders
-              <a><button>, which is invalid (interactive inside interactive) and
-              cost keyboard users two Tab stops per nav item. The Slot merges
-              the button's classes onto the link, so this is one element with
-              the same styling. */}
+          {/* `asChild`, not <Link><Button>: that renders <a><button> (interactive in interactive),
+              costing keyboard users two Tab stops per item. The Slot merges the button's classes
+              onto the link: one element, same styling. */}
           {navItems.map((item) => (
             <Button
               key={item.href}

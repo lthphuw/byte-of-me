@@ -1,9 +1,7 @@
 /**
- * `hideComment` lets a comment's author and the site owner hide it, and refuses
- * everyone else with the `forbidden` code. Prisma is replaced at the `comment`
- * delegate by an in-memory table that applies the `where` the action sends, so
- * each test asserts the stored row, not the arguments of a call. The identity
- * comes from the preload's auth stub; the default is the site owner.
+ * `hideComment` lets a comment's author and the site owner hide it and refuses everyone else
+ * (`forbidden`). Prisma's `comment` delegate is an in-memory table applying the sent `where`, so
+ * tests assert the stored row.
  */
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';

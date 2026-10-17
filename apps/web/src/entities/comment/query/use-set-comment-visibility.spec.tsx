@@ -1,8 +1,7 @@
 /**
- * Hiding or restoring a comment marks every cached comment list stale, not only
- * the admin page: a blog's public thread shows the same comment. Prisma's
- * `comment` delegate is replaced by a stub that echoes the update, so no
- * database is touched.
+ * Hiding or restoring a comment marks every cached comment list stale, not only the admin page: a
+ * blog's public thread shows the same comment. Prisma's `comment` delegate is a stub that echoes
+ * the update.
  */
 import type { ReactNode } from 'react';
 import { commentKeys } from '@byte-of-me/contracts/comment';

@@ -174,11 +174,9 @@ export async function getPaginatedPublicProjects(
         };
       },
       {
-        // Published-only, session-independent list: safe to share. Free-text
-        // searches, tag/tech-stack filters and deep pages are read live (each
-        // distinct tuple would store its own, mostly empty, entry, and the
-        // slugs are caller-chosen). The key mirrors every closure
-        // argument the query depends on (locale is appended by the handler).
+        // Published-only and session-independent, so safe to share. Searches, tag/tech filters and
+        // deep pages are read live (each caller-chosen tuple would store its own entry). The key
+        // mirrors every closure argument; the handler appends the locale.
         cache:
           !search &&
           tagSlugs.length === 0 &&

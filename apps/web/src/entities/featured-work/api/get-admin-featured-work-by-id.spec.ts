@@ -1,8 +1,7 @@
 /**
- * The editor's by-id read: the owner gets the full row with each language's
- * `details`; another owner's id is not found; a non-admin or a malformed id gets
- * the failure envelope and never reaches the database. The Prisma delegate is
- * replaced with an in-memory fake that honours `where: { id, userId }`.
+ * The editor's by-id read: the owner gets the full row with each language's `details`; another
+ * owner's id is not found; a non-admin or malformed id gets the failure envelope without a database
+ * read. Prisma is an in-memory fake honouring `{ id, userId }`.
  */
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';

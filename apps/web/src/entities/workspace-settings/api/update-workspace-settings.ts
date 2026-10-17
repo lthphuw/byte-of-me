@@ -17,19 +17,9 @@ import { requireAdmin } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
 
 /**
- * Writes a SUBSET of the settings and returns the full, re-parsed result.
- *
- * A patch rather than a whole-object write, and that is not just economy. Two
- * tabs open on the same account each hold their own copy of the settings; a
- * whole-object write from one would silently revert whatever the other had
- * changed in the meantime. Patching narrows that to the same field being
- * changed in both places, where last-write-wins is the only answer anyway.
- *
- * The merge happens in POSTGRES, not in JavaScript. `jsonb || jsonb` is a
- * single atomic statement, so the read-modify-write race the paragraph above
- * describes cannot open up between our own read and our own write either.
- * Doing it in application code would have reintroduced exactly the problem the
- * patch shape exists to avoid.
+ * Writes a SUBSET and returns the full, re-parsed result; a whole-object write would revert another
+ * tab's edits. The merge is in Postgres (`jsonb || jsonb`, one atomic statement), so no
+ * read-modify-write race can open.
  */
 export async function updateWorkspaceSettings(
   input: WorkspaceSettingsPatch
@@ -59,11 +49,8 @@ export async function updateWorkspaceSettings(
 
     if (updated === 0) {
       try {
-        // First write for this author. Through the Prisma client rather than
-        // more raw SQL so `id` gets its `@default(cuid())` — a raw INSERT would
-        // have to invent an id, and inventing one in a different format from
-        // every other row in the database is the kind of thing nobody notices
-        // until something sorts by it.
+        // First write for this author. Via the Prisma client, not raw SQL, so `id` gets its
+        // `@default(cuid())` instead of a hand-made id in a different format.
         await prisma.workspaceSettings.create({
           data: {
             ownerId: session.id,
@@ -95,18 +82,12 @@ export async function updateWorkspaceSettings(
       select: { preferences: true },
     });
 
-    // The settings row is cached across requests (`readWorkspaceSettings`), and
-    // the dashboard layout prefetches it on every full load. Without this line
-    // the popover would appear to save — the action returns the new value and
-    // the client applies it — and the next full load would paint the OLD value,
-    // which reads as "my setting didn't stick" rather than as a caching bug.
+    // `readWorkspaceSettings` is cached; without this the next full load paints the OLD value.
     // After the write and outside any transaction, per §8.
     revalidateTag(CACHE_TAGS.WORKSPACE_SETTINGS, 'max');
 
-    // Returned re-parsed rather than echoing the patch back: the caller applies
-    // this to its own state, and what it needs is what the database now holds
-    // merged over the defaults — including any field ANOTHER tab changed in
-    // between, which the echo would have hidden.
+    // Re-parsed, not echoing the patch: the caller needs what the database now holds,
+    // including any field ANOTHER tab changed in between.
     return { success: true, data: parseWorkspaceSettings(row?.preferences) };
   } catch (error) {
     logger.error(`Update workspace settings failed: ${String(error)}`);

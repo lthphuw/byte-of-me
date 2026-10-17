@@ -1,18 +1,7 @@
 /**
- * What a paste is allowed to bring with it.
- *
- * The contract is stated against the DOCUMENT the editor would end up with —
- * `generateJSON` over the editor's own extension list — rather than against the
- * transformed HTML string. That is the difference that matters: Tiptap keeps
- * only what an extension claims, so "the colour is gone" is a question about
- * marks in the document, and asserting on the intermediate HTML would pass
- * happily while `TextStyle`/`Color` went on parsing something the strip missed.
- *
- * The fixtures are the four shapes an author actually pastes from, each with
- * its own junk: Google Docs' `<b style="font-weight:normal">` wrapper and
- * `<span style="color:…">` runs, a Google Sheets range with a `<colgroup>`,
- * Excel's `<font face color>` and `bgcolor`, Notion's `class="c3 c7"`, and a
- * table copied out of a rendered web page.
+ * What a paste may bring with it, asserted on the DOCUMENT (`generateJSON` over the editor's
+ * extension list), not the transformed HTML: Tiptap keeps only what an extension claims.
+ * Fixtures: Google Docs, Google Sheets, Excel, Notion and a table copied from a rendered web page.
  */
 import { generateJSON } from '@tiptap/html';
 import type { JSONContent } from '@tiptap/react';

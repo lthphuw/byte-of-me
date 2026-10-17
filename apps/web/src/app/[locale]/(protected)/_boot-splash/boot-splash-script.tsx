@@ -1,21 +1,9 @@
 import { BOOT_SPLASH_ATTRIBUTE, BOOT_SPLASH_SESSION_KEY } from './constants';
 
 /**
- * Sets `data-booting` on `<html>` synchronously, before first paint, so the
- * CSS-only overlay in `BootSplashOverlay` is visible from the very first
- * frame instead of flashing in after the content it was meant to cover.
- *
- * Neither of the obvious React approaches works here:
- *  - A `useEffect` that reads `sessionStorage` runs after the first paint,
- *    so the splash would appear only once the content is already on screen.
- *  - Reading `sessionStorage` during render breaks hydration: the server has
- *    no `sessionStorage`, and React 19 discards the whole subtree on a
- *    server/client mismatch.
- *
- * A synchronous inline `<script>` is the only thing that runs early enough
- * and is invisible to hydration, because it mutates a DOM attribute rather
- * than React state — there is nothing for the hydration diff to disagree
- * about.
+ * Sets `data-booting` on `<html>` before first paint so the CSS-only overlay shows from frame one. A
+ * useEffect runs after paint and reading sessionStorage in render breaks hydration (React 19 discards
+ * the subtree); a sync inline script mutates a DOM attribute, so hydration has nothing to disagree on.
  */
 export function BootSplashScript() {
   const script = `(function(){try{if(!sessionStorage.getItem(${JSON.stringify(

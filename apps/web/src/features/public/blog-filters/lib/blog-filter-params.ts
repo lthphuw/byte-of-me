@@ -6,15 +6,9 @@ export interface BlogFilterState {
 }
 
 /**
- * Mirrors the unfiltered first page rendered server-side in `blogs/page.tsx`.
- *
- * This module deliberately carries **no** `'use client'` directive. The
- * constant lived next to `useBlogFilters` until the RSC graph replaced it with
- * a client-reference proxy on the server: `blogKeys.publicList(1, proxy)`
- * hashed to `["blog","public-list",1,null]` while the browser computed
- * `[...,{"search":"","tagSlugs":[]}]`, so the prefetch was never read and the
- * prerendered HTML shipped "No posts". Keep the server page's import path
- * pointing at a plain module.
+ * Mirrors the unfiltered first page rendered in `blogs/page.tsx`. No `'use client'` here on
+ * purpose: from a client module it reached the server as a reference proxy, the query hash drifted
+ * from the browser's, the prefetch was never read and the page shipped "No posts".
  */
 export const DEFAULT_BLOG_FILTERS: BlogFilterState = {
   tagSlugs: [],

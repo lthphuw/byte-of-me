@@ -11,10 +11,9 @@ import {
 } from '@/entities/workspace-settings/query';
 
 /**
- * The compression popover's state, read from the settings query. A change shows
- * at once in `draft`, and the draft is dropped when the LATEST write settles: on
- * success the query holds the server's answer, on refusal the controls fall back
- * to it.
+ * The compression popover's state from the settings query. A change shows at once in `draft`; the
+ * draft is dropped when the LATEST write settles, so the controls hold the server's answer or fall
+ * back on refusal.
  */
 export function useCompressionSettings() {
   const t = useTranslations('dashboard.media.compression');

@@ -1,19 +1,7 @@
 /**
- * Builds the whole icon set from the brand mark.
- *
- *   bun run gen:icons
- *
- * The single source of truth is `apps/web/src/shared/lib/brand-mark.ts`. This
- * script writes the four SVGs from it, then rasterises those to the PNGs and
- * the .ico. Every output is committed, because the app serves them statically.
- *
- * Imported by relative path rather than package name: the workspace uses an
- * isolated node_modules layout, so `@byte-of-me/*` only resolves inside
- * apps/web. This script already reaches into apps/web/public by path anyway.
- *
- * The SVGs are authored in a 24-unit viewBox. librsvg renders at 72 DPI by
- * default, which would rasterise them at 24x24 and then upscale — blurry. So
- * the density is scaled to the target instead of resizing after the fact.
+ * Builds the icon set from `apps/web/src/shared/lib/brand-mark.ts`: `bun run gen:icons`.
+ * Relative import: the isolated node_modules layout resolves `@byte-of-me/*` only in apps/web.
+ * librsvg rasterises the 24-unit SVGs at 72 DPI (blurry upscale), so density is scaled to size.
  */
 import { createHash } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
@@ -33,17 +21,9 @@ const PUBLIC_DIR = path.join(ROOT, 'apps/web/public');
 const ICONS_DIR = path.join(PUBLIC_DIR, 'icons');
 
 /**
- * Digest of every generated SVG, written after a successful run and asserted
- * by `icon-set.spec.ts`.
- *
- * The spec also re-renders the SVGs and compares the text, which catches an
- * edit to brand-mark.ts that was never generated. This lockfile catches the
- * other half: SVGs regenerated but the rasters left behind. Digests rather
- * than re-rasterising in the test keeps that check deterministic — sharp's PNG
- * bytes are not guaranteed identical across platforms or versions, a sha256 of
- * the source text is.
- *
- * It lives beside the generator rather than in public/ so it is not served.
+ * sha256 of every generated SVG, asserted by `icon-set.spec.ts`: catches SVGs regenerated
+ * with rasters left behind. Digests, not re-rasterising: sharp's PNG bytes differ across
+ * platforms and versions. Beside the generator, not in public/, so it is not served.
  */
 const LOCKFILE = path.join(ROOT, 'scripts/icons.lock.json');
 

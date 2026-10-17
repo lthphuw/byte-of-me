@@ -9,10 +9,9 @@ import { requireAdmin } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
 
 /**
- * The manager's list and the picker options read this one action. It is not
- * capped: the manager must show every row, and a silent `take` dropped the tail.
- * A tech-stack list is one author's portfolio, a few dozen rows, so it needs no
- * ceiling. A count-based ceiling would have to show "N of M" instead.
+ * The manager's list and the picker options read this one action. Uncapped: the manager must show
+ * every row and a silent `take` dropped the tail; a tech-stack list is a few dozen rows, so it
+ * needs no ceiling.
  */
 export async function getAllAdminTechStack(): Promise<
   ApiResponse<AdminTechStack[]>

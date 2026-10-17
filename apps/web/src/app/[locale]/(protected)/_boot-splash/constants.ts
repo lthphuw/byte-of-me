@@ -1,16 +1,12 @@
 /**
- * Shared between `BootSplashScript` (writes it) and `BootSplashReady` (reads
- * and writes it). `sessionStorage` scopes to the tab, which is exactly the
- * unit "once per browser session" needs: a reload of the same tab keeps the
- * flag, a brand-new tab does not.
+ * Shared by BootSplashScript and BootSplashReady. `sessionStorage` is per tab, the unit "once per
+ * browser session" needs: a reload keeps the flag, a new tab does not.
  */
 export const BOOT_SPLASH_SESSION_KEY = 'boot-splash-shown';
 
 /**
- * The attribute `BootSplashScript` sets on `<html>` before first paint and
- * `BootSplashReady` clears once the app is ready. Mirrored in the
- * `html[data-booting]` selector in `globals.css` — keep the two in step if
- * this ever changes.
+ * Set on `<html>` before first paint, cleared when ready. Mirrored by the `html[data-booting]` selector
+ * in globals.css: keep the two in step.
  */
 export const BOOT_SPLASH_ATTRIBUTE = 'data-booting';
 

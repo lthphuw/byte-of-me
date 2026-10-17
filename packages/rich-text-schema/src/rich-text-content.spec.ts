@@ -113,11 +113,9 @@ describe('richTextToPlainText', () => {
   });
 
   it('separates SIBLING blocks, so the words either side stay whole', () => {
-    // The regression this closes: every level joined with '', so the last
-    // word of one list item welded onto the first word of the next. In the
-    // notes corpus that produced tokens like `data.Step` and
-    // `motionpackages` — Postgres indexed the weld and neither real word
-    // could be found again. One item cannot show it; two can.
+    // Regression: every level joined with '', welding the last word of one list item onto the
+    // next (`data.Step`, `motionpackages` in the notes corpus), and Postgres indexed the weld.
+    // One item cannot show it; two can.
     const richDoc = JSON.stringify({
       type: 'doc',
       content: [

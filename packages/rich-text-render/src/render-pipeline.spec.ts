@@ -60,23 +60,16 @@ describe('render pipeline (generateHTML → sanitizeHtml)', () => {
   });
 
   it('wraps a table in the scroll container the styles hang off', () => {
-    // `.tableWrapper` is the horizontal scroll area for wide tables, and the
-    // same class the editor's own node view creates — without it in the
-    // rendered HTML, published tables have no scroll container at all and the
-    // rules in `rich-text-html.tsx` match nothing.
+    // `.tableWrapper` is the wide-table scroll area, the same class the editor's node view makes;
+    // without it published tables have no scroll container and `rich-text-html.tsx` matches nothing.
     expect(html).toContain('class="tableWrapper"');
     expect(html).toMatch(/<div class="tableWrapper"><table/);
   });
 
   it('scopes header cells so a screen reader knows what a number belongs to', () => {
-    // Without `scope`, assistive tech has to guess which header describes a
-    // cell — and on a benchmark table that guess IS the meaning of the figure
-    // being read out. The measured survey note had 184 `<th>` and no `scope`
-    // at all.
-    //
-    // Asserted through `sanitizeHtml`, not just `generateHTML`: the attribute
-    // allow-list is the likeliest place for this to regress, and a sanitizer
-    // that drops `scope` makes the renderer's work invisible with no error.
+    // Without `scope`, assistive tech guesses which header describes a cell, and on a benchmark
+    // table that guess IS the figure's meaning (survey note: 184 `<th>`, no `scope`). Asserted via
+    // `sanitizeHtml`: its attribute allow-list is the likeliest regression, dropping `scope` quietly.
     const table = {
       type: 'doc',
       content: [
@@ -156,11 +149,9 @@ describe('render pipeline (generateHTML → sanitizeHtml)', () => {
   });
 
   it('renders the document around a table that has no rows at all', () => {
-    // Upstream's table renderer asks `createColGroup` for a `<colgroup>` and
-    // gets `undefined` when there is no first row, which makes ProseMirror's
-    // serializer throw. `renderRichTextHtml` catches a throw here and falls
-    // back to escaping — of an object — so the reader would lose the whole
-    // note over one empty table, not just the table.
+    // Upstream's table renderer gets `undefined` from `createColGroup` when there is no first row,
+    // and ProseMirror's serializer throws. `renderRichTextHtml` then falls back to escaping an
+    // object, so the reader would lose the whole note over one empty table.
     const withEmptyTable = sanitizeHtml(
       generateHTML(
         {
@@ -271,10 +262,8 @@ describe('render pipeline (generateHTML → sanitizeHtml)', () => {
   });
 
   it('renders a row of images as one figure, with the caption outside the row', () => {
-    // The whole reason `render-extensions.ts` shares the editor's node
-    // definitions: a node the editor can persist but the render schema does
-    // not know makes `generateHTML` throw, and `renderRichTextHtml` then falls
-    // back to escaping — blanking the document, not just the images.
+    // `render-extensions.ts` shares the editor's node definitions because a node the render schema
+    // lacks makes `generateHTML` throw; `renderRichTextHtml` then escapes, blanking the document.
     const row = sanitizeHtml(
       generateHTML(
         {

@@ -57,10 +57,8 @@ export async function BlogDetailsContent({ blog }: { blog: PublicBlog }) {
                 <BlogContentHeader blog={blog} />
               </RevealSection>
 
-              {/* Below `xl` the headings and the bibliography live in
-                  `BlogReaderNav` — a button in the corner, rendered at the end
-                  of this file so it is not inside the article's stacking
-                  context. Nothing sits over the text any more. */}
+              {/* Below `xl` the headings and bibliography live in `BlogReaderNav`, a corner button
+                  rendered last, outside the article's stacking context. */}
               <div className="mb-6 md:mb-8" />
               <BlogContent blog={blog} />
 

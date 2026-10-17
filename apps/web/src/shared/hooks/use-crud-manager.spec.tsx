@@ -1,10 +1,7 @@
 /**
- * What this defends is the seam the dashboard's server prefetch relies on: a
- * first page already sitting in the cache under the entity's page key is what
- * the manager renders, with no round trip, and a save marks everything under
- * the list root stale. A key mismatch here does not throw — the page just
- * falls through to a client fetch behind skeletons — so the keys are asserted
- * by seeding the cache, never by reading the hook's source.
+ * Defends the server-prefetch seam: a first page cached under the entity's page key renders with no
+ * round trip, and a save stales the list root. A key mismatch falls back to a client fetch behind
+ * skeletons without throwing, so keys are asserted by seeding the cache, never by reading source.
  */
 import type { ReactNode } from 'react';
 import type { PaginatedData } from '@byte-of-me/api-core';

@@ -13,29 +13,9 @@ const DEFAULT_DESTINATION = '/dashboard';
 const SIGN_IN_PATH = '/auth/login';
 
 /**
- * Turn an untrusted `?from=` value into a safe, locale-prefixed internal path.
- *
- * Every sign-in entry point funnels through this one function — the email magic
- * link and both OAuth buttons — for the same reason `isSiteOwnerEmail()` is a
- * single function: two independently-written versions of a rule are exactly how
- * one of them stops normalising and nobody notices.
- *
- * Two things are being defended here.
- *
- * **Open redirect.** `callbackUrl` reaches the browser as a `Location`, so an
- * attacker who can put a value in `?from=` chooses where the owner's browser
- * goes after authenticating. Only a path — one leading slash, nothing else — is
- * accepted. Note `\` is normalised to `/` by browsers, so `/\evil.com` is a
- * protocol-relative URL wearing a path costume and is rejected alongside `//`.
- * Anything that fails the check silently degrades to the dashboard rather than
- * erroring: a mangled `from` should not cost the owner their sign-in.
- *
- * **A lost locale.** The redirect that produced `from` may have dropped the
- * locale prefix, and next-intl would then resolve the bare path to
- * `defaultLocale` — a `vi` owner signing in would land on the `en` copy of the
- * page they asked for. The prefix is therefore stripped and re-applied from the
- * locale in force at sign-in time, so a path that already carries one is not
- * double-prefixed into `/vi/vi/dashboard`.
+ * Turn an untrusted `?from=` into a safe, locale-prefixed internal path. Open redirect: only one
+ * leading slash is accepted, and `/\evil.com` is rejected because browsers normalise `\` to `/`.
+ * The locale prefix is stripped and re-applied so a bare path does not resolve to defaultLocale.
  */
 export function sanitizeCallbackUrl(
   candidate: string | null | undefined,

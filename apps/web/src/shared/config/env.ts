@@ -16,17 +16,9 @@ export const env = createEnv({
     DIRECT_URL: z.string().min(1),
 
     EMAIL: z.string().email().default('lthphuw@gmail.com'),
-    // The site's sole authorisation identity — who `isSiteOwnerEmail()`
-    // (see `@/shared/lib/auth/session.ts`) admits to the dashboard
-    // and every admin server action. Deliberately a *separate* key from
-    // `EMAIL` above: `EMAIL` also does double duty as the public contact
-    // address, the contact-form and comment-notification destination, and
-    // a profile-lookup fallback — reusing it as the auth identity meant a
-    // cosmetic change to the public contact address could silently revoke
-    // the owner's own access. Optional, falling back to `EMAIL` when unset,
-    // so preview, CI and development behave as before. In production it is
-    // required: a lost key would otherwise leave the `EMAIL` default quietly
-    // deciding who is admin.
+    // The sole authorisation identity (`isSiteOwnerEmail()`). Separate from `EMAIL`, the public contact
+    // address, so editing that cannot revoke the owner's access. Optional, falls back to `EMAIL`;
+    // required in production so the `EMAIL` default never decides who is admin.
     OWNER_EMAIL: requireOwnerEmail
       ? z.string().email()
       : z.string().email().optional(),
@@ -49,10 +41,8 @@ export const env = createEnv({
     AUTH_GOOGLE_ID: z.string(),
     AUTH_GOOGLE_SECRET: z.string(),
 
-    // Open-source contributions read (public GraphQL search). Optional on
-    // purpose: without a token the section simply does not render, so a
-    // deployment that never heard of this key still boots. A fine-grained
-    // token with public read access and no scopes is enough.
+    // Open-source contributions read (public GraphQL search). Optional: without a token the section
+    // does not render. A fine-grained token with public read and no scopes is enough.
     GITHUB_TOKEN: z.string().optional(),
     GITHUB_LOGIN: z.string().default('lthphuw'),
 
@@ -63,10 +53,8 @@ export const env = createEnv({
     SUPABASE_S3_STORAGE_SECRET_KEY: z.string(),
     SUPABASE_S3_STORAGE_BUCKET: z.string().default('byte-of-me'),
 
-    // 'test' is included because `bun test` sets NODE_ENV to 'test' before any
-    // preload runs (see apps/web/bunfig.toml) and this schema is validated
-    // eagerly at import time — without it, importing any module that reaches
-    // this file under `bun test` throws "Invalid environment variables".
+    // 'test' is included: `bun test` sets NODE_ENV to 'test' before any preload (bunfig.toml) and
+    // this schema validates eagerly, so without it every import reaching this file throws.
     NODE_ENV: z
       .enum(['development', 'production', 'test'])
       .optional()

@@ -23,15 +23,9 @@ import { FilterSearchInput } from '@/shared/ui';
 const SEARCH_ENABLED = false;
 
 /**
- * The merged-PR ledger on `/projects`. One flat list, newest first, filtered
- * by a free-text search and a row of repo chips, and paged by viewport (5 on a
- * phone, 8 from `md` up). On a row the repo name links to the repo and the `View`
- * badge to the PR; the row itself does not link.
- *
- * Client component: the search, the chips and the page are local state. The
- * first page is still rendered on the server, so the initial HTML is complete.
- * The server has no viewport, so it renders the phone count and a desktop
- * client swaps to the larger page after hydration.
+ * The merged-PR ledger on `/projects`: newest first, search plus repo chips, paged by viewport (5
+ * on a phone, 8 from `md`; the server renders 5, desktop swaps after hydration). The repo name
+ * links to the repo and the `View` badge to the PR; the row does not link.
  */
 export function ProjectsOpenSource({ repos }: { repos: OpenSourceRepo[] }) {
   const t = useTranslations('components.openSource');

@@ -1,15 +1,7 @@
 /**
- * `server-only`: Next resolves this bare specifier through its own bundler
- * alias (`next/dist/compiled/server-only`). It is not installed anywhere in
- * this repo's `node_modules`, so outside Next's bundler it is unresolvable and
- * module resolution fails before a single test runs. The marker's only job is
- * to throw when bundled into a Client Component, which has no meaning in a Bun
- * test process, so an empty module satisfies it.
- *
- * Its own preload, listed FIRST in `bunfig.toml`, not a plugin inside
- * `next-runtime-stubs.ts`: that file statically imports `@/shared/config/env`,
- * which imports `server-only`. Bun resolves a module's static imports before
- * running any of its code, so a registration in the same file loses the race.
+ * `server-only` is a Next bundler alias, absent from node_modules, so Bun cannot resolve it.
+ * Own preload, listed FIRST in bunfig.toml: next-runtime-stubs.ts imports env, which imports it,
+ * and Bun resolves static imports before running any code in the same file.
  */
 import { plugin } from 'bun';
 

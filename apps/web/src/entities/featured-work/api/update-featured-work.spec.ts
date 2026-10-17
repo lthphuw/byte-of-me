@@ -1,11 +1,7 @@
 /**
- * `updateFeaturedWork` rewrites every translation (`deleteMany` + `create`), so
- * the `details` it writes is whatever the caller sent. An omitted `details` is
- * stored as null: a caller that does not send the body clears it. That is
- * deliberate and pinned here, so a form that drops the field cannot wipe a body
- * unnoticed. The demo pair is the opposite, also pinned: an omitted `media` keeps
- * the stored pair and only an explicit `[]` clears it. The transaction runs
- * against a fake `tx`; no database is touched.
+ * `updateFeaturedWork` rewrites every translation: an omitted `details` is stored as null (pinned,
+ * so a form dropping the field cannot wipe a body unnoticed); an omitted `media` keeps the stored
+ * pair and only `[]` clears it. Runs against a fake `tx`, no database.
  */
 import type { FeaturedWorkFormValues } from '@byte-of-me/contracts/featured-work';
 import { prisma } from '@byte-of-me/db';

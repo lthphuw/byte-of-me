@@ -28,16 +28,9 @@ const createContainerVariants = (itemCount: number): Variants => ({
       delayChildren: stagger(staggerStep(itemCount)),
     },
   },
-  // A short ease-in tween, NOT the entrance spring. A spring keeps settling
-  // long after it looks finished, and the panel stayed on screen through it —
-  // which is what made dismissing the menu feel like it was waiting for the
-  // navigation rather than responding to the tap. Same principle the
-  // collapsible keyframes already follow: enter eases out, exit eases in and
-  // runs shorter.
-  //
-  // Transform only, deliberately, for the same reason the entrance carries no
-  // opacity (see above): fading the panel makes it a backdrop root and the
-  // frosted glass would flatten on the way out.
+  // A short ease-in tween, not the entrance spring: a spring keeps settling after it looks
+  // finished and held the panel on screen, so dismissing felt like waiting for the navigation.
+  // Transform only, as the entrance: an opacity fade would make the panel a backdrop root.
   exit: {
     scale: 0.95,
     y: -10,
@@ -84,10 +77,8 @@ export const PublicHeaderMobileNav = ({
       }
     };
 
-    // `pointerdown`, not `mousedown`: on touch the mouse events are compatibility
-    // events the browser synthesizes only after the gesture resolves, so a tap
-    // outside the panel waited on that round trip before anything happened.
-    // `pointerdown` fires on the touch itself and covers mouse and pen too.
+    // `pointerdown`, not `mousedown`: on touch the mouse events are synthesized only after the
+    // gesture resolves, so a tap outside waited on that round trip. Also covers mouse and pen.
     document.addEventListener('pointerdown', handleClickOutside);
     return () =>
       document.removeEventListener('pointerdown', handleClickOutside);
@@ -97,16 +88,9 @@ export const PublicHeaderMobileNav = ({
   return createPortal(
     <AnimatePresence mode="wait" initial={false}>
       {isOpen && (
-        // top: 4rem (64px) is the island's bottom, 56px on mobile in BOTH
-        // states — `AT_REST_MOBILE` is 0 + 56 and `DOCKED_MOBILE` is 8 + 48,
-        // kept equal on purpose — plus an 8px gap. That invariant is what
-        // lets this be one number instead of a branch on `docked`; if either
-        // geometry changes, this changes with it. `env(safe-area-inset-top)`
-        // is added on top of it, not baked into the 4rem: the header itself
-        // sits `env(safe-area-inset-top)` lower on a notched iPhone (see
-        // `public-site-header.tsx`), and without the same offset here this
-        // panel opened flush under the header on every other phone but
-        // overlapped it on a notched one.
+        // top: 4rem = the island's bottom (56px on mobile in BOTH states: AT_REST_MOBILE 0+56,
+        // DOCKED_MOBILE 8+48, equal on purpose) + 8px gap; change either geometry and this changes.
+        // Plus `env(safe-area-inset-top)`: the header sits that much lower on a notched iPhone.
         <m.div
           className="pointer-events-none fixed inset-x-0 z-[9999] md:hidden"
           style={{
@@ -126,10 +110,8 @@ export const PublicHeaderMobileNav = ({
               className="pointer-events-auto overflow-hidden rounded-2xl border border-border p-2 shadow-xl container-bg"
             >
               <div className="grid gap-2">
-                {/* No gap between rows. §14's 8px separation guards small
-                    buttons packed side by side; a vertical list of full-width
-                    44px rows is the shape that rule is protecting, and the 8px
-                    only made five links read as five unrelated cards. */}
+                {/* No gap between rows: §14's 8px separation guards small side-by-side buttons,
+                    not full-width 44px rows, where it made the links read as unrelated cards. */}
                 <nav className="grid">
                   {/* `staggerItem` has no `exit`: on the way out only the panel
                       animates, so the menu leaves as one object instead of the
@@ -140,10 +122,8 @@ export const PublicHeaderMobileNav = ({
                         href={item.disabled ? '#' : item.href}
                         onClick={() => onOpenChange(false)}
                         className={cn(
-                          // `min-h-11`: `px-3 py-2` around a 20px line box is a
-                          // 36px row, and this panel is a touch-only surface —
-                          // §14's 44px minimum applies to it before anything else
-                          // in the header.
+                          // `min-h-11`: a `px-3 py-2` row is 36px; this panel is touch-only, so
+                          // §14's 44px minimum applies first.
                           'flex min-h-11 w-full items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-accent',
                           item.href.startsWith(`/${segment}`) ||
                             (!segment && item.href === Routes.Homepage)

@@ -61,10 +61,8 @@ type CrudManagerOptions<TItem extends { id: string }, TSaveInput> = {
 );
 
 /**
- * The standard dashboard manager flow:
- * load (placeholder-kept pagination, surfaced errors) → create/update via a
- * single dialog → delete via ConfirmDeleteDialog → sonner feedback on every
- * mutation outcome.
+ * Standard dashboard manager flow: load (placeholder-kept pagination, surfaced errors), create/update
+ * via one dialog, delete via ConfirmDeleteDialog, sonner feedback on every mutation outcome.
  */
 export function useCrudManager<TItem extends { id: string }, TSaveInput>(
   options: CrudManagerOptions<TItem, TSaveInput>

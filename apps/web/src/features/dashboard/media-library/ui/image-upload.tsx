@@ -46,11 +46,9 @@ export function ImageUpload({
     ? ACCEPTED_MEDIA_MIME_TYPES
     : ACCEPTED_IMAGE_MIME_TYPES;
 
-  // Compresses BEFORE the size check, not after: a phone photo that arrives
-  // here over the 3 MB ceiling and would compress under it must be given the
-  // chance to shrink first, or this rejects it for a size it never actually
-  // uploads at. `compressInBrowser` itself is a no-op for SVG/GIF/a disabled
-  // config, so this loop is safe to run unconditionally.
+  // Compress BEFORE the size check: a phone photo over the 3 MB ceiling that compresses under it
+  // must not be rejected for a size it never uploads at. `compressInBrowser` is a no-op for
+  // SVG/GIF/disabled config.
   const handleFiles = async (incomingFiles: FileList | null) => {
     // A batch in flight takes no new files, so the upload sends what was listed.
     if (!incomingFiles || isBusy) return;

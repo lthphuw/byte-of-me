@@ -50,19 +50,9 @@ export class Storage {
   }
 
   /**
-   * Reads an object back out of the bucket.
-   *
-   * The counterpart to `getPublicUrl` for buckets that have no public URL: a
-   * private bucket answers nothing to an anonymous request, so the only way to
-   * put its bytes in front of a reader is to fetch them here, behind whatever
-   * authorization the caller performs first.
-   *
-   * `body` is a web `ReadableStream` so a route handler can hand it straight
-   * to a `Response` without buffering the whole file in the function's memory.
-   * `contentType` is returned for completeness, but a caller serving the bytes
-   * to a browser should set the type from its OWN record of what the object
-   * is: what S3 reports is whatever was written at upload time, and trusting
-   * it turns a mislabelled object into a same-origin script.
+   * Reads an object from a private bucket (counterpart of `getPublicUrl`); `body` is a web stream
+   * that a route handler can hand straight to a `Response`. Serve with the type from YOUR record,
+   * not `contentType`: a mislabelled upload would become a same-origin script.
    */
   async getFile(key: string) {
     const result = await this.client.send(
@@ -80,12 +70,9 @@ export class Storage {
   }
 
   /**
-   * Server-side copy between buckets — the bytes never travel through this
-   * process.
-   *
-   * `CopySource` is `<bucket>/<key>` and must be URL-encoded: keys here carry
-   * a file name taken from the upload, and an unencoded space or `#` in one
-   * makes S3 reject the request or, worse, copy the wrong object.
+   * Server-side copy between buckets; the bytes never pass through this process.
+   * `CopySource` is `<bucket>/<key>` and must be URL-encoded: an unencoded space or `#` in an
+   * upload's file name makes S3 reject the request or copy the wrong object.
    */
   async copyFileFrom(sourceBucket: string, sourceKey: string, destKey: string) {
     await this.client.send(

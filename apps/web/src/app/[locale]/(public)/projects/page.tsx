@@ -30,12 +30,9 @@ export default async function ProjectsPage({ params }: ProjectsPageProps) {
 
   setRequestLocale(locale as LocaleType);
 
-  // The server renders the unfiltered first page and both chip rows, so none of
-  // them waits for a client action after hydration. Each prefetch calls the same
-  // factory the client hook calls, so the key and the query cannot drift. A failed
-  // prefetch is not dehydrated, and the client shows its own error state.
-  // `DEFAULT_PROJECT_FILTERS` lives in a module without `'use client'`: imported
-  // from the hook file, it became a client reference and the query hash drifted.
+  // Prefetch the first page and both chip rows via the client hooks' factories so keys cannot drift;
+  // a failed prefetch is not dehydrated. `DEFAULT_PROJECT_FILTERS` lives in a module without
+  // `'use client'`: imported from the hook file it became a client reference and the hash drifted.
   const queryClient = getQueryClient();
   const [openSourceResp, tOss, tError] = await Promise.all([
     getOpenSourceContributions(),

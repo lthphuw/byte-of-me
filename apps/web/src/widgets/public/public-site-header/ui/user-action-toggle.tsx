@@ -15,12 +15,9 @@ import { useAccount } from '@/widgets/public/public-site-header/lib/use-account'
 import { UserAvatar } from '@/widgets/public/public-site-header/ui/user-avatar';
 
 /**
- * The account control, for a pointer. Desktop only; a phone gets
- * `PublicHeaderAccountPanel` at the foot of the nav menu.
- *
- * A plain `button`, not the `Button` component — the variant system's `h-9` is
- * what made the previous trigger an ellipse. `group` lets the avatar's ring
- * react to hover and focus without declaring either twice.
+ * The account control for a pointer, desktop only (a phone gets `PublicHeaderAccountPanel`).
+ * A plain `button`, not `Button`: the variant system's `h-9` made the trigger an ellipse.
+ * `group` lets the avatar's ring react to hover and focus without declaring either twice.
  */
 export function UserActionToggle() {
   const t = useTranslations('global.userToggle');

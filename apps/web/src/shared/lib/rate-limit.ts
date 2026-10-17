@@ -13,12 +13,8 @@ type RateLimitOptions = {
 };
 
 /**
- * Fixed-window rate limiter backed by the `rate_limit_hits` table.
- *
- * The counter is incremented with a single atomic upsert on the composite id,
- * so concurrent requests cannot race past the limit. The limiter is a guard,
- * never a gate: any database failure fails OPEN so a limiter outage can never
- * take down the write paths it protects.
+ * Fixed-window limiter on the `rate_limit_hits` table; one atomic upsert on the composite id stops
+ * concurrent requests racing past the limit. Any database failure fails OPEN: a guard, never a gate.
  */
 export async function checkRateLimit({
   key,

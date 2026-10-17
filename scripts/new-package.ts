@@ -1,13 +1,7 @@
 /**
- * Scaffolds a workspace package, registers its layer and wires it into the app.
- *
- *   bun run new-package <name> --layer <n> [--dom] [--tests] [--css]
- *
- * --tests  adds `bun test`. Pass it once the package has specs: `bun test`
- *          exits non-zero when it finds none.
- * --dom    React package: peers, @types and the happy-dom preload (implies
- *          --tests).
- * --css    the package imports CSS, so `sideEffects` lists the stylesheets.
+ * Scaffolds a workspace package, registers its layer, wires it into the app.
+ * `bun run new-package <name> --layer <n> [--dom] [--tests] [--css]`; --dom implies --tests.
+ * --tests only once specs exist (`bun test` exits non-zero on none); --css lists sideEffects.
  */
 import fs from 'node:fs';
 import path from 'node:path';

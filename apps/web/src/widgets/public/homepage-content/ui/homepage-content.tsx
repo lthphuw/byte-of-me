@@ -25,11 +25,9 @@ import { RevealSection } from '@/shared/ui';
 export async function HomepageContent() {
   return (
     <HomepageShell>
-      {/* A <div>, not <main>: the public layout already provides the page's
-          <main> landmark, and nesting a second one is invalid and leaves screen
-          readers with two "main" regions to choose between.
-          The width comes from HomepageShell — a max-width here would sit inside
-          the shell's narrower one and never apply. */}
+      {/* A <div>, not <main>: the public layout already provides the <main> landmark, and a second
+          is invalid. Width comes from HomepageShell: a max-width here would sit inside its
+          narrower one and never apply. */}
       <div id="home" className="space-y-12 md:space-y-16">
         {/* `immediate`: the profile holds the page's LCP element (the h1). */}
         <RevealSection immediate>

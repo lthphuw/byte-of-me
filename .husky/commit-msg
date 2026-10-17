@@ -1,17 +1,13 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-# AGENTS.md §13 forbids `Co-authored-by` and attribution trailers. That rule is
-# prose, and agent harnesses inject those lines from their own system prompts —
-# so it held on most commits and silently failed on four. Strip them here
-# instead: a hook does not forget.
+# AGENTS.md §13 forbids `Co-authored-by` and attribution trailers, but agent harnesses
+# inject them anyway. Strip them here: a hook does not forget.
 msg="$1"
 tmp="$msg.stripped"
 
-# Both patterns are anchored, because an unanchored one ate a body line that
-# merely quoted a trailer as an example and left the sentence cut in half. The
-# leading `[^[:alnum:][:space:]]*` skips a decoration such as the robot emoji
-# that "Generated with [Claude Code]" arrives with.
+# Both patterns are anchored: an unanchored one ate body lines that merely quoted a trailer.
+# The leading `[^[:alnum:][:space:]]*` skips a decoration such as the robot emoji.
 grep -viE \
   -e '^[[:space:]]*co-authored-by:' \
   -e '^[[:space:]]*[^[:alnum:][:space:]]*[[:space:]]*(generated|made|created) (with|by)[[:space:]]' \

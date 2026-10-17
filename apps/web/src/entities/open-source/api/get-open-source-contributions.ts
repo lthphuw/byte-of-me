@@ -15,13 +15,9 @@ import { env } from '@/shared/config/env';
 const REVALIDATE_SECONDS = 3600;
 
 /**
- * Merged pull requests to other people's repos, one entry per repo.
- *
- * The data lives on GitHub, not in our database, so nothing in the app can
- * invalidate it: the cache entry refreshes by time. A failed refresh throws
- * out of the cached function, which leaves the previous entry in place, so the
- * page shows its error state only when there has never been a good read.
- * A missing token is not cached at all, see below.
+ * Merged PRs to other people's repos, one entry per repo. The data lives on GitHub, so the cache
+ * refreshes by time only; a failed refresh throws and keeps the previous entry, so the error state
+ * shows only without a prior good read. A missing token is not cached (below).
  */
 export async function getOpenSourceContributions(): Promise<
   ApiResponse<{ repos: OpenSourceRepo[] }>

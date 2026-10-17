@@ -20,13 +20,8 @@ export interface Account {
 }
 
 /**
- * Who is signed in, and how to stop being signed in.
- *
- * A hook because the account appears in two places that look nothing alike —
- * a circular trigger on desktop, a row in the nav panel on a phone — and they
- * must not disagree about what sign out does. `null` when signed out, which is
- * the common case on a public site. `isLoading` while the session request is
- * in flight, so a caller draws a skeleton rather than nothing.
+ * Who is signed in, and how to sign out; one hook so the desktop trigger and the phone row agree.
+ * `null` when signed out (the common case); `isLoading` while the session request is in flight.
  */
 export function useAccount(): {
   account: Account | null;

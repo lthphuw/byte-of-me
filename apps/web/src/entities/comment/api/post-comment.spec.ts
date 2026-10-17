@@ -1,9 +1,7 @@
 /**
- * `postComment` is the one write a signed-in visitor can aim at any id. What is
- * defended: only a published blog takes a comment, a reply must point at a
- * visible comment on the same blog and stay within the depth cap, and a
- * refused comment never sends the owner a notification. Prisma's delegates are
- * replaced by an in-memory comment table; the mailer is a recording fake.
+ * `postComment` is the one write a signed-in visitor can aim at any id. Defends: only a published
+ * blog takes a comment, a reply targets a visible comment on that blog within the depth cap, and a
+ * refused comment never notifies the owner. Prisma is an in-memory table; the mailer a fake.
  */
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';

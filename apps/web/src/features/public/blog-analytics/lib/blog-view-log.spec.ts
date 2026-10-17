@@ -1,9 +1,7 @@
 /**
- * `trackBlogView` and `updateBlogReadingTime` are anonymous endpoints. What is
- * defended: only a published blog can be viewed, a caller cannot write to a log
- * it was not given (the cookie is signed), nothing reaches the rate limiter
- * before that proof, and a failure never carries database text back out.
- * Prisma's delegates are replaced by in-memory fakes.
+ * `trackBlogView` and `updateBlogReadingTime` are anonymous. Defends: only a published blog can be
+ * viewed, no writing to a log not given (signed cookie), no rate-limiter call before that proof,
+ * and no database text in a failure. Prisma's delegates are in-memory fakes.
  */
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';

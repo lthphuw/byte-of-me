@@ -19,13 +19,8 @@ import { type Prisma, prisma } from '@byte-of-me/db';
 
 import type { PublicBlog } from '@/entities/blog/model/types';
 import type { PublicProject } from '@/entities/project/model/types';
-// Direct submodule import, not the `@/shared/api` barrel: that barrel also
-// re-exports `./mailer` and `./s3-storage-api`, which construct a nodemailer
-// transport and an S3 client at module scope. Pulling those in eagerly for
-// every caller of this action is the same barrel-eagerness hazard already
-// fixed once for `@byte-of-me/ui` (see the `cn` re-export in
-// `@/shared/lib/utils`) — same fix here: import the file this action
-// actually needs, directly.
+// Direct import, not the `@/shared/api` barrel: it re-exports `./mailer` and `./s3-storage-api`,
+// which build a nodemailer transport and an S3 client at module scope.
 import {
   handlePublicAction,
   withPublicActionHandler,
@@ -178,12 +173,9 @@ export async function getPaginatedPublicBlogs(
         };
       },
       {
-        // The draft-inclusive branch depends on the caller's session, so its
-        // result must never be shared: only the anonymous, published-only
-        // branch is cached. Free-text searches, tag filters and deep pages are
-        // read live: each distinct tuple would otherwise store its own (mostly
-        // empty) entry, and the slugs are caller-chosen. The key mirrors every closure argument the query depends on
-        // (locale is appended by the handler).
+        // Cached only for anonymous, published-only reads (drafts depend on the session). Searches,
+        // tag filters and deep pages are read live: each tuple would store its own entry. The key
+        // mirrors every closure argument; the handler appends the locale.
         cache:
           !includeDrafts &&
           !search &&

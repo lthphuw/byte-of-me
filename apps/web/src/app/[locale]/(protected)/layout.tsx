@@ -19,11 +19,8 @@ export default async function ProtectedLayout({
   const user = await getAuthenticatedAdmin();
 
   if (!user) {
-    // `from` is what lets sign-in return the visitor to the page they actually
-    // asked for. Without it every rejected visitor lands on the dashboard, which
-    // is wrong for any deep dashboard link. The pathname
-    // comes from the proxy because a layout is never handed the URL; see
-    // `PATHNAME_HEADER`.
+    // `from` lets sign-in return the visitor to their page, not the dashboard. The pathname comes from
+    // the proxy because a layout is never handed the URL (see `PATHNAME_HEADER`).
     const from = (await headers()).get(PATHNAME_HEADER);
 
     redirect({
@@ -35,15 +32,9 @@ export default async function ProtectedLayout({
     });
   }
 
-  // No `NextIntlClientProvider` here. `dashboard/` mounts its own with a
-  // list narrowed to what that surface renders; see `shared/i18n/messages.ts`.
-  //
-  // The splash pieces sit around `children`, not inside the redirect logic
-  // above: a rejected visitor never reaches this return, so they never see
-  // it. `BootSplashScript` and `BootSplashOverlay` are server components —
-  // their markup streams with the rest of this layout's HTML, which is what
-  // lets the inline script run before first paint. `BootSplashReady` is the
-  // only client piece; it owns nothing but the timing of the dismissal.
+  // No `NextIntlClientProvider`: `dashboard/` mounts its own (see shared/i18n/messages.ts). The splash
+  // sits outside the redirect logic; its server pieces stream with this HTML so the inline script runs
+  // before first paint. `BootSplashReady` is the only client piece and owns only dismissal timing.
   return (
     <>
       <BootSplashScript />

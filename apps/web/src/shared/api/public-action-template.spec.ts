@@ -1,18 +1,7 @@
 /**
- * `handlePublicAction` is the failure funnel for ~20 public reads. What this
- * spec defends is the boundary between the two audiences of a failure: the
- * caught exception message belongs in the log, and the envelope a public page
- * renders must not carry it.
- *
- * The module is `'use server'`-adjacent — it imports `server-only`,
- * `next/cache` and `next-intl/server`, all stubbed by the `Bun.plugin`
- * resolver in `apps/web/next-runtime-stubs.ts` (see AGENTS.md §10). It also
- * imports `@/shared/config/env`, which decides at import time whether it is in
- * a browser by reading `typeof window` — and the `happydom.ts` preload has
- * already put a `window` on the global by the time this file's imports run.
- * The same two global bindings are dropped and restored here as in
- * `src/entities/blog/api/get-paginated-public-blogs.spec.ts`; see that file
- * for why the happy-dom `Window` itself must be left alive.
+ * Defends the failure boundary of ~20 public reads: the caught message goes to the log, never into the
+ * envelope a public page renders. `env` reads `typeof window` at import and happydom.ts already set one,
+ * so the same two globals are dropped and restored as in get-paginated-public-blogs.spec.ts.
  */
 import { logger } from '@byte-of-me/logger';
 import {

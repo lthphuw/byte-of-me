@@ -6,20 +6,9 @@ import { useTranslations } from 'next-intl';
 import type { NavDrawerGroup } from '@/shared/ui/nav-drawer';
 
 /**
- * The single list the rail and the mobile drawer both render, lifted out of
- * `dashboard-sidebar.tsx` when the desktop side became an icon rail and the
- * two stopped sharing markup. They must not stop sharing DESTINATIONS: a page
- * added to one and forgotten in the other is reachable on a laptop and missing
- * on a phone, which is the kind of gap nobody notices until they are out.
- *
- * The group labels survive even though the rail draws them as nothing but a
- * hairline. They are what the drawer's `sr-only` headings announce, and what
- * gives the rail's separators something to be a separator BETWEEN.
- *
- * Labels are resolved with literal `t('items.x')` calls rather than a
- * `labelKey` field looked up dynamically — next-intl's generated declarations
- * only type-check literal keys, so a dynamic lookup would silently accept a
- * key that does not exist.
+ * The one list the rail and the mobile drawer both render, so no page is missing from either.
+ * Group labels stay though the rail draws a hairline: the drawer's `sr-only` headings need them.
+ * Literal `t('items.x')` keys, not a dynamic `labelKey`: next-intl only type-checks literal keys.
  */
 export function useDashboardNavGroups(): NavDrawerGroup[] {
   const t = useTranslations('dashboard.sidebar');

@@ -1,10 +1,7 @@
 /**
- * The dashboard managers invalidate `adminList()` after every save or delete,
- * read their pages through `adminPage(n)`, and the project and tag pickers sit
- * under the same root as `options(locale)`. A key that drifted out from under
- * the root would be silently stale after a save, and one that drifted from the
- * server prefetch would hydrate nothing and leave skeletons on screen — so
- * both are checked through real TanStack behaviour, not the shape of arrays.
+ * Dashboard managers invalidate `adminList()` after saves, read pages through `adminPage(n)`, and
+ * the pickers sit under the same root as `options(locale)`. A drifted key goes stale or hydrates
+ * nothing, so both are checked through real TanStack behaviour, not array shapes.
  */
 import type { ReactNode } from 'react';
 import { unwrapApiResponse } from '@byte-of-me/api-core';

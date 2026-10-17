@@ -42,12 +42,9 @@ export type AdminBlog = Prisma.BlogGetPayload<{
 }>;
 
 /**
- * Shape returned by the paginated admin list. Same as `AdminBlog` except
- * `translations[]` drops `content` (a whole TipTap document, `@db.Text`) —
- * the list card only renders title/description, and loading it for every
- * post on every page view was the actual cost this type removes. The editor
- * dialog fetches the full `AdminBlog` (via `getAdminBlogById`) on demand
- * instead of reusing this list item as its initial data.
+ * The paginated admin list item: `AdminBlog` minus `translations[].content` (a whole TipTap
+ * `@db.Text`), which the card never renders. The editor dialog fetches the full `AdminBlog` via
+ * `getAdminBlogById`.
  */
 export type AdminBlogListItem = Prisma.BlogGetPayload<{
   include: {

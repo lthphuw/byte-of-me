@@ -20,16 +20,9 @@ export function BlogActionBar({
   noCommentAppear?: boolean;
 }) {
   return (
-    // `flex-wrap` is the backstop, not the primary fit: the five controls fit
-    // one line at 375px (the narrowest supported viewport) now that
-    // comment/share/PDF go icon-only below `sm`. It stays because the buttons
-    // carry `whitespace-nowrap` and cannot shrink — a five-digit like count or
-    // a longer locale would otherwise push the PDF link past the layout's
-    // `overflow-x-clip` and cut it off silently.
-    //
-    // `gap-2` on both axes, not `gap-y-1`: these are inline buttons, and the
-    // 4px the wrapped row used to get was under the 8px minimum between touch
-    // targets (AGENTS.md §14).
+    // `flex-wrap` is the backstop: five controls fit one line at 375px (icon-only below `sm`), but
+    // buttons are `whitespace-nowrap`, so a five-digit count or longer locale would push PDF past
+    // `overflow-x-clip` and cut it off. `gap-2` on both axes: 4px is under §14's 8px touch gap.
     <div className="flex flex-wrap items-center justify-between gap-2 py-2">
       <div className={'ml-[-4px] flex items-center gap-2'}>
         <Suspense fallback={<InteractionButtonLoading />}>

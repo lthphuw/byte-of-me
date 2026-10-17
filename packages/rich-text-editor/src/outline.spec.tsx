@@ -1,8 +1,7 @@
 /**
- * The outline aside as an author meets it: a button per heading once the editor
- * has settled, absent from a compact editor, and a way to the heading.
- * Renders the real editor; the outline rebuilds on a 300 ms pause, so the specs
- * wait for the list rather than for a duration.
+ * The outline aside as an author meets it: a button per heading once the editor has settled,
+ * absent from a compact editor, and a way to the heading. Renders the real editor; the outline
+ * rebuilds on a 300 ms pause, so specs wait for the list, not a duration.
  */
 import * as React from 'react';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';

@@ -9,14 +9,9 @@ import { requireAdmin } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
 
 /**
- * The owner's full workspace settings, for the dashboard's client query
- * (`workspaceSettingsQueries.current()`). The dashboard layout prefetches that
- * same query on the server, so the first client render already holds the
- * saved values.
- *
- * It reads the same row and cache entry as `getWorkspaceSettings`, so the two
- * cannot disagree. The guard sits outside the `try` (see
- * `getImageCompressionSettings`).
+ * The owner's full settings for the client query (`workspaceSettingsQueries.current()`), prefetched
+ * by the layout; same cache entry as `getWorkspaceSettings`, so they cannot disagree. The guard
+ * sits outside the `try` (see `getImageCompressionSettings`).
  */
 export async function getAdminWorkspaceSettings(): Promise<
   ApiResponse<WorkspaceSettings>

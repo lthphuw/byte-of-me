@@ -115,13 +115,9 @@ export default {
             height: 0,
           },
         },
-        // Deliberately not a height animation. Radix measures
-        // `--radix-collapsible-content-height` the moment the content mounts,
-        // but this content holds a Tiptap editor that renders one tick later
-        // (`immediatelyRender: false`) — the measurement lands ~180px while the
-        // real content is ~610px, so a height tween would run to the wrong
-        // target and snap. Opacity and a short lift need no measurement and
-        // stay correct however the content grows.
+        // Not a height animation: Radix measures the content at mount, but the Tiptap editor renders a
+        // tick later (`immediatelyRender: false`), so it reads ~180px against ~610px real and the tween
+        // snaps. Opacity and a short lift need no measurement.
         'collapsible-down': {
           from: {
             opacity: 0,
@@ -151,10 +147,8 @@ export default {
             backgroundPosition: '0% 50%',
           },
         },
-        // The boot splash's icon: a restrained scale-and-fade entrance. Under
-        // `motion-reduce`, callers pair this with `motion-reduce:animate-none`
-        // rather than relying on the keyframe itself, per AGENTS §14 — a raw
-        // CSS animation isn't covered by `MotionConfig reducedMotion="user"`.
+        // Boot splash icon entrance. Callers pair it with `motion-reduce:animate-none` (AGENTS §14):
+        // a raw CSS animation is not covered by `MotionConfig reducedMotion="user"`.
         'splash-in': {
           from: {
             opacity: 0,
@@ -227,11 +221,8 @@ export default {
         '.article-text': {
           '@apply leading-relaxed text-justify tracking-normal break-safe': {},
         },
-        // The one label style shared by every list surface — post dates, project
-        // date ranges, stats, timeline years. It is what makes the blog grid and
-        // the project timeline read as the same system despite different shapes.
-        // Deliberately not uppercased: abbreviated Vietnamese months ("thg 4")
-        // look broken in caps.
+        // The label style shared by every list surface (post dates, project ranges, stats, years).
+        // Not uppercased: abbreviated Vietnamese months ("thg 4") look broken in caps.
         '.meta-label': {
           '@apply text-[11px] font-medium tracking-[0.08em] text-muted-foreground':
             {},

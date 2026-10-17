@@ -30,14 +30,9 @@ function slugify(text: string): string {
 }
 
 /**
- * Reads the article's headings out of the DOM and tracks which one is on
- * screen.
- *
- * The article body is `dangerouslySetInnerHTML` with no heading ids, so this
- * assigns slug ids on mount — every consumer that links to a heading depends
- * on that having happened, which is why it lives in one place rather than in
- * each of them. Call it once, from `ArticleHeadingsProvider`: every call adds
- * its own IntersectionObserver on the same nodes.
+ * Reads the article's headings from the DOM and tracks which is on screen. The body is
+ * `dangerouslySetInnerHTML` with no heading ids, so slug ids are assigned here on mount.
+ * Call once, from `ArticleHeadingsProvider`: each call adds its own IntersectionObserver.
  */
 export function useArticleHeadings(targetId: string): {
   headings: ArticleHeading[];
@@ -93,14 +88,9 @@ export function useArticleHeadings(targetId: string): {
 }
 
 /**
- * Reads the bibliography the `referenceList` node rendered at the end of the
- * article.
- *
- * Off the DOM rather than off the blog record, because that is where the
- * numbering already exists: entries are numbered by first citation, and
- * `applyCitationNumbering` resolved that at render time. Re-deriving it from
- * the stored document would be a second implementation of the same rule, free
- * to disagree with the one the reader can see.
+ * Reads the bibliography `referenceList` rendered at the end of the article. Off the DOM, not the
+ * blog record: `applyCitationNumbering` already numbered entries by first citation, and
+ * re-deriving that would be a second implementation free to disagree with what the reader sees.
  */
 export function useArticleReferences(targetId: string): ArticleReference[] {
   const [references, setReferences] = useState<ArticleReference[]>([]);

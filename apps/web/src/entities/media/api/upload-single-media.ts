@@ -90,10 +90,9 @@ export function createSingleMediaRecordUploader(
   };
 
   /**
-   * Uploads one image (or mp4/webm clip) and returns the stored row.
-   * Compresses BEFORE validating: a 5 MB phone photo that compresses to 400 KB
-   * must not be refused for its raw size. A clip is never compressed, so it skips
-   * the settings read too. Throws: that is `ImageUploadFn`'s contract.
+   * Uploads one image (or mp4/webm clip) and returns the stored row; throws (`ImageUploadFn`'s
+   * contract). Compresses BEFORE validating: a 5 MB phone photo that compresses to 400 KB must not
+   * be refused for its raw size. A clip is never compressed, so it skips the settings read too.
    */
   return async function uploadSingleMediaRecord(
     file: File,

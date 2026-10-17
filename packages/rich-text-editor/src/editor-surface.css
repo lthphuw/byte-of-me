@@ -6,10 +6,8 @@
 
 :root {
   /*
-   * The colour picker's swatches (`toolbars/color-and-highlight.tsx` reads
-   * these by name). Default and Gray resolve to the app's own text tokens so
-   * "Default" always means the theme's body colour; the named hues are fixed,
-   * because an author who paints a word red means red in both themes.
+   * The colour picker's swatches (`toolbars/color-and-highlight.tsx` reads them by name).
+   * Default and Gray follow the theme's text tokens; the named hues are fixed in both themes.
    */
   --editor-text-default: hsl(var(--foreground));
   --editor-text-gray: hsl(var(--muted-foreground));
@@ -54,15 +52,9 @@
 
 .ProseMirror {
   /*
-   * The vertical rhythm, as one set of tokens. Every gap in the document is
-   * one of these, and nothing below hardcodes a length — which is what makes
-   * the density variants at the bottom of this file two lines each instead of
-   * a second stylesheet.
-   *
-   * `--flow` is the ordinary gap between two sibling blocks. It is deliberately
-   * well under one line box (12px against a ~25px line): a gap at or above the
-   * leading reads as a blank line, and a document where every paragraph is
-   * separated by a blank line has no rhythm left to spend on grouping.
+   * The vertical rhythm as tokens; nothing below hardcodes a length, so density variants stay tiny.
+   * `--flow` (sibling gap) stays well under one line box (12px vs ~25px): a gap at or above the
+   * leading reads as a blank line.
    */
   --flow: 0.75rem;
   /* Fenced blocks, quotes, tables, media. They carry their own frame, so they
@@ -80,16 +72,9 @@
   --lead-3: 1.375rem;
   --lead-4: 1.125rem;
   /*
-   * Space BELOW every heading — small on purpose, and the single most
-   * important number here.
-   *
-   * A heading belongs to what follows it, so it must sit closer to its own
-   * content than to the block above. The starter expressed that intent with
-   * per-level `margin-bottom` (16/16/12/8px) and then lost it: the following
-   * paragraph's 24px `margin-top` collapsed against it and won every time.
-   * Measured on the real page, EVERY gap in the document came out 24px or
-   * 32px — h1→p, p→p, h3→p, h4→p, p→ul, ul→p all identical. The hierarchy
-   * existed only in the source.
+   * Space BELOW every heading, small on purpose: a heading sits closer to its content than to
+   * the block above. With per-level `margin-bottom` (16/16/12/8px) the next paragraph's 24px
+   * `margin-top` collapsed against it and won: every measured gap came out 24px or 32px.
    */
   --trail: 0.375rem;
 
@@ -118,14 +103,9 @@
   /* Tiptap's default `min-height: 100vh` turns every editor into a page-tall
      scroll area regardless of the box it was given. */
   min-height: unset !important;
-  /* No `text-rendering: optimizeLegibility`, deliberately. It forces kerning
-     and optional ligatures onto every text run, and that shaping is redone
-     whenever a tile is rastered — including the tiles a scroll newly exposes,
-     across the ~13,000 table cells of a long research note. `body` in
-     `globals.css` already asks for `'rlig' 1, 'calt' 1`, which is the part of
-     it worth paying for, and every other surface in the app renders at the
-     default `auto`. A writing surface that shapes text differently from the
-     page it sits on is the bug, not the feature. */
+  /* No `text-rendering: optimizeLegibility`: it forces kerning and ligatures onto every run,
+     redone on each raster tile, across ~13,000 table cells of a long note. `body` already
+     sets `'rlig' 1, 'calt' 1` (`globals.css`). */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -150,17 +130,10 @@
 }
 
 /* ---------------------------------------------------------------------------
- * Rhythm
- *
- * Every block starts at zero margin, and each gap is then declared exactly
- * once, on the LATER of the two blocks. Nothing collapses, because nothing has
- * a bottom margin to collapse with — so what the source says is what the page
- * does. That is the whole reason the heading `--trail` above now survives.
- *
- * The reset is `:where()` (zero specificity) so a node view, an extension, or
- * a consumer's class overrides it without an arms race.
+ * Rhythm: every gap is declared once, on the LATER of two blocks, so nothing collapses
  * ------------------------------------------------------------------------ */
 
+/* `:where()` keeps the reset at zero specificity so node views and consumer classes override it. */
 .ProseMirror :where(p, h1, h2, h3, h4, h5, h6, ul, ol, li, pre, blockquote,
     table, figure, img, hr, .react-renderer) {
   margin: 0;
@@ -184,26 +157,17 @@
 }
 
 /*
- * Deliberately AFTER the four rules above, and deliberately the same
- * specificity: a heading directly under another heading (`## ` then `### `)
- * matches both, the tie goes to source order, and this one wins. That is the
- * behaviour you want — a subheading opening immediately under its parent is
- * part of the same block of thought, not a new section.
+ * Deliberately AFTER the four rules above at equal specificity: a heading right under another
+ * heading matches both and source order decides, so a subheading stays tight under its parent.
  */
 .ProseMirror > :is(h1, h2, h3, h4) + * {
   margin-top: var(--trail);
 }
 
 /*
- * Framed blocks, either side: they carry a border or a fill, so they read as
- * cramped at the gap a bare paragraph is happy with.
- *
- * Split in two by SPECIFICITY, not by taste. The node-view wrappers are class
- * selectors (0,2,0) and the elements are type selectors (0,1,1); keeping them
- * apart is what lets the `hr` pair below — also 0,1,1, also later in the file
- * — win the tie for `blockquote + hr` and give a section break its full
- * clearance. Merged into one list, the class would have dragged that case down
- * to `--flow-block` for no stated reason.
+ * Framed blocks, either side: a border or fill needs more than the bare `--flow`.
+ * Split by SPECIFICITY: node-view wrappers are classes (0,2,0), elements are (0,1,1). Apart, the
+ * `hr` pair below (0,1,1, later) wins the tie for `blockquote + hr` and gets its full clearance.
  */
 .ProseMirror > * + :is(pre, blockquote, table, figure) {
   margin-top: var(--flow-block);
@@ -213,12 +177,9 @@
 }
 
 /*
- * The table's wrapper, not the table. prosemirror-tables' node view puts a
- * `div.tableWrapper` between `.ProseMirror` and every `<table>`, so the pair
- * above — which matches on the element — reaches nothing, and a table would
- * take the bare `--flow` its neighbours get. Here rather than merged into that
- * `:is()` list for the reason its comment gives: a class would raise the
- * selector to (0,2,0) and break the `blockquote + hr` tie below.
+ * The table's wrapper: prosemirror-tables' node view puts `div.tableWrapper` between `.ProseMirror`
+ * and every `<table>`, so the element pair above never matches. Not merged into that `:is()`:
+ * a class (0,2,0) would break the `blockquote + hr` tie below.
  */
 .ProseMirror > * + .tableWrapper,
 .ProseMirror > .tableWrapper + * {
@@ -331,12 +292,7 @@
 }
 
 /* ---------------------------------------------------------------------------
- * Lists
- *
- * The gap between two bullets was 16px — the same as the gap between two
- * paragraphs, which is why a list read as a stack of paragraphs with dots
- * rather than as one object. `--flow-tight` binds the items together; the list
- * as a whole still gets `--flow` from the sibling rule above.
+ * Lists: `--flow-tight` binds items so a list reads as one object, not stacked paragraphs
  * ------------------------------------------------------------------------ */
 
 .ProseMirror :is(ul, ol) {
@@ -377,50 +333,28 @@
  * Tables
  * ------------------------------------------------------------------------ */
 
-/* The scroll container. prosemirror-tables' node view already wraps every
-   table in this element, and `renderWrapper` (render-extensions.ts) puts the
-   same wrapper in the published HTML, so these rules and the ones in
-   `rich-text-html.tsx` describe the same box. */
+/* The scroll container. prosemirror-tables' node view wraps every table in it, and `renderWrapper`
+   (render-extensions.ts) emits the same one in published HTML (styled in `rich-text-html.tsx`). */
 .ProseMirror .tableWrapper {
   max-width: 100%;
   overflow-x: auto;
   /* Scrolling a table to its end must not then drag the page sideways. */
   overscroll-behavior-x: contain;
 
-  /* Off-screen tables cost nothing to have. Without this the engine styles,
-     lays out and paints every cell of every table in the document on any
-     invalidation — and a benchmark note is mostly cells. Measured on the
-     survey note (30 tables, 3,738 cells, a 36,000px document): one style
-     invalidation over the writing surface took ~280ms of recalc + layout,
-     and ~43ms with this rule present.
-
-     `auto` on `contain-intrinsic-size`, not a bare length: `auto` makes the
-     element remember the size it last really had, so a table that has been
-     on screen once stops guessing and the scrollbar stops jittering as the
-     reader moves through the document. 400px is only the first guess. */
+  /* Off-screen tables cost nothing. Survey note (30 tables, 3,738 cells, 36,000px): one style
+     invalidation took ~280ms of recalc + layout, ~43ms with this rule.
+     `auto` remembers the real size once seen, so the scrollbar stops jittering. */
   content-visibility: auto;
   contain-intrinsic-size: auto 400px;
 }
 
 .ProseMirror table {
-  /* `auto`, not `fixed`: fixed divides the writing column between the columns
-     no matter how many there are, so an eleven-column benchmark table got
-     77px per column and wrapped every heading. Auto sizes to content, and the
-     `min-width` on cells below is what lets it exceed the column and scroll. */
+  /* `auto`, not `fixed`: fixed splits the column evenly (77px each on an eleven-column table) and
+     wrapped every heading. The cell `min-width` below lets it exceed the column and scroll. */
   table-layout: auto;
-  /* `width: 100%`, not `width: auto` + `min-width: 100%`.
-   *
-   * prosemirror-tables' node view writes an INLINE `min-width` onto the table
-   * (`cellMinWidth` × columns — 75px for a three-column table), and an inline
-   * declaration beats this stylesheet. So `min-width: 100%` here never
-   * applied, `width: auto` shrank the table to its content, and a narrow table
-   * sat 50px short of the writing column looking like a mistake.
-   *
-   * `width` is safe to set because the same node view CLEARS the inline width
-   * in this branch (it only sets one for explicitly-sized columns, which
-   * `resizable: false` never produces). And with `table-layout: auto` a
-   * percentage width is a preference, not a cap: a table whose content needs
-   * more still overflows, which is what the wrapper scrolls. */
+  /* `width: 100%`, not `auto` + `min-width: 100%`: the node view writes an INLINE `min-width`
+   * (75px for three columns) that beats this sheet, so a narrow table sat 50px short.
+   * Safe: it clears the inline width (`resizable: false`), and `auto` layout still overflows. */
   width: 100%;
   min-width: 100%;
   /* `separate`, not `collapse`: a collapsed table owns its borders, and the
@@ -447,45 +381,25 @@
   min-width: 7ch;
 }
 
-/* Columns of figures, worked out from the content by the numeric-column
-   plugin. A number is read by its last digit, so right-aligned and never
-   wrapped; and it needs a fraction of the width a sentence does, which is
-   where most of an eleven-column table's excess width goes. */
+/* Columns of figures, detected by the numeric-column plugin: right-aligned (read by the last digit),
+   never wrapped, and narrow, which is where an eleven-column table's excess width goes. */
 .ProseMirror :is(th, td)[data-numeric] {
   text-align: right;
   white-space: nowrap;
   min-width: 5ch;
 }
 
-/* Row hover. On a table too wide to see at once, this is what keeps the eye on
-   one row while it travels.
-
-   Both the gate and the `.tableWrapper:hover` root are there for scrolling
-   cost, not for taste. With the pointer STATIONARY, scrolling moves rows
-   underneath it, so the browser re-runs hit-testing every frame and hands
-   `:hover` to a different `tr` each time — a style invalidation plus a repaint
-   of two rows per frame, on a document that already has 3,738 cells to keep up
-   with. Rooting the selector at the wrapper means none of that is reachable
-   unless the pointer is actually inside a table; the media query drops the rule
-   entirely on touch, where there is no hover to give and the highlight only
-   ever latched onto whichever row was tapped last. */
+/* Row hover, rooted at `.tableWrapper:hover` and media-gated. Scrolling under a stationary pointer
+   re-hit-tests every frame (style invalidation + repaint of two rows, across 3,738 cells), and on
+   touch the tint only latched onto the last tapped row. */
 @media (hover: hover) and (pointer: fine) {
   .ProseMirror .tableWrapper:hover tr:hover > td:not(:first-child) {
     background: hsl(var(--muted) / 0.4);
   }
 
-  /* The pinned row label needs the SAME tint and a different colour value.
-     `:not(:first-child)` above is what makes this rule necessary rather than
-     redundant: the row-hover selector is (0,4,2) and the pinned column's own
-     `background` is (0,2,1), so before this split the hover tint simply won
-     — and it is translucent. The one cell in the row that must never be
-     see-through was the one cell the hover state made see-through, and the
-     columns scrolling underneath showed straight through the row label.
-
-     `color-mix` rather than an alpha, because that is the whole point: it
-     resolves to what `--muted` at 40% LOOKS like over the surface, as an
-     opaque colour. Same appearance as the cells beside it, nothing behind
-     it. */
+  /* The pinned row label needs the same tint, opaque: the row-hover selector (0,4,2) beats the
+     pinned column's `background` (0,2,1), and a translucent tint shows scrolled columns through.
+     `color-mix` resolves `--muted` at 40% over the surface to an opaque colour. */
   .ProseMirror .tableWrapper:hover tr:hover > td:first-child {
     background: color-mix(
       in srgb,
@@ -495,18 +409,9 @@
   }
 }
 
-/* A TABLE IS NOT PROSE.
- *
- * A grid is scanned, not read, so its rows want to sit closer together than
- * the writing rhythm around them — 14px on a 1.4 line, which is what Notion
- * and every spreadsheet use.
- *
- * Behind the same `min-width: 641px` gate as the density and type-scale
- * variants above, and for exactly the reason spelled out there: iOS Safari
- * zooms the whole page whenever a focused editable computes under 16px, and a
- * table cell is as editable as anything else here. On a phone the small size
- * simply does not exist. Moving this rule out of the query is the
- * "simplification" that reintroduces the zoom.
+/* A table is scanned, not read: rows sit closer than the prose rhythm (14px on a 1.4 line).
+ * Keep it behind the `min-width: 641px` gate: iOS Safari zooms the page when a focused
+ * editable (a table cell too) computes under 16px.
  */
 @media (min-width: 641px) {
   .ProseMirror :is(th, td) {
@@ -530,39 +435,11 @@
   white-space: nowrap;
 }
 
-/* The header row is NOT pinned, and the table is NOT its own vertical scroll
-   pane. Both were tried together and both are reverted, because the pair made
-   the document unscrollable.
+/* No pinned header row and no table `max-height`: `overflow-x: auto` makes `overflow-y` compute to
+   `auto` (CSS Overflow 3 §3), so a cap turned every table into a vertical scroll trap. Survey note
+   (30 tables): 12 traps; over one, 3 wheel ticks moved the page 0px and the table 300px. */
 
-   `overflow-x: auto` above is enough to make `overflow-y`'s used value `auto`
-   too (CSS Overflow 3 §3: once one axis is not `visible`, a `visible` other
-   axis computes to `auto`). Adding `max-height: 70vh` then guaranteed that
-   second axis had something to scroll — so every table became a vertical
-   scroll container occupying most of the viewport, and a wheel gesture landing
-   on one scrolled the TABLE to its end before the document moved at all.
-
-   Measured on the survey note this was written for (30 tables, 3,738 cells):
-   12 tables were vertical traps; with the pointer over one, three wheel ticks
-   moved the page 0px and the table 300px. With the cap removed, the same
-   gesture moved the page 300px and the table 0px. The comment this replaces
-   worried about exactly this trap on phones and gated the cap at `md` — but
-   the trap is the pointer being over a table, not the width of the screen.
-
-   What survives: wide tables still scroll SIDEWAYS, and the row-label column
-   below still pins while they do. That is the affordance that was actually
-   carrying its weight; a pinned header row only ever mattered inside the
-   scroll pane this no longer creates. */
-
-/* No corner rule. The top-left cell used to carry `z-index: 3` so it outranked
-   both pinned bands where they crossed; with the header band gone there is one
-   band left and nothing for it to cross. */
-
-/* No `max-height` here. See the note above the header-row rule: capping the
-   wrapper is what turned every table into a vertical scroll trap. */
-
-/* The row label, pinned while the numbers scroll past it. On a wide table
-   this is the difference between reading a row and guessing which one it is;
-   on a table that fits, it does nothing at all. */
+/* The row label, pinned while the numbers scroll past it; inert on a table that fits. */
 .ProseMirror tr > :first-child {
   position: sticky;
   left: 0;
@@ -571,27 +448,13 @@
   border-left: 1px solid hsl(var(--border) / 0.7);
   /* Opaque, or the column scrolling underneath shows through. */
   background: hsl(var(--background));
-  /* And that column is HIDDEN, not absent — a reader has to be able to tell.
-     Numeric columns are right-aligned, so what this covers is the leading
-     digits: `25.9M` reading as `5.9M` is a plausible wrong number, which is
-     worse than an obviously cut-off one. With the scrollbar no longer forced
-     into existence (`globals.css`), this edge is the ONLY thing still saying
-     the table continues.
-
-     A zero-blur hairline, not the blurred shadow it started as. A blur is a
-     raster op per cell, redone for every tile the shadow falls across, and the
-     survey note carries 455 pinned cells. The cue is worth having; three
-     blurred pixels of it are not.
-
-     `--foreground`, not the `rgb(0 0 0 / 0.18)` this was: a black edge against
-     a near-black page is no edge at all, so in dark mode the cue was simply
-     not being given. */
+  /* The hidden column must show as hidden: right-aligned numbers lose leading digits (`25.9M`
+     reads `5.9M`), and this edge is the only cue the table continues. Zero blur: a blur is a
+     raster op per cell (455 pinned in the survey note). `--foreground`: black vanishes in dark. */
   box-shadow: 1px 0 0 hsl(var(--foreground) / 0.2);
 }
 
-/* A `th` in the row-label column keeps the header fill while it pins. No
-   `z-index` any more: that only ever ranked it against the header band, which
-   no longer pins (see above), and the pinned cells never overlap each other. */
+/* A `th` in the row-label column keeps the header fill while it pins. */
 .ProseMirror tr > th:first-child {
   background: hsl(var(--muted));
 }
@@ -616,17 +479,9 @@
   border: 1px solid hsl(var(--border));
 }
 
-/* Rows of images (the `imageGroup` node).
- *
- * The layout sits on `.image-group-items > *`, not on `.image-group-items`
- * itself: ReactNodeViewRenderer puts its own element between the one
- * `NodeViewContent` renders and the child node views, so that inner element —
- * the row's only child — is what actually holds the images.
- *
- * Scoped to `.ProseMirror` so it cannot reach the preview pane, which renders
- * through the published-page styles in `rich-text-html.tsx` and must keep
- * matching them exactly. Same breakpoint as those styles: stacked below 640px,
- * side by side above it.
+/* Rows of images (`imageGroup`). The layout sits on `.image-group-items > *` because
+ * ReactNodeViewRenderer adds its own element, the row's only child, around the node views.
+ * Scoped to `.ProseMirror` so the preview keeps matching `rich-text-html.tsx` (stacked below 640px).
  */
 .ProseMirror .image-group-items > * {
   display: flex;
@@ -654,12 +509,7 @@
 }
 
 /* ---------------------------------------------------------------------------
- * Density
- *
- * What used to be `tiptap-lite.css`. An editor embedded in a form card (the
- * contact form's message box, any `compact` editor in a dialog) is a field,
- * not a document: it wants the same rules at a smaller scale, and overriding
- * four tokens is the whole difference.
+ * Density: a `compact` editor (form message box, dialog) is a field, not a document
  * ------------------------------------------------------------------------ */
 
 [data-editor-density='compact'] .ProseMirror {

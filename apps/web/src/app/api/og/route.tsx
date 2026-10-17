@@ -13,12 +13,9 @@ import { getErrorMessage } from '@/shared/lib/utils';
  */
 
 /**
- * Satori cannot parse .woff2, so this points at the .ttf sitting beside it.
- *
- * `readFile`, not `fetch`: Turbopack resolves `import.meta.url` to a `file://`
- * URL, and Node's fetch rejects those outright ("not implemented... yet"), so
- * the documented webpack-era `fetch(new URL(...))` recipe silently yields no
- * font here. Read once per process rather than per request.
+ * Satori cannot parse .woff2, so this points at the .ttf beside it. `readFile`, not `fetch`: Turbopack
+ * resolves `import.meta.url` to `file://`, which Node's fetch rejects (no font from the webpack recipe).
+ * Read once per process.
  */
 const headingFont = readFile(
   new URL('../../assets/fonts/CalSans-SemiBold.ttf', import.meta.url)
@@ -123,12 +120,9 @@ export async function GET(request: Request) {
               style={{ display: 'flex', height: 1, backgroundColor: BORDER }}
             />
             <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-              {/* A background, not an <img>: border-radius clips a background
-                  directly, while satori will not clip an oversized child with
-                  `overflow: hidden`. The source is a 1200x900 landscape shot
-                  with the subject at the left edge, so a centred crop would
-                  frame the painting behind him — this window is x 0-430,
-                  y 350-780 of the source, scaled by 64/430. */}
+              {/* A background, not an <img>: border-radius clips it, while satori will not clip an
+                  oversized child with `overflow: hidden`. The 1200x900 source has the subject at the
+                  left edge; this window is x 0-430, y 350-780, scaled by 64/430. */}
               <div
                 style={{
                   display: 'flex',

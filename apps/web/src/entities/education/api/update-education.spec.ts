@@ -1,8 +1,7 @@
 /**
- * The outcome of `updateEducation`'s achievement rewrite: every achievement sent
- * is written (new created, known updated), dropped ones deleted, and a failed
- * write is a failure. The writes are issued together, so a dropped promise
- * would skip one silently. `$transaction` runs against a fake `tx`.
+ * `updateEducation`'s achievement rewrite: every achievement sent is written (new created, known
+ * updated), dropped ones deleted, a failed write is a failure. The writes are issued together, so a
+ * dropped promise would skip one silently. `$transaction` runs against a fake `tx`.
  */
 import type { EducationFormValues } from '@byte-of-me/contracts/education';
 import { prisma } from '@byte-of-me/db';

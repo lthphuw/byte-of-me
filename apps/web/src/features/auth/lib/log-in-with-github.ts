@@ -21,10 +21,8 @@ export async function logInWithGithub(
       `Attempting to sign in with GitHub, callbackUrl: ${destination}`
     );
 
-    // `redirectTo` + a positional `authorizationParams`: Auth.js v5's shape.
-    // The previous `callbackUrl` key was silently dropped and the destination
-    // fell back to the `Referer` header — which happened to be the right page
-    // here, so this read as working. See `log-in-to-dashboard.ts` for detail.
+    // `redirectTo` + a positional `authorizationParams`: Auth.js v5's shape; a `callbackUrl`
+    // key is silently dropped (see `log-in-to-dashboard.ts`).
     await nextAuthSignIn(
       'github',
       { redirect: true, redirectTo: destination },

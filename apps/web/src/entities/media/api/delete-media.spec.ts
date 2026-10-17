@@ -1,11 +1,7 @@
 /**
- * The row goes before the storage object. A failed row delete keeps the file, so
- * no row is left pointing at nothing; a failed storage delete after the row is an
- * orphan object, logged and not reported to the caller as a failure.
- *
- * Prisma's `media` delegate is replaced by an in-memory one, and the storage
- * object is a spy on the shared instance, so each test reads the order of the
- * writes back from `events`.
+ * The row goes before the storage object: a failed row delete keeps the file (no row points at
+ * nothing); a failed storage delete after the row leaves an orphan object, logged, not reported.
+ * Prisma's `media` is in-memory and storage a spy; tests read write order from `events`.
  */
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';

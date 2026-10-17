@@ -127,12 +127,9 @@ export function ContactForm() {
           </div>
         ) : null}
 
-        {/* Every field below carries `h-11 md:h-9`: the shared Input defaults to
-            h-9 (36px), which is under the 44px touch minimum this public form has
-            to meet. The default itself stays at 36px on purpose — the dashboard
-            forms are deliberately dense — so the height is raised per surface,
-            and only below md where the pointer is a finger. The submit button
-            takes the same pair; it was the one control that missed it. */}
+        {/* Every field carries `h-11 md:h-9`: the shared Input is h-9 (36px), under the 44px touch
+            minimum this public form must meet. The default stays 36px for the dense dashboard
+            forms, so the height is raised per surface, only below md; the submit button too. */}
 
         {/* Name */}
         <FormField

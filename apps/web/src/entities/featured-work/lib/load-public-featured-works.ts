@@ -216,13 +216,8 @@ async function getPublicFeaturedWorkRows(): Promise<
       },
       {
         cache: true,
-        // Versioned: rows cached before `media` existed would otherwise serve
-        // without it. No `revalidate` is set, so they never expire by time. v4: rows
-        // cached before the first clip was attached, which a tag revalidation served stale.
-        // v5: the demo items carry each file's pixel size, which v4 rows lack.
-        // v6: no is_published filter any more, so v5 rows would hide the drafts that now show.
-        // v7: a work's single `url` became `links`, so v6 rows carry no links at all.
-        // v8: a work's body falls back to `en` per field, so v7 rows hold none for a `vi` visitor.
+        // Bump the version when the row shape changes: no `revalidate`, so old rows never
+        // expire by time. v8: body falls back to `en` per field; v7 rows hold none for `vi`.
         cacheKey: ['featured-works-rows-v8'],
         cacheTags: [CACHE_TAGS.FEATURED_WORK],
       }

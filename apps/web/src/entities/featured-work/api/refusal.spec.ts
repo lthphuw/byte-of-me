@@ -1,8 +1,7 @@
 /**
- * The owner's featured-work mutations refuse a signed-in non-owner before any
- * read or write. The guard sits above `try` (AGENTS §8), so each call rejects
- * rather than returning an envelope, and Prisma is never reached. Prisma is
- * replaced at the delegate, as in `get-admin-project-options.spec.ts`.
+ * The featured-work mutations refuse a signed-in non-owner before any read or write: the guard sits
+ * above `try` (AGENTS §8), so each call rejects and Prisma is never reached. Prisma is replaced at
+ * the delegate, as in `get-admin-project-options.spec.ts`.
  */
 import type { FeaturedWorkFormValues } from '@byte-of-me/contracts/featured-work';
 import { prisma } from '@byte-of-me/db';

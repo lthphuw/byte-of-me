@@ -4,19 +4,9 @@ import { ProjectTimelineItemSkeleton } from '@/entities/project';
 import { ProjectsShell } from '@/widgets/public/projects-content/ui';
 
 /**
- * Route-level fallback for /projects.
- *
- * It mirrors what `ProjectsContent` renders while its query is in flight — a
- * `ListPageHeader` above an `<ol>` spine of `ProjectTimelineItemSkeleton`s —
- * and it reuses that same skeleton component rather than approximating it, so
- * the two cannot drift apart the way hand-copied markup does.
- *
- * It previously mocked a three-column card grid, which is not a layout this
- * page has ever rendered: the projects list is a vertical timeline. Navigating
- * here therefore painted a grid and then replaced it wholesale.
- *
- * No container or padding of its own — `ProjectsShell` (`ShellBase`) already
- * owns the page frame and the gap between these children.
+ * Route-level fallback for /projects: mirrors `ProjectsContent` (`ListPageHeader` over an `<ol>`
+ * timeline of `ProjectTimelineItemSkeleton`s, not a card grid), reusing it so they cannot drift.
+ * No container or padding of its own: `ProjectsShell` owns the page frame.
  */
 export default function ProjectsLoading() {
   return (

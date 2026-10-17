@@ -29,10 +29,9 @@ export interface AdminFeaturedWorkLink {
 }
 
 /**
- * The full row the editor dialog edits. `details` is a stringified TipTap document
- * (no length cap, as blog bodies have none), so it stays out of the list: the dialog loads this by id.
- * `media` is the demo pair, flattened and ordered by slot; `links` are the proof links in
- * position order. The list carries neither.
+ * The full row the editor dialog edits, loaded by id. `details` (stringified TipTap, no length cap)
+ * stays out of the list, which also lacks `media` (the demo pair, flattened by slot) and `links`
+ * (proof links, by position).
  */
 export type AdminFeaturedWorkDetail = Prisma.FeaturedWorkGetPayload<{
   include: {

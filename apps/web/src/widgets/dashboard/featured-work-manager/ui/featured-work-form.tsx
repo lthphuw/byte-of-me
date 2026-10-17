@@ -116,7 +116,7 @@ export function FeaturedWorkForm({
         })}
         className="space-y-6"
       >
-        {/* Spans the dialog body's padding and sticks to its top edge, so the bar stays in view. */}
+        {/* Spans the dialog body's padding, sticks to its top edge so the bar stays in view. */}
         <div
           ref={setToolbarTarget}
           className="sticky -top-4 z-30 -mx-4 -mt-4 min-h-11 bg-background md:-mx-6"

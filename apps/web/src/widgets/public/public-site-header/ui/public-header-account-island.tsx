@@ -10,13 +10,9 @@ import {
 import { UserActionToggle } from '@/widgets/public/public-site-header/ui/user-action-toggle';
 
 /**
- * The account's own island, outboard of the preferences one — theme and
- * language are what any visitor wants; this is only ever the owner's. Docked
- * they read as two pills with a gap; at rest, unpadded, as one row.
- *
- * Unmounted rather than hidden when signed out or below `md`: it is a flex
- * item, and one that only looks hidden still holds its slot. While the session
- * loads it holds the avatar's place with a skeleton of the same size.
+ * The account's own island, outboard of the preferences one (the owner's, not every visitor's).
+ * Unmounted, not hidden, when signed out or below `md`: a flex item that only looks hidden still
+ * holds its slot. While the session loads a same-size skeleton holds the avatar's place.
  */
 export function PublicHeaderAccountIsland({
   docked,

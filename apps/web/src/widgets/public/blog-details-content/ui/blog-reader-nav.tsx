@@ -22,16 +22,8 @@ const FLASH_CLASS = 'is-flash';
 const FLASH_MS = 1600;
 
 /**
- * Contents and References, below `xl`.
- *
- * A button in the corner rather than the sticky bar this replaces. That bar
- * sat at `top-24` over the article: it covered running text (a code block, in
- * the case that prompted this), it spent 42px of a phone screen on navigation
- * nobody had asked for yet, and it put the control at the top edge — the one
- * place a thumb cannot reach. It also had nowhere to put the bibliography, so
- * on a phone the only route to a reference was to scroll to the end of the
- * post.
- *
+ * Contents and References below `xl`, as a corner button. The sticky bar it replaced covered text
+ * at `top-24`, spent 42px of a phone screen, sat out of thumb reach and had no bibliography.
  * From `xl` the rail beside the article does this job and the button is gone.
  */
 export function BlogReaderNav({

@@ -1,30 +1,12 @@
 /**
- * The brand mark — one definition, every surface.
- *
- * The mark is an off-centre bezier spiral whose outer end is pulled into a
- * short leg, so it reads as a spiral first and suggests a "P" second. It is
- * drawn as a single open stroke: no fill, no counters, nothing that closes up
- * when the raster gets down to 16px.
- *
- * Everything that draws the mark reads it from here:
- *
- *   - `scripts/gen-icons.ts` renders the five favicon SVGs from
- *     `renderFaviconSvg`, then rasterises them to PNG/ICO.
- *   - `@/shared/ui/brand-mark` renders it in the app (header, footer, sidebars,
- *     auth screens) using `currentColor`.
- *   - `app/api/og/route.tsx` inlines `MARK_PATH` into the social card.
- *
- * So changing the mark means editing this file and running `bun run gen:icons`.
- * Nothing else references the geometry, and `icon-set.spec.ts` fails if the
- * committed assets drift from what this file describes.
+ * The brand mark, one definition for every surface: an off-centre bezier spiral drawn as a single open
+ * stroke (no fill, nothing that closes up at 16px). Read by gen-icons.ts, ui/brand-mark and api/og.
+ * Change the mark here, then `bun run gen:icons`; icon-set.spec.ts fails if the committed assets drift.
  */
 
 /**
- * The two access layers the site is split into.
- *
- * They differ only by enclosure — bare or framed — never by colour. A
- * favicon is 16px of monochrome on an unknown background; a hue is the first
- * thing that stops being legible there, and a silhouette is the last.
+ * The two access layers differ only by enclosure, never by colour: at 16px on an unknown background
+ * a hue stops being legible first and a silhouette last.
  */
 export type BrandLayer = 'public' | 'cms';
 
@@ -68,13 +50,8 @@ export const MARK_LAYERS: Record<BrandLayer, LayerGeometry> = {
   },
 
   /**
-   * The densest cell in the system: a frame wrapped around a spiral inside a
-   * 16px box. Three variants were rasterised at true 16px and compared, and
-   * matching the two stroke weights — the obvious choice — was the muddiest,
-   * because frame and mark then compete for the same reading. What survives is
-   * a deliberately dominant frame with the mark pulled in smaller to buy
-   * separation, even though that leaves the mark smaller than in the other two
-   * layers.
+   * Densest cell: frame plus spiral at 16px. Measured at true 16px, equal stroke weights were the
+   * muddiest; a dominant frame with a smaller mark separates best, at the cost of mark size.
    */
   cms: {
     mark: { transform: 'translate(4.78 5.4) scale(0.58)', strokeWidth: 3.1 },
@@ -127,12 +104,8 @@ function svg(label: string, comment: string, body: string): string {
 }
 
 /**
- * A tab favicon for one access layer.
- *
- * The ink colour is declared twice on purpose: the presentation attribute is
- * what SVG rasterisers without CSS support fall back to, and the class is what
- * lets a browser invert the mark on a dark tab strip. PNG and ICO cannot adapt
- * at all, which is why `buildIconSet` lists the SVG first.
+ * A tab favicon for one access layer. Ink is declared twice on purpose: the attribute is the fallback
+ * for rasterisers without CSS, the class lets a browser invert the mark on a dark tab strip.
  */
 function renderLayerSvg(layer: BrandLayer): string {
   const { mark, enclosure } = MARK_LAYERS[layer];
@@ -168,12 +141,8 @@ function renderLayerSvg(layer: BrandLayer): string {
 }
 
 /**
- * The home-screen and launcher icons.
- *
- * Both are opaque and neither adapts to the colour scheme: iOS composites its
- * icon over its own background and handles transparency badly, and a launcher
- * icon is baked once at install time. The maskable one holds the mark inside
- * the 80% safe circle because Android may crop it to any shape.
+ * The home-screen and launcher icons: opaque, not colour-scheme aware (iOS composites over its own
+ * background; a launcher icon is baked at install). The maskable one stays inside the 80% safe circle.
  */
 const STANDALONE: Record<
   'apple-touch.svg' | 'maskable.svg',

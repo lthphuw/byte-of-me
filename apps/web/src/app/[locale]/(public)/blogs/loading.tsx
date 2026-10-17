@@ -4,19 +4,9 @@ import { BlogCardSkeleton } from '@/entities/blog';
 import { BlogsShell } from '@/widgets/public/blogs-content/ui';
 
 /**
- * Route-level fallback for /blogs.
- *
- * Mirrors what `BlogsContent` renders while its query is in flight — a
- * `ListPageHeader` above a `grid-cols-1 md:grid-cols-2` of `BlogCardSkeleton`s
- * — and reuses that skeleton component rather than approximating it with a
- * bare box, so the two cannot drift apart.
- *
- * It previously rendered generic `h-72` blocks in a `lg:grid-cols-3` grid; the
- * real list is two columns and never three, so the third column collapsed away
- * on load.
- *
- * No container or padding of its own — `BlogsShell` (`ShellBase`) already owns
- * the page frame and the gap between these children.
+ * Route-level fallback for /blogs: mirrors `BlogsContent` while loading (`ListPageHeader` over a
+ * two-column grid, never three, of `BlogCardSkeleton`s), reusing that skeleton so they cannot drift.
+ * No container or padding of its own: `BlogsShell` owns the page frame.
  */
 export default function BlogsLoading() {
   return (

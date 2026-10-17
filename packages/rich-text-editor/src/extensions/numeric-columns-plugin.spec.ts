@@ -8,11 +8,9 @@ import { beforeAll, describe, expect, it } from 'bun:test';
 import { numericDecorations } from './numeric-columns-plugin';
 
 /**
- * The incremental path is the whole point of this plugin — and the whole risk.
- * Every test below asserts the same invariant: whatever the edit, carrying the
- * decorations forward must land exactly where rebuilding from scratch would.
- * A drift here is invisible until a column is silently aligned by a rule that
- * no longer applies to it.
+ * The incremental path is the whole point of this plugin, and the whole risk. Every test asserts:
+ * carrying decorations forward lands exactly where a rebuild would. A drift is invisible until a
+ * column is aligned by a rule that no longer applies to it.
  */
 
 let schema: ReturnType<typeof getSchema>;

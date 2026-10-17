@@ -26,10 +26,9 @@ export async function ContactContent() {
         />
       </RevealSection>
 
-      {/* Channels first in source order, so they come first when the columns
-          stack below md. The whole page is the first screen on a desktop, so
-          both columns are `immediate`: hidden in the server HTML they would
-          hold back the LCP candidate until JS ran. */}
+      {/* Channels first in source order, so they lead when columns stack below md. Both columns
+          are `immediate`: the page is the first desktop screen, and hidden in server HTML they
+          would hold back the LCP candidate. */}
       <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2 md:gap-10">
         <RevealSection id="contact-info" immediate>
           <Suspense fallback={<ContactInfosLoading />}>

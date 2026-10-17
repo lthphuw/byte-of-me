@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 
 import { EducationAchievementsFieldLoading } from './education-achievements-field-loading';
 
-/** Stands in for `EducationForm` while the full entry loads: the same sections, in the same order. */
+/** Stands in for `EducationForm` while the full entry loads: same sections, same order. */
 export function EducationFormLoading() {
   const t = useTranslations('dashboard.shared.managerListState');
 

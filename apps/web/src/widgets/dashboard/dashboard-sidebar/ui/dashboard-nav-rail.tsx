@@ -78,11 +78,8 @@ export function DashboardNavRail({
 
   return (
     <TooltipProvider delayDuration={200}>
-      {/* `pt-3 pb-[max(...)]`, not `py-3`: the left inset is handled once, on
-          the dashboard layout's outer row, since this rail and the content
-          column share that edge — but the BOTTOM edge is this element's own,
-          a flex sibling that layout never pads on its behalf. The floor
-          matches `nav-drawer.tsx`'s own bottom group for the same reason. */}
+      {/* `pt-3 pb-[max(...)]`, not `py-3`: the layout's outer row handles the left inset, but the
+          BOTTOM edge is this sibling's own (same floor as `nav-drawer.tsx`'s bottom group). */}
       <aside
         aria-label={t('navAriaLabel')}
         className={cn(
@@ -121,11 +118,8 @@ export function DashboardNavRail({
           </>
         ) : (
           <>
-            {/* A mark, not a link — unlike the space rail's, whose logo is the way
-                back OUT to the dashboard. Here /dashboard is the first button
-                below, so making this a link too would put two links with the same
-                name and the same destination one row apart, which is noise to
-                anyone tabbing or listening rather than looking. */}
+            {/* A mark, not a link: /dashboard is the first button below; two links with the same
+                name and destination a row apart are noise to anyone tabbing or listening. */}
             <div
               aria-hidden="true"
               className="flex size-9 items-center justify-center rounded-md"
@@ -141,10 +135,8 @@ export function DashboardNavRail({
               {groups.map((group, index) => (
                 <div
                   key={group.label}
-                  // A real group with a real name, announced, and drawn as a rule.
-                  // The rail has no room for four captions and no need for them:
-                  // the clustering is the whole point, and a reader who wants the
-                  // names still gets them.
+                  // A named group, announced and drawn as a rule: the rail has no room for four
+                  // captions, but the clustering is the point.
                   role="group"
                   aria-label={group.label}
                   className={cn(
@@ -188,11 +180,9 @@ export function DashboardNavRail({
 
               <Tooltip>
                 <TooltipTrigger asChild>
-                  {/* `disabled` plus a spinner, because a full-layout revalidate
-                      takes long enough that an unchanged icon reads as a click
-                      that did not register — and the response to that is a second
-                      click and a second purge. `aria-busy` says the same thing to
-                      a reader that the spin says to an eye. */}
+                  {/* `disabled` plus a spinner: a full revalidate is slow, and an unchanged
+                      icon reads as a missed click that invites a second purge. `aria-busy`
+                      says to a reader what the spin says to an eye. */}
                   <button
                     type="button"
                     onClick={() => void clearCache()}

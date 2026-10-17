@@ -50,10 +50,9 @@ export function ProfileTranslationCard({
     null
   );
 
-  // Removing a language drops its name, bio, quote and whole "About me"
-  // document at once. `getValues` rather than a watch: this only has to be
-  // right at click time, and a subscription here would re-render the card —
-  // and its editor — on every keystroke.
+  // Removing a language drops its name, bio, quote and whole "About me" document at once.
+  // `getValues`, not a watch: it only has to be right at click time, and a subscription would
+  // re-render the card and its editor on every keystroke.
   const handleRemove = () => {
     const values = form.getValues(`translations.${index}`);
     const hasContent =

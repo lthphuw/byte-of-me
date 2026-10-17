@@ -6,16 +6,9 @@ import { cn } from '@/shared/lib/utils';
 import type { Account } from '@/widgets/public/public-site-header/lib/use-account';
 
 /**
- * The signed-in person, as a circle.
- *
- * It measured 40x36 before — an ellipse. The trigger was a `<Button>` with
- * `size-10 rounded-full` and no `size` prop, so the variant's `h-9` rode along
- * and won on height; tailwind-merge does not know `size-*` collapses
- * `h-*`/`w-*`. Hence one element with one width and one height and no variant
- * system underneath to disagree with them.
- *
- * `AvatarImage` falls back to initials on a load error, so a dead URL degrades
- * to letters rather than a hole.
+ * The signed-in person, as a circle. A `<Button>` with `size-10 rounded-full` measured 40x36: its
+ * variant `h-9` won, as tailwind-merge does not collapse `size-*` into `h-*`/`w-*`.
+ * `AvatarImage` falls back to initials on a load error.
  */
 export function UserAvatar({
   account,

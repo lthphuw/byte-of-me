@@ -22,11 +22,9 @@ export async function getPaginatedAdminComments(
     );
     const skip = (page - 1) * limit;
 
-    // Scoped to the admin's OWN content — both statements had no `where` at
-    // all, so this listed and counted every comment in the database. A comment
-    // always carries the blog or project it was left on (`postComment` sets
-    // `blogId` on replies too), so the owner is reachable through it; a row
-    // attached to neither is not "a comment on your content" and stays out.
+    // Scoped to the admin's OWN content: a comment always carries its blog or project
+    // (`postComment` sets `blogId` on replies too), so the owner is reachable through it; a row on
+    // neither stays out.
     const where = {
       OR: [
         { blog: { userId: session.id } },

@@ -1,8 +1,7 @@
 /**
- * The admin list stays narrow: its query selects each translation's columns
- * without `details`, so a list row can never carry a stored body. The editor
- * loads the full row by id instead. The Prisma delegate is replaced with a fake
- * that records the query arguments; no database is touched.
+ * The admin list stays narrow: its query selects each translation's columns without `details`, so a
+ * list row never carries a stored body (the editor loads it by id). The Prisma delegate records
+ * query arguments.
  */
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';

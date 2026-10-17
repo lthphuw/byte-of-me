@@ -1,25 +1,14 @@
 /**
- * Where the PUBLIC print view lives.
- *
- * Its own route group (`app/[locale]/(print)`), not `(public)` and — this is
- * the part that matters — not `(protected)`. Blogs are anonymous content, so
- * nothing here goes behind `getAuthenticatedAdmin()`, and nothing here may ever
- * be pointed at an admin query.
- *
- * Outside `(public)` because that group's layout draws the site header, the
- * footer and the reading shell, and a page whose entire job is to become a
- * clean PDF must inherit none of it.
+ * Where the PUBLIC print view lives: its own route group `app/[locale]/(print)`, never
+ * `(protected)`, so nothing here may be pointed at an admin query. Outside `(public)` because that
+ * layout draws the site header, footer and reading shell, which a clean PDF must not inherit.
  */
 const BLOG_PRINT_PATH = '/print/blogs';
 
 /**
- * Href for a blog's print view, relative to the locale root — pass it to the
- * `Link` / router from `@/shared/i18n/navigation`, which adds the prefix. The
- * locale is not optional here: a blog body comes from `BlogTranslation`, so
- * `/vi/print/blogs/x` and `/en/print/blogs/x` are two different documents.
- *
- * `?print=1` is what makes the opened tab raise its own print dialog. The
- * page does NOT do that unprompted — see `BlogPrintTrigger`.
+ * Href for a blog's print view, relative to the locale root (for `@/shared/i18n/navigation`). The
+ * locale is required: each locale's `BlogTranslation` is another document. `?print=1` makes the
+ * opened tab raise its own print dialog; the page never does unprompted.
  */
 export function blogPrintHref(slug: string, autoPrint = true): string {
   const path = `${BLOG_PRINT_PATH}/${encodeURIComponent(slug)}`;

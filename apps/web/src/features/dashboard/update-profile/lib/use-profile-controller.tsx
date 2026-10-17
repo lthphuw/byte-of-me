@@ -71,11 +71,9 @@ export function useProfileController(initUser: AdminUserProfile) {
     [form]
   );
 
-  // Seed once per profile, not on every `user` identity: a refetch (the
-  // invalidation after a save, a reconnect) hands back a fresh object, and an
-  // unconditional reset would throw away everything typed since. Keyed on the
-  // id (as `blog-form.tsx` does) rather than gated on `isDirty`, because a
-  // reset while pristine is just as unwanted mid-edit.
+  // Seed once per profile (keyed on the id, as `blog-form.tsx` does), not on every `user` identity:
+  // a refetch hands back a fresh object, and a reset would throw away what was typed, pristine or
+  // not.
   const seededProfileId = useRef<Nullable<string>>(null);
 
   useEffect(() => {

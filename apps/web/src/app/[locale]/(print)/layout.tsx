@@ -8,27 +8,9 @@ import {
 import { ForceLightTheme } from '@/shared/ui/force-light-theme';
 
 /**
- * The PUBLIC print surface: no shell at all.
- *
- * A sibling of `(public)` rather than a route inside it, because
- * `(public)/layout.tsx` draws the site header, the footer and the container
- * grid, and a page whose only job is to become a clean PDF must inherit none
- * of it. It is equally NOT inside `(protected)`: the article is public content, so
- * nothing here goes through `(protected)/layout.tsx`. The group uses the
- * mechanism (server-rendered `RichText`, `MathRenderer`, Chrome's "Save as
- * PDF" driven by the `@media print` rules in `globals.css`).
- *
- * Forced light, both halves of it. `RichTextHtml` reads the theme variables,
- * so `force-light-surface` alone repaints the article body; the editor's
- * highlight colours still key on `.dark` SELECTORS in `editor-surface.css`:
- *
- * - `force-light-surface` redeclares the CSS custom properties so the subtree
- *   is light even in the frame before the effect below runs, but a subtree
- *   cannot override a `.dark &` SELECTOR;
- * - `ForceLightTheme` drops the class those selectors key on.
- *
- * With only the first, a reader in dark mode exports dark-tinted highlights
- * onto white paper. Paper has no dark mode.
+ * PUBLIC print surface, no shell: sibling of `(public)` (header, footer, grid), outside `(protected)`.
+ * Forced light twice: `force-light-surface` sets the variables, but only `ForceLightTheme` drops
+ * the `.dark` class editor-surface.css keys on (else dark highlights print on white paper).
  */
 export default async function PublicPrintLayout({
   children,

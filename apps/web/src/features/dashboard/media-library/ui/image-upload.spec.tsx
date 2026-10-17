@@ -1,8 +1,7 @@
 /**
- * What the library's upload dialog tells the author: clips are accepted only where
- * the dialog opts in, each kind of file is held to its own size, and a request the
- * server would refuse as a whole (too many files, too many bytes) is answered here,
- * in the active locale, before anything is sent. Renders the real component.
+ * What the upload dialog tells the author: clips are accepted only where the dialog opts in, each
+ * kind of file is held to its own size, and a request the server would refuse as a whole is
+ * answered here, in the active locale, before anything is sent. Renders the real component.
  */
 import type { ImageCompressionConfig } from '@byte-of-me/contracts';
 import {

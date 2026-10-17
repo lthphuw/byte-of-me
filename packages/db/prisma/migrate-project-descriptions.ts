@@ -1,14 +1,7 @@
 /**
- * One-off data migration: project descriptions become rich text.
- *
- * Plain-text `ProjectTranslation.description` values are rewritten as
- * stringified Tiptap documents (one paragraph per line), the format the
- * dashboard editor and `RichText` renderer both expect. Rows that already
- * hold a Tiptap document — anything saved after the editor shipped — are
- * left untouched, so the script is safe to run repeatedly.
- *
- *   cd packages/db && bunx tsx prisma/migrate-project-descriptions.ts --dry-run
- *   cd packages/db && bunx tsx prisma/migrate-project-descriptions.ts
+ * One-off: rewrite plain-text `ProjectTranslation.description` as stringified Tiptap documents
+ * (one paragraph per line); rows already holding a Tiptap document are skipped, so it is idempotent.
+ *   cd packages/db && bunx tsx prisma/migrate-project-descriptions.ts [--dry-run]
  */
 import { prisma } from '../src';
 

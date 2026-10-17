@@ -1,18 +1,7 @@
 /**
- * Why these tabs reveal themselves.
- *
- * A translation error renders inside the tab that owns it, and an unselected
- * tab is unmounted — so a failed submit on the wrong tab shows nothing at all
- * and the submit button reads as broken. The first fix was an `onInvalid`
- * handler per dialog, which only ever reached the OUTERMOST tabs: a company
- * role's tabs, a role task's tabs and an education achievement's tabs are
- * nested one or two levels further down and stayed silent, because the parent
- * would have had to thread its error object through every collapsible in
- * between.
- *
- * These tests pin the replacement: the component subscribes to its own errors
- * and switches itself, at any depth, without the caller doing anything — and
- * only ever on a failed SUBMIT, never while somebody is typing.
+ * An unselected tab is unmounted, so a failed submit on the wrong tab would show nothing. The tabs
+ * subscribe to their own errors and switch themselves at any nesting depth, on a failed SUBMIT only,
+ * never while typing (a per-dialog `onInvalid` reached only the outermost tabs).
  */
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
@@ -201,11 +190,8 @@ describe('TranslationTabs error reveal', () => {
     const container = await mount();
     await submit(container);
 
-    // Back to the valid tab by hand — the state an author is in when they go
-    // to check what they wrote elsewhere. The error on tab 1 is still live and
-    // react-hook-form revalidates on every keystroke once a submit has failed,
-    // so a reveal keyed off `errors` instead of `submitCount` would yank the
-    // tab away mid-word.
+    // Back on the valid tab by hand: the tab-1 error is live and react-hook-form revalidates on every
+    // keystroke, so a reveal keyed off `errors`, not `submitCount`, would yank the tab away mid-word.
     await clickTab('EN');
     expect(screen.getByLabelText('Title 0')).toBeDefined();
 

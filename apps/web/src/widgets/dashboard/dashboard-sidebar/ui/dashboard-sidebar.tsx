@@ -34,11 +34,8 @@ export function DashboardSidebar({
     <>
       <DashboardNavRail expanded={expanded} onToggle={toggleExpanded} />
 
-      {/* Mobile topbar. `env(safe-area-inset-top)` on top of the usual `py-1.5`
-          for the same reason the dashboard layout pads left/right: this bar
-          is `sticky top-0`, so on a notched iPhone in standalone mode (the
-          manifest's `display: "standalone"`) it sticks flush under the
-          camera housing with no gap otherwise. */}
+      {/* Mobile topbar. `env(safe-area-inset-top)` on top of `py-1.5`: the bar is `sticky top-0`,
+          so on a notched iPhone in standalone mode it sticks flush under the camera. */}
       <div
         className="sticky top-0 z-40 flex items-center gap-2 border-b border-border/50 bg-background px-2 pb-1.5 lg:hidden"
         style={{

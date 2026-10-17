@@ -18,12 +18,9 @@ import { getErrorMessage } from '@/shared/lib/utils';
 const UPLOAD_URL_TTL_SECONDS = 300;
 
 /**
- * Step 1 of a clip upload: a signed URL the browser PUTs the file to itself.
- *
- * A clip cannot travel inside a server action: Vercel refuses a function request
- * body over 4.5 MB, before any of our code runs, and the client then only sees
- * "An unexpected response was received from the server". The bytes are checked
- * by `finalizeVideoUpload`; this only vouches for the name, type and size claimed.
+ * Step 1 of a clip upload: a signed URL the browser PUTs the file to. A clip cannot travel in a
+ * server action: Vercel refuses a function body over 4.5 MB before our code runs.
+ * `finalizeVideoUpload` checks the bytes; this only vouches for the claimed name, type and size.
  */
 export async function prepareVideoUpload(input: {
   fileName: string;

@@ -107,10 +107,7 @@ export default [
     },
   },
 
-  /* Next.js rules, scoped to the app. These used to live in
-     apps/web/.eslintrc.json, which ESLint 9 ignores in favour of this flat
-     config — so the app was carrying eslint-config-next without ever running
-     a single one of its rules. */
+  /* Next.js rules, scoped to the app. ESLint 9 ignores a per-app .eslintrc.json. */
   {
     files: ['apps/web/**/*.{ts,tsx}'],
     plugins: { '@next/next': nextPlugin },

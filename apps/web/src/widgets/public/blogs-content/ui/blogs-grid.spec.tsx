@@ -1,9 +1,7 @@
 /**
- * What this defends is the list's entrance: the first row plays it for the
- * first result set only, and nothing is ever hidden in the server HTML — the
- * first row holds the LCP element, and Chrome ignores an `opacity: 0` candidate
- * until JS reveals it. A result set that arrives later (filter, page) must not
- * start hidden, or the entrance replays on every change.
+ * Defends the list's entrance: it plays for the first result set only, and nothing is hidden in
+ * the server HTML (the first row holds the LCP element; Chrome ignores `opacity: 0` candidates
+ * until JS reveals them). A later result set (filter, page) must not start hidden.
  */
 import { renderToString } from 'react-dom/server';
 import { render } from '@testing-library/react';

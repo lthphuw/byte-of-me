@@ -10,22 +10,9 @@ import {
 } from './constants';
 
 /**
- * Waits for the app to actually be ready, then dismisses the splash and
- * remembers it for the rest of the tab's session.
- *
- * Renders nothing — it only ever touches the DOM outside React, by removing
- * the `data-booting` attribute `BootSplashScript` set on `<html>`.
- * `.app-boot-splash` in `globals.css` transitions on that removal, so the
- * fade-out is pure CSS; this effect only decides *when*.
- *
- * "Ready" is: mounted, plus `document.fonts.ready` resolved, floored at
- * `BOOT_SPLASH_FLOOR_MS` so the splash never strobes on a fast connection,
- * and capped at `BOOT_SPLASH_CEILING_MS` so a hung font request can never
- * trap someone on the splash.
- *
- * This mounts once per `(protected)` layout instance, which persists across
- * client-side navigation within `/dashboard` — so it runs once
- * per hard load, not once per page.
+ * Dismisses the splash once mounted and fonts are ready, floored at BOOT_SPLASH_FLOOR_MS (no strobe on
+ * a fast connection) and capped at BOOT_SPLASH_CEILING_MS (a hung font request cannot trap anyone).
+ * Removing `data-booting` triggers the CSS fade in globals.css; it runs once per hard load.
  */
 export function BootSplashReady() {
   useEffect(() => {

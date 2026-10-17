@@ -10,10 +10,8 @@ const SVG = Buffer.from(
   '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><rect width="10" height="10" fill="red"/></svg>'
 );
 
-// A real, tiny (1x1) GIF — re-encoding through `sharp`'s default single-frame
-// read would be indistinguishable from an intentional re-encode for a
-// STATIC gif like this one, which is why the assertion below is on the
-// bytes, not just on whether it "looks like a gif" afterwards.
+// A real 1x1 GIF: for a STATIC gif a sharp re-encode is indistinguishable by look,
+// so the assertion is on the bytes.
 const GIF = Buffer.from(
   'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBTAA7',
   'base64'

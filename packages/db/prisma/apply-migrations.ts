@@ -1,12 +1,7 @@
 /**
- * Applies every pending migration. Use this on a new database instead of
- * `prisma migrate deploy`, which is the same thing plus the fallback below.
- *
- * Prisma runs each migration in one transaction, and PostgreSQL refuses
- * `CREATE INDEX CONCURRENTLY` inside a transaction block. When a migration
- * fails for that reason, its statements run one at a time (autocommit), the
- * migration is recorded with `migrate resolve --applied`, and deploy resumes.
- * Only plain `;`-separated statements are supported in such a file.
+ * Applies every pending migration; use instead of `prisma migrate deploy` on a new database.
+ * Postgres refuses `CREATE INDEX CONCURRENTLY` in a transaction, so such a migration runs statement
+ * by statement (plain `;`-separated only), is `migrate resolve --applied`, and deploy resumes.
  */
 import { spawnSync } from 'node:child_process';
 import { readFile } from 'node:fs/promises';

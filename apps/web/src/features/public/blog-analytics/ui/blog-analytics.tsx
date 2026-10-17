@@ -13,10 +13,9 @@ export function BlogAnalytics({ blogId }: { blogId: string }) {
   const startTime = useRef<number>(Date.now());
   const accumulatedTime = useRef<number>(0);
 
-  // Fire-and-forget: nothing here renders a result, so `mutateAsync` is used
-  // for its per-call settlement. The `.catch` only stops an unhandled
-  // rejection. No `errorMessage`: a refused view or reading-time beat is only
-  // logged, and a reader is never told that analytics failed.
+  // Fire-and-forget: nothing renders a result, so `mutateAsync` is used for per-call settlement and
+  // `.catch` only stops an unhandled rejection. No `errorMessage`: a refused beat is logged, never
+  // shown to the reader.
   const recordView = useServerMutation<string, string>({
     mutationFn: (id) => trackBlogView(id),
   });

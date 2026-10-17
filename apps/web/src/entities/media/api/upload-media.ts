@@ -54,13 +54,9 @@ export async function uploadMedia(
     };
   }
 
-  // Before any network or database work: an oversized file that reaches
-  // storage is worse than a rejected one, because the editor then holds a URL
-  // to an object the reader's browser has to download in full. Checked
-  // against the AS-UPLOADED bytes, before compression — a direct call to this
-  // action with an oversized file is exactly the case this guards, and
-  // compressing it first would let an arbitrarily large upload in as long as
-  // it happened to compress under the ceiling.
+  // Before any network or database work, on the AS-UPLOADED bytes: a direct call with an oversized
+  // file is what this guards, and compressing first would let any size in that happens to compress
+  // under the ceiling.
   const violation = findUploadViolation(files);
   if (violation) {
     return { success: false, errorMsg: describeViolation(violation) };
@@ -114,10 +110,8 @@ export async function uploadMedia(
       // The dimensions are the compressor's own, after any resize it made.
       const compressed = await compressImage(buffer, mimeType, compression);
 
-      // From the POST-compression MIME type, not the filename or the original
-      // type: a webp buffer written under a `.jpg` key is a file no CDN
-      // serves sensibly, and the editor's auto-upload builds its File as
-      // `new File([blob], 'image')` anyway, with no extension to read.
+      // From the POST-compression MIME type: a webp buffer under a `.jpg` key is served badly, and
+      // the editor's auto-upload builds `new File([blob], 'image')` with no extension to read.
       const fileExtension = extensionForMimeType(compressed.mimeType);
       const fileKey = buildMediaFileKey(
         user.id,

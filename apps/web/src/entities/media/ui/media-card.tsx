@@ -14,10 +14,8 @@ interface MediaCardProps {
   isDeleting?: boolean;
   className?: string;
   /**
-   * Accessible names for the icon-only actions. Passed in rather than
-   * translated here: this is an `entities/` component and must not decide
-   * which namespace owns the copy (same rule as `useMediaLibrary`'s toast
-   * messages).
+   * Accessible names for the icon-only actions, passed in: an `entities/` component must not decide
+   * which namespace owns the copy (same rule as `useMediaLibrary`'s toast messages).
    */
   deleteLabel?: string;
   copyLabel: string;

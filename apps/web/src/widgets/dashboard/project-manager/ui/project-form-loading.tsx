@@ -1,6 +1,6 @@
 import { Skeleton } from '@byte-of-me/ui';
 
-/** Stands in for the `ProjectForm` while its record loads. Same wrappers and field sizes as the form. */
+/** Stands in for `ProjectForm` while its record loads: same wrappers and field sizes. */
 export function ProjectFormLoading() {
   return (
     <div className="space-y-6" aria-hidden="true">

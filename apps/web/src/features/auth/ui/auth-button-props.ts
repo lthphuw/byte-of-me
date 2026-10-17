@@ -15,13 +15,9 @@ export interface AuthButtonProps {
   callbackUrl?: string;
 
   /**
-   * Which audience the button is serving.
-   *
-   * `'admin'` routes through the owner-gated provider ids (see
-   * `ADMIN_OAUTH_PROVIDER_IDS`), so a stranger is refused at the `signIn`
-   * callback instead of receiving a `USER` session that then bounces off every
-   * protected route. `'public'` is the default so the comment modal keeps its
-   * existing behaviour untouched.
+   * Which audience the button serves. `'admin'` uses the owner-gated provider ids
+   * (`ADMIN_OAUTH_PROVIDER_IDS`), so a stranger is refused at the `signIn` callback instead of
+   * getting a `USER` session that bounces off protected routes. `'public'` is the default.
    */
   surface?: 'public' | 'admin';
 }

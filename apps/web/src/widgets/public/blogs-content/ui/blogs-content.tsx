@@ -88,10 +88,9 @@ export function BlogsContent() {
                   size="sm"
                   className="h-8 w-fit gap-2 text-xs"
                   onClick={() => {
-                    // The drafts variant is a different key with a different
-                    // page count, so page 3 may not exist in it — but `setPage`
-                    // is a URL write now, and on page 1 it would push a history
-                    // entry for the identical URL on every toggle.
+                    // Drafts is a different key with its own page count, so page 3 may not exist.
+                    // `setPage` is a URL write: on page 1 it would push a duplicate history entry
+                    // per toggle.
                     if (page !== 1) setPage(1);
                     setShowDrafts((v) => !v);
                   }}

@@ -32,16 +32,9 @@ export async function logInToDashboard(
     const res: string = await nextAuthSignIn('email', {
       email,
       redirect: false,
-      // `redirectTo`, NOT `callbackUrl`. Auth.js v5 renamed the option, and the
-      // rename fails silently in the worst possible way: `signIn` destructures
-      // `redirectTo` and sweeps every other key into `...rest`, then builds the
-      // request body as `{ ...rest, callbackUrl }` where that second
-      // `callbackUrl` is `redirectTo ?? headers.get('Referer') ?? '/'`. A
-      // `callbackUrl` passed here therefore lands in `rest` and is overwritten
-      // by the Referer — which on this form is the sign-in page itself, so the
-      // magic link came back to `/auth/login`, where `(auth)/layout.tsx` bounced
-      // the now-authenticated owner to `/dashboard`. That, not the hardcoded
-      // string this used to pass, is why a deep `?from=` never worked.
+      // `redirectTo`, NOT `callbackUrl`: Auth.js v5 `signIn` sweeps `callbackUrl` into `...rest`
+      // and overwrites it with the Referer (the sign-in page itself), so a deep `?from=` was always
+      // lost.
       redirectTo: sanitizeCallbackUrl(callbackUrl, locale),
     });
 

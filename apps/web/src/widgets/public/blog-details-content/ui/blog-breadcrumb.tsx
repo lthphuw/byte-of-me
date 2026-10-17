@@ -12,15 +12,8 @@ export async function BlogBreadcrumb({ title }: { title: string }) {
       aria-label={t('breadcrumb')}
       className="mb-6 flex items-center gap-2 text-sm text-muted-foreground"
     >
-      {/* The two labels never shrink and never wrap. Everything here was
-          `flex-shrink: 1`, so a narrow viewport squeezed them down to their
-          longest word and broke them across two lines — "Trang chủ" and "Tất cả
-          bài viết" each became two rows while the title kept 261 of the 421px
-          available. Vietnamese shows it first because its labels are longer
-          than "Home" and "All posts", but English is the same shape.
-
-          A `min-w-16` used to sit on the second link, which was an attempt at
-          this; a min-width does not stop text wrapping inside the box. */}
+      {/* The labels never shrink or wrap: at `flex-shrink: 1` a narrow viewport broke "Trang chủ"
+          and "Tất cả bài viết" across two rows while the title kept 261 of 421px. */}
       <Link
         href="/"
         className="shrink-0 whitespace-nowrap transition-colors hover:text-foreground"
@@ -39,10 +32,8 @@ export async function BlogBreadcrumb({ title }: { title: string }) {
 
       <ChevronRight className="h-3.5 w-3.5 shrink-0" />
 
-      {/* `min-w-0` so the title is what gives way: a flex child defaults to
-          `min-width: auto`, which is its longest word, and without this the
-          truncation cannot take effect before the labels start being squeezed
-          again. */}
+      {/* `min-w-0` so the title gives way: a flex child's default `min-width: auto` is its longest
+          word, so truncation could not take effect before the labels got squeezed again. */}
       <span
         className="min-w-0 truncate text-foreground"
         aria-current="page"

@@ -28,10 +28,8 @@ export async function getPaginatedAdminBlogs(
         where: { userId },
         include: {
           coverImage: true,
-          // Narrowed to what blog-editor-card.tsx renders: never `content`
-          // (a whole TipTap document per translation). The editor dialog
-          // fetches the full row on demand via getAdminBlogById instead of
-          // reusing this list item.
+          // Narrowed to what blog-editor-card.tsx renders: never `content` (a whole TipTap document
+          // per translation); the editor dialog fetches the full row via getAdminBlogById.
           translations: {
             select: {
               id: true,
@@ -40,11 +38,8 @@ export async function getPaginatedAdminBlogs(
               description: true,
             },
           },
-          // Narrowed for the same reason as `translations` above: a full
-          // include pulls every locale's `ProjectTranslation.description`,
-          // which is `@db.Text`. The card renders only the tag name; nothing
-          // in the admin list or the editor form reads a project translation
-          // beyond its title.
+          // Narrowed like `translations` above: a full include pulls every locale's `@db.Text`
+          // project description, while the card and editor read only the title and the tag name.
           project: {
             include: {
               translations: {

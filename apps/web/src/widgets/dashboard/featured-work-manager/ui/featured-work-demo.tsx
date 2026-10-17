@@ -94,10 +94,8 @@ export function FeaturedWorkDemo({
     return () => onUploadingChange?.(false);
   }, [isUploading, onUploadingChange]);
 
-  // A removed or disabled control drops focus to <body>; hand it on, unless the
-  // owner has already moved to something else. Focus parked on an ancestor (the
-  // Radix dialog's focus scope wraps this component) is not a move, so it still
-  // hands on.
+  // A removed or disabled control drops focus to <body>; hand it on, unless the owner has moved
+  // elsewhere. Focus parked on an ancestor (the Radix dialog's focus scope) is not a move.
   useEffect(() => {
     const target = focusAfter.current;
     if (!target) return;

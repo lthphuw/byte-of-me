@@ -211,10 +211,8 @@ export function NavDrawer({
         <SheetTitle className="sr-only">{title}</SheetTitle>
 
         <div className="flex h-full flex-col">
-          {/* `span`, not an `h1`. Every page under here has its own `h1`, so a
-              heading in the drawer would be a second top-level one on every
-              screen — and a reader jumping by headings would land on the
-              product name before the page. */}
+          {/* `span`, not `h1`: every page has its own `h1`, so a drawer heading would be a second
+              top-level one and heading-jumping readers would land on the product name first. */}
           <div className="flex items-center gap-3 px-4 py-5">
             <div className="flex size-7 items-center justify-center rounded-md">
               {brand}
@@ -228,10 +226,8 @@ export function NavDrawer({
             className="flex-1 space-y-3 overflow-y-auto px-3 py-2"
           />
 
-          {/* `env(safe-area-inset-bottom)`: on a phone with a gesture bar the
-              last entry sat underneath it — "Sign out" was clipped by the
-              home indicator on both surfaces. `max()` keeps the ordinary
-              padding on everything else. */}
+          {/* `env(safe-area-inset-bottom)`: on a gesture-bar phone the last entry ("Sign out") sat under
+              the home indicator. `max()` keeps the ordinary padding elsewhere. */}
           <div className="mt-auto space-y-1 border-t border-border/40 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
             {/* `side="top"`: a menu opening right of the 288px drawer has no room to land. */}
             <div className="flex items-center gap-1 pb-1">

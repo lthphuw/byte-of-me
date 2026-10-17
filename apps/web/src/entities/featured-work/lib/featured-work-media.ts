@@ -14,10 +14,9 @@ export function toMediaRows(
 }
 
 /**
- * True when every id is one of this admin's own images or accepted videos.
- * The ids come from the caller, so ownership is checked here against `Media.userId`
- * and not assumed from the library UI; anything else (another user's file, a PDF)
- * would render as a broken demo or leak a file across owners.
+ * True when every id is one of this admin's own images or accepted videos. The ids come from the
+ * caller, so ownership is checked against `Media.userId`; anything else would render broken or leak
+ * a file across owners.
  */
 export async function ownsAllMedia(
   db: Pick<Prisma.TransactionClient, 'media'>,

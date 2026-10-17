@@ -14,16 +14,9 @@ import { env } from '@/shared/config/env';
 import { Link } from '@/shared/i18n/navigation';
 
 /**
- * The line under a channel's name exists to identify the account, the way the
- * email row shows the address itself. Repeating the platform name there — what
- * the LinkedIn and GitHub rows used to do — carries no information, so derive a
- * readable profile address from the stored URL instead: host without `www.`,
- * plus the path. Never a hardcoded handle (§11.7); the URL comes from the
- * social-link records.
- *
- * Returns undefined when the URL is not parseable or resolves to nothing
- * readable, and the row then renders with its label alone rather than a blank
- * second line.
+ * A readable profile address from the stored URL (host without `www.`, plus path), never a
+ * hardcoded handle (§11.7). Returns undefined when unparseable or empty, so the row renders its
+ * label alone.
  */
 function toProfileAddress(url: string): string | undefined {
   let parsed: URL;

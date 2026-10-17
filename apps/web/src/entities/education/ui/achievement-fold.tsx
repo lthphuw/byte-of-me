@@ -15,14 +15,9 @@ interface AchievementFoldProps {
 }
 
 /**
- * The achievements past the first few. They open downward in place and the
- * toggle stays at the very end of the list, so "show less" is always the last
- * thing under what it collapses.
- *
- * The folded rows hold carousels and expandable text whose heights are only known
- * after layout, so the height reveal is `DisclosureRegion`, which needs no
- * measurement. The rows stay in the DOM, still laid out, so the carousels size
- * correctly while collapsed.
+ * Achievements past the first few, opening downward with the toggle at the list end. Carousels and
+ * expandable text have heights known only after layout, so the reveal is `DisclosureRegion` (no
+ * measuring); rows stay in the DOM so carousels size while collapsed.
  */
 export function AchievementFold({
   children,

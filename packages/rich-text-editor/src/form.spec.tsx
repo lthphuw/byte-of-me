@@ -1,16 +1,7 @@
 /**
- * What `<FormControl>` promises, and what silently breaks it.
- *
- * `FormControl` injects `id`, `aria-describedby` and `aria-invalid` into its
- * child through a Radix `Slot`, and `FormLabel` points its `htmlFor` at that
- * same id. Nothing enforces that the child does anything with them: a control
- * that takes a fixed prop list and never spreads the rest drops all three, and
- * the result is a label pointing at nothing and an error message no assistive
- * technology can reach — with no warning, no type error and no visual change.
- *
- * Every case below is a control that failed exactly that way. They are driven
- * through a real failed submit rather than `setError`, so the assertions run
- * against the state a user actually reaches.
+ * `<FormControl>` injects `id`, `aria-describedby` and `aria-invalid` through a Radix `Slot`; a
+ * control that does not spread the rest drops all three with no warning or type error. Every case
+ * failed that way, driven through a real failed submit rather than `setError`.
  */
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
@@ -31,10 +22,8 @@ import { afterEach, describe, expect, test } from 'bun:test';
 import { testEditorLabels } from './editor-labels.test-fixture';
 import { RichTextEditor } from './rich-text-editor';
 
-// `@testing-library/react` only auto-registers cleanup for a Jest/Vitest-shaped
-// global, which `bun:test` is not — and these cases reach their control through
-// `document.getElementById`, so a leftover render from an earlier test would be
-// found instead of this one's.
+// `@testing-library/react` only auto-registers cleanup under a Jest/Vitest global, not `bun:test`;
+// cases use `document.getElementById`, so a leftover render would be found instead.
 afterEach(() => {
   cleanup();
 });
@@ -186,10 +175,8 @@ describe('FormControl wiring', () => {
   });
 
   test('RichTextEditor', async () => {
-    // The editor renders a frame, a toolbar and only then the contenteditable
-    // ProseMirror owns. The id has to reach that last element: it is the only
-    // one a label can meaningfully point at, and the wrapper it used to be
-    // attached to (blog-form's rounded border) is not focusable at all.
+    // The id must reach the contenteditable ProseMirror owns, behind a frame and toolbar: the
+    // only element a label can point at (the border wrapper is not focusable).
     const { container, target } = await submitAndResolveLabelTarget(
       <RichTextEditor
         compact
@@ -207,10 +194,8 @@ describe('FormControl wiring', () => {
   });
 
   test('RichTextEditor tracks the field state after it has mounted', async () => {
-    // Tiptap freezes `editorProps` at the value the editor mounted with, so
-    // putting these attributes there and stopping would pin the surface to
-    // "valid" forever — the state it was created in. `aria-invalid` flipping on
-    // the SAME element is what proves the live write is doing its job.
+    // Tiptap freezes `editorProps` at mount, so setting these attributes there would pin the surface
+    // to "valid". `aria-invalid` flipping on the SAME element proves the live write works.
     const container = await mount(
       <RichTextEditor
         compact

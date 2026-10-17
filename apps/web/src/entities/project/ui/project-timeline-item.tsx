@@ -22,15 +22,9 @@ interface ProjectTimelineItemProps {
 }
 
 /**
- * One entry on the projects timeline. Projects carry no cover image, so the
- * date range is the material this form is built around: entries hang off a
- * spine, and the marker is filled when the project is still running and hollow
- * when it has finished — the structure states something true about the work
- * rather than decorating it.
- *
- * Renders the entry's contents only; the owning `<li>`, its spacing and the
- * reveal animation belong to `ProjectsTimeline`. The marker is absolutely
- * positioned against that `<li>`.
+ * One timeline entry: projects have no cover image, so the date range is the material. The marker
+ * is filled while the project runs, hollow once finished. `ProjectsTimeline` owns the `<li>`,
+ * spacing and reveal; the marker is absolutely positioned against that `<li>`.
  */
 export function ProjectTimelineItem({
   project,

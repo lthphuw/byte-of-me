@@ -31,18 +31,9 @@ interface CompressionSettingsPopoverProps {
 }
 
 /**
- * A compact popover for the four image-compression knobs, opened from the
- * media library's header.
- *
- * A popover rather than a dialog or a settings page: these are four small
- * controls an author tunes rarely and wants back to the library from
- * immediately.
- *
- * Purely presentational — `MediaManager` owns `useCompressionSettings` and
- * passes the result down, because the SAME config also has to reach
- * `ImageUpload` for compressing files before they upload. Owning the hook
- * here and reporting it back up through a callback would make this component
- * the source of truth for state a sibling needs, one render late.
+ * Popover for the four compression knobs (rarely tuned; the author wants the library back at once).
+ * Presentational: `MediaManager` owns `useCompressionSettings` because `ImageUpload` needs the same
+ * config.
  */
 export function CompressionSettingsPopover({
   config,
@@ -188,13 +179,8 @@ function SaveStatus({
 }
 
 /**
- * A number input that only writes on blur, not on every keystroke.
- *
- * `update()` fires a network write per call, and this field's value changes
- * one digit at a time while typing — writing on `onChange` would mean typing
- * "2048" sends four separate patches (`2`, `20`, `204`, `2048`). Blur (and
- * Enter) commit exactly once, and out-of-range input is clamped back to the
- * nearest valid value rather than rejected silently.
+ * A number input that commits on blur or Enter, not per keystroke (typing "2048" would
+ * send four patches). Out-of-range input is clamped to the nearest valid value.
  */
 function NumberField({
   id,

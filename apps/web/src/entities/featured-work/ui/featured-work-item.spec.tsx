@@ -1,8 +1,7 @@
 /**
- * A featured work as a visitor meets it: the title with its links, the demo, then the
- * details. The details are clamped with a toggle only when they overflow; happy-dom cannot
- * lay anything out, so a short body shows no toggle here, and the layout is pinned as a
- * class contract. Renders the real component; no mocks.
+ * A featured work as a visitor meets it: title with links, demo, then details, clamped with a
+ * toggle only on overflow. happy-dom cannot lay out, so a short body shows no toggle and the layout
+ * is pinned as a class contract. Renders the real component; no mocks.
  */
 import type { ComponentProps } from 'react';
 import { cleanup, render, screen } from '@testing-library/react';

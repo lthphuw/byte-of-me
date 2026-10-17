@@ -10,7 +10,7 @@ function FieldLoading() {
   );
 }
 
-/** Stands in for the `FeaturedWorkForm` while its full row loads: the tabs, the fields and the demo pair, at their sizes. */
+/** Stands in for `FeaturedWorkForm` while its row loads: tabs, fields and demo pair, same sizes. */
 export function FeaturedWorkFormLoading() {
   const t = useTranslations('dashboard.shared.managerListState');
 

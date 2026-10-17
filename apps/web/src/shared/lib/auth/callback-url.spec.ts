@@ -1,13 +1,6 @@
 /**
- * `sanitizeCallbackUrl` decides where a browser is sent immediately after it
- * authenticates, from a value that arrives on the URL as `?from=`. The contract
- * it defends is therefore a security one — "the destination is always a path on
- * this site" — plus the locale correctness that made the parameter necessary in
- * the first place.
- *
- * Imported by path rather than through `@/shared/lib/auth`, because the barrel
- * is replaced wholesale by `next-runtime-stubs.ts`; this exercises the real
- * implementation.
+ * `?from=` becomes the post-sign-in redirect, so the contract is security: the destination is always
+ * a path on this site, with the right locale. Imported by path: the barrel is stubbed wholesale.
  */
 import { describe, expect, it } from 'bun:test';
 

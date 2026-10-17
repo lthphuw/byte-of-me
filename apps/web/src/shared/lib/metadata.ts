@@ -17,14 +17,8 @@ type JsonLdValue =
 export type JsonLdObject = { [key: string]: JsonLdValue | undefined };
 
 /**
- * Site-level structured data, rendered once in the locale layout so every page
- * carries it.
- *
- * Only the blog post route described itself to search engines; the other twelve
- * URLs shipped no JSON-LD at all, so nothing tied the site and its author
- * together as entities. The two nodes are linked by `@id` rather than nested,
- * which lets the `BlogPosting` on a post reference the same Person without
- * repeating it.
+ * Site-level structured data, rendered once in the locale layout. The nodes link by `@id` instead of
+ * nesting, so a post's `BlogPosting` can reference the same Person without repeating it.
  */
 /** `@id` of the site's Person node. Blog posts point here as their author. */
 export const SITE_PERSON_ID = `${siteConfig.url}/#person`;
@@ -62,26 +56,9 @@ export function buildSiteJsonLd({
 }
 
 /**
- * Builds the complete icon set for an access layer.
- *
- * A nested layout's `icons` REPLACES the parent's outright — same wholesale
- * semantics as `openGraph` above. Measured on Next 16.2.3: adding
- * `icons: { icon: '…' }` to a nested layout dropped the root's `shortcut` and
- * `apple-touch-icon` links entirely. So a layer cannot declare just the part it
- * wants to change; it has to restate everything. This helper is the only place
- * that knows what "everything" is.
- *
- * SVG is listed first because it is the only format that can invert itself on a
- * dark tab strip (each file carries its own prefers-color-scheme rule). The
- * PNGs are the fallback for browsers that skip it, and they cannot adapt —
- * those browsers get the dark-ink mark on every theme.
- *
- * `apple` is deliberately shared across layers: the manifest scope is the whole
- * locale, so there is one installed app and one home-screen icon. Only the tab
- * favicon varies.
- *
- * Related constraint: never add `app/favicon.ico` or `app/icon.*`. Next injects
- * file-convention icons automatically and they would defeat these overrides.
+ * Icon set for a layer. A nested layout's `icons` REPLACES the parent's (Next 16.2.3 dropped `shortcut`
+ * and `apple-touch-icon`), so each layer restates all. SVG is first: only it inverts on dark tabs.
+ * `apple` is shared. Never add app/favicon.ico or app/icon.*: Next injects them over these overrides.
  */
 export function buildIconSet(layer: BrandLayer): Metadata['icons'] {
   return {
@@ -127,30 +104,15 @@ interface PublicPageMetadataInput {
   title: string;
   description: string;
   /**
-   * Page-specific keywords as one comma-separated string, straight from
-   * `metadata.<segment>.keywords`; the site-wide list is appended
-   * automatically.
-   *
-   * A string rather than an array because next-intl message values are strings
-   * — an array in the catalogue turns its indices into keys, which would force
-   * `en` and `vi` to list the *same number* of keywords to satisfy
-   * `i18n-parity.spec.ts`. Splitting here keeps the parse in one place.
+   * Page keywords, one comma-separated string from `metadata.<segment>.keywords` (site-wide ones are
+   * appended). A string, not an array: array indices become keys, forcing en/vi to match in count.
    */
   keywords?: string;
 }
 
 /**
- * Builds the metadata for a top-level public page.
- *
- * The five public layouts each hand-rolled this same object, and all five left
- * `images` out of `openGraph`. Next.js replaces `openGraph` wholesale rather
- * than merging it with the root layout's, so those pages shipped with no social
- * preview image at all — only the homepage and blog posts had one. Centralising
- * it means a new page cannot repeat the mistake.
- *
- * Keywords went the same way. Four of the five layouts hardcoded a bilingual
- * array — `['Bài viết', 'Blogs']` — so an English visitor was served Vietnamese
- * terms and vice versa. They now come from `metadata.<segment>.keywords`.
+ * Metadata for a top-level public page. Next replaces `openGraph` wholesale, so images must be set
+ * here or the page ships with no social preview. Keywords come from `metadata.<segment>.keywords`.
  */
 export function buildPublicPageMetadata({
   segment,

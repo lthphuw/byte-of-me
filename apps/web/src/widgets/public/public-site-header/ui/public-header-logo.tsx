@@ -10,11 +10,9 @@ export const PublicHeaderLogo = React.memo(
     <div className="flex items-center gap-2">
       <BrandMark />
       <div className="relative overflow-hidden whitespace-nowrap">
-        {/* `popLayout`, not `wait`: with `wait` the outgoing label finishes
-            exiting before the incoming one mounts, so the wrapper collapses to
-            zero width in between and the island snaps narrow and then wide
-            again. `popLayout` takes the outgoing label out of flow at once, so
-            the width changes only once. */}
+        {/* `popLayout`, not `wait`: `wait` finishes the outgoing exit first, collapsing the wrapper
+            to zero width, so the island snaps narrow then wide. `popLayout` takes the outgoing
+            label out of flow at once, so the width changes once. */}
         <AnimatePresence mode="popLayout" initial={false}>
           <m.span
             key={minimized ? 'short' : 'full'}

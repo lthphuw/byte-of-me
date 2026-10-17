@@ -21,23 +21,9 @@ const DAYS = 30;
 const TOP_BLOGS = 5;
 
 /**
- * Here the clock is the *only* invalidation there is, which is why this number
- * is a product decision rather than a safety net.
- *
- * `blog_view_logs` and `interactions` are written by anonymous public traffic —
- * a visitor reading a post, a visitor clapping — and none of those paths calls
- * `revalidateTag`; `toggle-blog-interaction` revalidates the post's own slug
- * tag, not a `CACHE_TAGS` entry. So the `BLOG` tag below only ever catches a
- * post being retitled or deleted. Everything the card actually counts moves
- * without telling anyone, and expires only when this runs out.
- *
- * Five minutes, because what this card answers is "how are my posts doing" over
- * a thirty-day window: a 30-day bar chart and an all-time total do not visibly
- * change in five minutes, while an owner who has just shared a link and comes
- * back to look still sees movement inside one sitting. Shorter would spend a
- * six-statement fan-out on a Tokyo round trip for a chart that cannot have
- * changed shape; much longer and the card stops feeling live at exactly the
- * moment its owner is watching it.
+ * Five minutes, and the clock is the only invalidation: public traffic (views, claps) never calls
+ * `revalidateTag`, so the `BLOG` tag only catches retitles and deletes. A 30-day chart does not
+ * visibly change in 5 min; shorter wastes a six-statement Tokyo round trip, longer feels stale.
  */
 const ANALYTICS_REVALIDATE_SECONDS = 5 * 60;
 
@@ -65,11 +51,9 @@ type AnalyticsOverviewData = {
 };
 
 /**
- * One row per bucket of the combined aggregate below. `kind` says which of the
- * four aggregates the row came from, `key` is that aggregate's grouping value
- * (a `YYYY-MM-DD` day, a blog id, an interaction type, or nothing), and
- * `value` is its count — `bigint`, because Postgres `count(*)` is, and the
- * driver hands those back as JS `BigInt`s that no RSC payload can serialize.
+ * One row per bucket: `kind` names the aggregate, `key` its grouping value (day, blog id, type or
+ * none). `value` is `bigint`: the driver returns Postgres `count(*)` as `BigInt`, which no RSC
+ * payload serializes.
  */
 type AggregateRow = {
   kind: 'day' | 'top' | 'interaction' | 'total';
@@ -85,20 +69,9 @@ type TopBlogTitleRow = {
 };
 
 /**
- * The four aggregates behind this card, in one round trip.
- *
- * They were four statements in a `Promise.all` — the 30-day rollup, the top-5
- * group-by, the like/clap group-by and the all-time view count — four
- * independent scalars-or-small-groupings with nothing sequential between them,
- * so four × ~92ms to Supabase's Tokyo region and four pgbouncer slots for what
- * one `UNION ALL` returns. Nothing about *what* they count changes here.
- *
- * `UNION ALL` does not promise an order, so the top-5 branch is re-sorted in JS
- * below; its `ORDER BY` still has to be inside the subquery because that is
- * what picks *which* five. The tie-break on `blog_id` is new and deliberate:
- * the Prisma `groupBy` left ties to the planner, which was invisible when every
- * request re-ran the query and would be very visible now that a cache entry
- * freezes one arbitrary ordering for minutes.
+ * The four aggregates in one `UNION ALL` round trip (four statements cost 4 x ~92ms to Tokyo).
+ * `UNION ALL` promises no order: the top-5 branch is re-sorted in JS; its inner `ORDER BY` picks
+ * which five. Ties break on `blog_id`, else a cache entry freezes one arbitrary ordering.
  */
 async function readAggregates(since: Date): Promise<AggregateRow[]> {
   return await prisma.$queryRaw<AggregateRow[]>`
@@ -141,22 +114,8 @@ async function readAggregates(since: Date): Promise<AggregateRow[]> {
 }
 
 /**
- * Titles for the top posts, in one round trip.
- *
- * This one genuinely depends on the aggregate above — it needs the ids the
- * ranking produced — so it cannot join the statement before it. What it *can*
- * stop being is two round trips: a nested Prisma `select` on `translations`
- * always issues a second statement for the relation, and this client has no
- * join strategy available to it (`relationLoadStrategy` needs a preview
- * feature this generator does not have), so the blogs read and the
- * translations read were two Tokyo round trips for one display string each.
- *
- * The titles are display-only, so one locale (+ the `'en'` fallback) is enough
- * — the same rule the nested `select` applied; it is just spelled as a join
- * predicate now, title column only. `LEFT JOIN` rather than an inner one, so a
- * post with no translation in
- * either language still comes back and can fall through to its slug, exactly
- * as `findMany` + `getTranslatedContent` did before.
+ * Titles for the top posts in one round trip: a nested `select` costs a second statement
+ * (`relationLoadStrategy` is unavailable). LEFT JOIN so an untranslated post falls to its slug.
  */
 async function readTopBlogTitles(
   blogIds: string[],
@@ -259,21 +218,14 @@ async function readAnalyticsOverview(
 export async function getAnalyticsOverview(): Promise<
   ApiResponse<AnalyticsOverviewData>
 > {
-  // Both of these read request state — the session and the negotiated locale
-  // — so both must happen out here: `unstable_cache` runs its callback with
-  // no cookies, headers or session, and on a hit does not run it at all.
-  // `requireAdmin` also stays inside this function per §5, since a server
-  // action is reachable without the layout that guards the view. It sits
-  // above the `try` so a refusal rejects instead of returning an envelope.
+  // Request state (session, locale) must be read out here: `unstable_cache` has no cookies,
+  // headers or session. `requireAdmin` sits above the `try` so a refusal rejects (§5).
   const session = await requireAdmin();
   const locale = await getLocale();
 
   try {
-    // Truncated to UTC midnight, so it only changes once a day — which is what
-    // makes it safe to put in the cache key. It is *not* computed inside the
-    // callback, because then a cache entry filled at 23:59 would keep drawing
-    // yesterday's window until it expired; keyed like this, the entry rolls
-    // over the instant the day does.
+    // UTC midnight keeps the cache key stable for a day. Computed inside the callback, an
+    // entry filled at 23:59 would keep drawing yesterday's window until it expired.
     const since = new Date();
     since.setUTCHours(0, 0, 0, 0);
     since.setUTCDate(since.getUTCDate() - (DAYS - 1));
@@ -282,29 +234,23 @@ export async function getAnalyticsOverview(): Promise<
       () => readAnalyticsOverview(since, locale),
       [
         'analytics-overview',
-        // The admin id does not narrow a single query here — this card counts
-        // site-wide traffic, not the owner's rows. It is in the key anyway, so
-        // that a cache entry of owner-private numbers can never be handed to a
-        // second identity if `requireAdmin` ever widens.
+        // Site-wide traffic, so the id narrows no query; it is in the key so owner-private
+        // numbers can never reach a second identity if `requireAdmin` ever widens.
         session.id,
         // The titles are locale-resolved, so `en` and `vi` are different data.
         locale,
         since.toISOString(),
       ],
       {
-        // `BLOG` covers the only tagged table this reads (posts and their
-        // translations, for the top-post titles). The counters underneath —
-        // `blog_view_logs`, `interactions` — have no tag and no tagged writer,
-        // so the `revalidate` above is what actually keeps this card moving.
+        // `BLOG` is the only tagged table read (titles); the counters have no tag or tagged
+        // writer, so `revalidate` is what keeps this card moving.
         tags: [CACHE_TAGS.BLOG],
         revalidate: ANALYTICS_REVALIDATE_SECONDS,
       }
     );
 
-    // Everything crossing this boundary is a string or a number — the dates are
-    // already `YYYY-MM-DD` strings — which matters because `unstable_cache`
-    // returns a `Date` as a string on a hit and would otherwise make the shape
-    // differ between a hit and a miss.
+    // Only strings and numbers cross this boundary: `unstable_cache` returns a `Date` as a
+    // string on a hit, so the shape would differ between hit and miss.
     return { success: true, data: await cached() };
   } catch (error) {
     const errorMsg = getErrorMessage(

@@ -1,15 +1,7 @@
 /**
- * The `<FormControl>` half of the media pickers.
- *
- * `FormControl` injects `id`, `aria-describedby` and `aria-invalid` through a
- * Radix `Slot`, and `FormLabel` points its `htmlFor` at that id. Both pickers
- * take a fixed prop list and spread the remainder onto their trigger button;
- * dropping that spread — the state they were both in — leaves the label
- * pointing at nothing and the error text unreachable, with no type error and
- * nothing visibly different on screen.
- *
- * The sibling case for the controls that live in packages (DatePicker,
- * MultiSelect, RichTextEditor) is `packages/rich-text-editor/src/form.spec.tsx`.
+ * The `<FormControl>` half of the pickers: it injects `id` and `aria-*` through a Radix `Slot`.
+ * Dropping the props spread onto the trigger leaves the label pointing at nothing, with no type
+ * error. Sibling for package controls: `packages/rich-text-editor/src/form.spec.tsx`.
  */
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
@@ -35,10 +27,8 @@ import { NextIntlClientProvider } from 'next-intl';
 import { MediaMultiSelect } from './media-multi-select';
 import { MediaSelect } from './media-select';
 
-// `@testing-library/react` only auto-registers cleanup against a Jest/Vitest
-// shaped global, which `bun:test` is not — and these cases reach their control
-// through `document.getElementById`, which would otherwise find a leftover
-// render from an earlier test.
+// `@testing-library/react` only auto-cleans against a Jest/Vitest global, which `bun:test` is not;
+// without it `document.getElementById` would find a leftover render from an earlier test.
 afterEach(() => {
   cleanup();
 });
@@ -82,11 +72,9 @@ const messages = {
 } as const;
 
 /**
- * An empty media library and the default settings, seeded into the cache rather
- * than fetched. The pickers call `useMediaInfiniteQuery` and `useWorkspaceSettings`
- * themselves and there is no prop to turn either off; priming the keys the
- * entities' own factories produce is what keeps this spec from reaching for a
- * server action (and a database) to assert on an `aria-` attribute.
+ * An empty media library and default settings, seeded into the cache: the pickers call
+ * `useMediaInfiniteQuery` and `useWorkspaceSettings` with no off switch, and this avoids a server
+ * action.
  */
 function makeQueryClient(): QueryClient {
   const queryClient = new QueryClient({

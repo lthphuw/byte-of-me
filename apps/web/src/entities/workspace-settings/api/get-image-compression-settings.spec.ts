@@ -1,11 +1,7 @@
 /**
- * `getImageCompressionSettings` is the one settings read the image uploader
- * makes, and it runs in the browser before each batch. What this defends is
- * its contract: the success envelope carries the compression config and
- * nothing else; a non-owner is refused before the row is read; and a failed
- * read comes back as a failure envelope, never as the built-in defaults.
- *
- * Prisma is replaced at the delegate, as in `get-admin-tag-options.spec.ts`.
+ * Defends `getImageCompressionSettings` (read in the browser per batch): the envelope carries only
+ * the compression config, a non-owner is refused before the read, and a failed read is a failure
+ * envelope, never defaults. Prisma replaced as in `get-admin-tag-options.spec.ts`.
  */
 import type { ImageCompressionConfig } from '@byte-of-me/contracts';
 import { prisma } from '@byte-of-me/db';

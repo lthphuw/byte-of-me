@@ -24,28 +24,15 @@ type DashboardStats = {
 const NEW_MESSAGE_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
 
 /**
- * A backstop, not the freshness budget.
- *
- * Every table below is invalidated by a `CACHE_TAGS` tag on create, update and
- * delete — including the one write an anonymous visitor can trigger, since
- * `send-contact-message` calls `revalidateTag(CACHE_TAGS.CONTACT, 'max')`. So
- * the tags do the real work and this hour is only a ceiling on how long a
- * *future* write path that forgets its tag could keep a tile wrong.
- *
- * The one change tags genuinely cannot catch is a message ageing *out* of the
- * seven-day window: nothing writes at that moment, so nothing revalidates. An
- * hour of drift on "3 new this week" is invisible — that number is read as a
- * rough signal, not to the minute — which is why the backstop can be this long
- * rather than the five minutes the analytics card needs.
+ * A backstop, not the freshness budget: every table is tag-invalidated on write (even the anonymous
+ * `send-contact-message`), so this hour only caps a future write path that forgets its tag. A
+ * message ageing out of the 7-day window fires no tag; an hour of drift is invisible.
  */
 const STATS_REVALIDATE_SECONDS = 60 * 60;
 
 /**
- * Postgres `count(*)` is `bigint`, and the driver hands it back as a JS
- * `BigInt` — which `JSON.stringify` throws on, so an unconverted one would
- * fail the RSC payload rather than render a wrong number. Converted to
- * `Number` at the boundary below, the same way the analytics rollup already
- * treats its `::bigint` views.
+ * Postgres `count(*)` is `bigint`, returned as a JS `BigInt`, which `JSON.stringify` throws on and
+ * would fail the RSC payload; converted to `Number` at the boundary below.
  */
 type DashboardStatsRow = {
   totalMessages: bigint;
@@ -59,28 +46,13 @@ type DashboardStatsRow = {
 };
 
 /**
- * The eight tiles, in one round trip.
- *
- * This was eight `prisma.*.count()` calls in a `Promise.all`: eight statements,
- * eight pgbouncer slots, and eight × ~92ms to Supabase's Tokyo region measured
- * from a developer's machine — for eight scalars that fit in a single row.
- * Eight scalar subqueries return exactly the same eight numbers.
- *
- * Two details the `count()` calls carried that are easy to lose here:
- *
- * - `tech_stacks` and `tags` are **unscoped** on purpose (`where: {}` before),
- *   because both are shared vocabularies rather than owner content. The other
- *   six stay scoped to the owner.
- * - `contact_messages` is the one model whose owner column has no `@map`, so
- *   it is `"userId"` where every other table here is `"user_id"`. Getting that
- *   wrong is a silent `column does not exist`, not a wrong number.
+ * Eight tiles as scalar subqueries in one round trip (8 `count()`s cost 8 x ~92ms to Tokyo).
+ * `tech_stacks` and `tags` are unscoped on purpose (shared); the rest are owner-scoped.
+ * `contact_messages` has no `@map`: `"userId"`, not `"user_id"` (else `column does not exist`).
  */
 async function readDashboardStats(userId: string): Promise<DashboardStats> {
-  // Computed in JS, exactly as before, and bound as a parameter rather than
-  // written as `now() - interval '7 days'` — the boundary semantics stay the
-  // ones the tile has always had. Computed *inside* this function rather than
-  // captured from the caller on purpose: a captured `Date.now()` would put a
-  // millisecond into the cache key and no entry would ever be reused.
+  // Computed in JS and bound as a parameter, inside this function: a `Date.now()` captured from the
+  // caller would put a millisecond in the cache key and no entry would ever be reused.
   const newMessagesSince = new Date(Date.now() - NEW_MESSAGE_WINDOW_MS);
 
   const [row] = await prisma.$queryRaw<DashboardStatsRow[]>`
@@ -103,10 +75,8 @@ async function readDashboardStats(userId: string): Promise<DashboardStats> {
   `;
 
   if (!row) {
-    // A select of scalar subqueries always produces exactly one row, so no row
-    // means the statement did not run the way this code believes it did.
-    // Throwing routes that into the caller's error envelope; returning eight
-    // zeroes would render a working portfolio as an empty one.
+    // A scalar-subquery select always yields one row; none means it did not run as believed.
+    // Throw: eight zeroes would render a working portfolio as an empty one.
     throw new Error('Dashboard stats query returned no rows');
   }
 

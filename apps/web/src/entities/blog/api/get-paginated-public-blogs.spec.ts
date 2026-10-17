@@ -1,19 +1,7 @@
 /**
- * `getPaginatedPublicBlogs` is a `'use server'` action reached only through
- * Next.js's server runtime in production (locale resolution, the
- * incremental cache, `server-only`'s bundler alias — see
- * `apps/web/next-runtime-stubs.ts` for why each needs a stand-in under
- * `bun test`). None of that is what this spec defends. What it defends is
- * the action's own contract: the envelope shape callers rely on, that
- * caller-controlled pagination is bounded before it reaches Prisma (see
- * `clampPagination` in `@byte-of-me/api-core`, already unit-tested on its
- * own), and that an anonymous caller only ever sees published posts.
- *
- * Prisma is not spied on: Prisma 7 synthesizes a fresh function per method
- * access (`prisma.blog.findMany !== prisma.blog.findMany`), so
- * `spyOn(prisma.blog, 'findMany')` patches a value the client never reads
- * back. The whole `blog` delegate is replaced instead, mirroring
- * `apps/web/src/shared/lib/rate-limit.spec.ts`.
+ * Defends the action's own contract: envelope shape, pagination bounded before Prisma
+ * (`clampPagination`), and anonymous callers seeing only published posts. Prisma 7 returns a fresh
+ * function per method access, so `spyOn` is bypassed: swap the `blog` delegate.
  */
 import { prisma } from '@byte-of-me/db';
 import {
@@ -28,48 +16,17 @@ import {
 
 import type * as GetPaginatedPublicBlogsModule from './get-paginated-public-blogs';
 
-// `env.ts` (reached transitively through this action) validates eagerly at
-// import time against `typeof window`, and `happydom.ts` (an earlier
-// preload, needed by *.spec.tsx files) has already registered a global
-// `window` by the time this file's imports run. Left in place, that makes
-// the env module treat this test process as a browser and refuse every
-// server-only key it holds (`onInvalidAccess`) the moment the action reads
-// one. This spec never renders anything, so the DOM global is dropped
-// before the action is imported.
-//
-// This used to call `GlobalRegistrator.unregister()` (destroying happy-dom's
-// `Window`) with nothing to undo it. `GlobalRegistrator` is process-global,
-// not per-file — confirmed the hard way by the first `*.spec.tsx` in this
-// suite: every file that ran after this one in the same
-// `bun test` process saw no `document` at all and `render()` failed outright
-// (contradicting an earlier version of this comment, which claimed each spec
-// file gets its own globals). Re-registering afterward
-// (`GlobalRegistrator.register()`) does not fix it either — that builds a
-// SECOND, different `Window` instance, and anything that had already cached
-// a reference to the FIRST one (`@testing-library/react`, apparently) keeps
-// pointing at a `document` whose `defaultView` `unregister()` had already
-// torn down, so `render()` fails with "window object is not available for
-// the provided node" instead. What actually works, and is what this does
-// now: never destroy the `Window` at all. Only `typeof window` needs to read
-// `'undefined'` for `onInvalidAccess` to back off, so this deletes just the
-// two global BINDINGS `window`/`document` point at (keeping the underlying
-// happy-dom objects alive and untouched) and restores the exact same
-// references afterward — nothing downstream can tell the difference.
+// `env.ts` treats a global `window` as a browser and refuses server-only keys, so drop the
+// `window`/`document` bindings before the import and restore the same references afterward. Not
+// `GlobalRegistrator.unregister()`: it is process-global and breaks every later spec's `render()`.
 const originalWindow = globalThis.window;
 const originalDocument = globalThis.document;
 
 let getPaginatedPublicBlogs: typeof GetPaginatedPublicBlogsModule.getPaginatedPublicBlogs;
 
 beforeAll(async () => {
-  // `Reflect.deleteProperty`, not the `delete` operator: `delete
-  // globalThis.window` needs `window` to be an optional property of
-  // `globalThis`'s type to type-check, which it is not, so that reads as a
-  // type error `@ts-expect-error` would have to paper over — the first
-  // type-suppression directive anywhere in `apps/web/src` (AGENTS §11.2 bans
-  // `@ts-ignore` by name; a `@ts-expect-error` here is the same class of
-  // problem with no existing precedent to justify it). `Reflect.deleteProperty`
-  // is a plain runtime call, not the operator, so it is not subject to that
-  // restriction and needs no suppression.
+  // `Reflect.deleteProperty`, not `delete globalThis.window`: that fails type-check (`window` is
+  // not optional) and the repo bans type suppressions (AGENTS §11.2).
   Reflect.deleteProperty(globalThis, 'window');
   Reflect.deleteProperty(globalThis, 'document');
   ({ getPaginatedPublicBlogs } = await import('./get-paginated-public-blogs'));
@@ -131,20 +88,16 @@ describe('getPaginatedPublicBlogs', () => {
 
     expect(res.success).toBe(false);
     if (res.success) throw new Error('unreachable');
-    // The failure field is `errorMsg` (§8), and it is a fixed sentence: this
-    // used to assert `toContain('connection refused')`, which is the driver's
-    // own message and reached a public page verbatim. `handlePublicAction`
-    // keeps it in the log now — see `shared/api/public-action-template.spec.ts`.
+    // The failure field is `errorMsg` (§8), a fixed sentence: the driver's own message must not
+    // reach a public page (`handlePublicAction` logs it).
     expect(res.errorMsg).not.toContain('connection refused');
     expect(res.errorCode).toBe('unknown');
     expect((res as { error?: unknown }).error).toBeUndefined();
   });
 
   it('clamps out-of-range pagination before it reaches Prisma', async () => {
-    // clampPagination's own bounds (defaultLimit 9, maxLimit 50) are tested
-    // in pagination.spec.ts; this only checks the action actually applies
-    // them before querying, using an out-of-range page and an oversized
-    // limit together.
+    // Bounds (defaultLimit 9, maxLimit 50) are tested in pagination.spec.ts; this checks the action
+    // applies them before querying, with an out-of-range page and an oversized limit.
     await getPaginatedPublicBlogs({ page: 0, limit: 1_000_000 });
 
     expect(findMany).toHaveBeenCalledWith(

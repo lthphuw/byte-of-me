@@ -1,19 +1,7 @@
 /**
- * Per-route-group scoping of the client message catalogue.
- *
- * `NextIntlClientProvider` serializes whatever it gets as `messages` into the
- * RSC payload of every page below it. Mounting it at the locale root with the
- * full catalogue meant a marketing page shipped the `dashboard`, `auth` and
- * `email` namespaces to every visitor, so each route group now mounts its own
- * provider with only the namespaces its **client** components read. Server
- * components use `getTranslations`, which resolves from the request config and
- * never touches the provider — they don't constrain these lists.
- *
- * Nested providers replace `messages` instead of merging them (use-intl's
- * `IntlProvider` only falls back to the parent value when the prop is
- * `undefined`), so every list below has to be self-sufficient — including the
- * `error` namespace, which any nested `error.tsx` boundary inside the group
- * needs.
+ * Per-route-group client message scoping: NextIntlClientProvider serializes `messages` into each page's
+ * RSC payload, so a group mounts only the namespaces its **client** components read (server ones use
+ * getTranslations). Nested providers replace, not merge, so every list needs its own `error`.
  */
 
 /** Namespaces reachable from the locale root itself, outside the route groups:
@@ -43,18 +31,13 @@ export const AUTH_MESSAGE_NAMESPACES = [
 ] as const;
 
 /**
- * `(protected)` has no provider of its own — `dashboard/` mounts one narrowed
- * to what the CMS renders, because the `dashboard` namespace is large and the
- * group is `force-dynamic`, so anything mounted at the group root ships on every
- * request. `global` is carried because the shell reuses the same toggles the
- * public header exposes.
+ * `(protected)` has no provider; `dashboard/` mounts one narrowed to the CMS, since the `dashboard`
+ * namespace is large and the group is force-dynamic. `global` is carried for the shell's toggles.
  */
 export const DASHBOARD_MESSAGE_NAMESPACES = [
   'components',
-  // Leaf by leaf rather than plain `dashboard`, so a new sub-namespace does
-  // not silently join the CMS payload. `dashboard.dashboard` is absent
-  // because the home page's stats/profile/analytics blocks are all RSCs on
-  // `getTranslations`, which resolves from the request config, not from here.
+  // Leaf by leaf so a new sub-namespace does not silently join the CMS payload. `dashboard.dashboard`
+  // is absent: its blocks are RSCs on `getTranslations`, which resolves from the request config.
   'dashboard.blog',
   'dashboard.comment',
   'dashboard.common',
@@ -75,12 +58,8 @@ export const DASHBOARD_MESSAGE_NAMESPACES = [
 ] as const;
 
 /**
- * The public print view (`/print/blogs/[slug]`): one button label.
- *
- * `dashboard` is deliberately absent — the same reason it is absent from
- * the other public lists. This page is anonymous, and a visitor has no
- * business receiving the CMS's vocabulary in their RSC payload. The page renders
- * `BlogPrintTrigger`, which reads `blogDetails`.
+ * Public print view (`/print/blogs/[slug]`): one button label (`BlogPrintTrigger`, `blogDetails`).
+ * `dashboard` is absent for the usual reason: anonymous visitors must not receive the CMS vocabulary.
  */
 export const PUBLIC_PRINT_MESSAGE_NAMESPACES = ['blogDetails'] as const;
 
@@ -91,12 +70,8 @@ function isMessageGroup(value: unknown): value is MessageGroup {
 }
 
 /**
- * Narrow a resolved catalogue to the given namespaces, each either a top-level
- * name (`global`) or a dotted path (`dashboard.media`). A dotted path keeps the
- * enclosing objects, so `useTranslations('dashboard.media')` still resolves;
- * siblings listed separately merge into one branch. Kept inline rather than
- * pulling in a `pick` dependency; missing namespaces are skipped so a locale
- * file that lags behind `en.json` still renders.
+ * Narrow a catalogue to namespaces, top-level (`global`) or dotted (`dashboard.media`). A dotted path
+ * keeps its parents and siblings merge; missing ones are skipped so a locale lagging `en.json` renders.
  */
 export function pickMessages(
   messages: Record<string, unknown>,

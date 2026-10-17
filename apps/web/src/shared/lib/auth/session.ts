@@ -27,18 +27,9 @@ export async function requireUser() {
 }
 
 /**
- * The one human this site belongs to.
- *
- * This is deliberately an *identity* check, not just a role check. `role` is a
- * column any future `User` row could carry, and a second ADMIN would otherwise
- * inherit the dashboard and every admin server action.
- * Identity is delegated to `isSiteOwnerEmail()` above so this guard and the
- * sign-in form's gate can never disagree.
- *
- * It is narrowed here rather than in `(protected)/layout.tsx` on purpose. The
- * layout guard only protects the *view*; server actions are addressable
- * endpoints that never render it (AGENTS §5). Every `requireAdmin()` call site
- * funnels through this function, so narrowing it covers the actions too.
+ * The site owner: an identity check (ADMIN role and isSiteOwnerEmail), so a second ADMIN gains nothing.
+ * Narrowed here, not in (protected)/layout.tsx: the layout guards only the view, while server
+ * actions are addressable endpoints that never render it (AGENTS §5).
  */
 export async function getAuthenticatedAdmin() {
   const session = await auth();

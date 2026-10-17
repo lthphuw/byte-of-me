@@ -1,9 +1,6 @@
 /**
- * When a paste counts as Markdown source.
- *
- * The decision reads the two clipboard flavours an author can hold: the plain text and, when
- * the source was a rendered page or an app, its HTML. The cases are what people copy from:
- * a Markdown file in an editor, a chat message, a rendered page, this editor itself.
+ * When a paste counts as Markdown source, from the plain-text and (if any) HTML clipboard flavours.
+ * Cases: a Markdown file in an editor, a chat message, a rendered page, this editor itself.
  */
 import { describe, expect, test } from 'bun:test';
 

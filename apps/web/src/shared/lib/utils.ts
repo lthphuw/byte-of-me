@@ -48,11 +48,8 @@ export function formatImageSize(bytes: number) {
 }
 
 /**
- * Month + year by default; pass `options` for a fuller date (e.g. post dates).
- *
- * The `en-US` default is a trap in a client component: taking it renders
- * "Jan 2024" to a `vi` reader. Prefer next-intl's `useFormatter().dateTime()`
- * there, and pass `locale` explicitly everywhere else.
+ * Month + year by default; pass `options` for a fuller date. The `en-US` default shows "Jan 2024" to a
+ * `vi` reader: client components use next-intl's `useFormatter().dateTime()`; elsewhere pass `locale`.
  */
 export function formatDate(
   dateString: string | Date | undefined | null,
@@ -66,18 +63,9 @@ export function formatDate(
 }
 
 /**
- * Whether an `updatedAt` is worth showing beside the date a post already
- * displays.
- *
- * Compared by CALENDAR DAY, not by timestamp. Every save bumps
- * `Blog.updatedAt`, so publish-day activity — write, publish, fix a typo —
- * would otherwise stamp "Updated" with the post's own date, which tells a
- * reader nothing. Only a later day is a real revision.
- *
- * Both parameters are widened past `Date` on purpose: these values reach the
- * UI through Next's data cache, and a cache hit hands Dates back serialized
- * as strings (the same reason `blogs/[slug]/page.tsx` re-wraps them for
- * JSON-LD).
+ * Whether `updatedAt` is worth showing beside the post date. Compared by CALENDAR DAY: every save bumps
+ * `updatedAt`, so same-day edits would stamp "Updated" with the post's own date. Inputs are widened to
+ * string because a Next data-cache hit returns Dates serialized (blogs/[slug]/page.tsx re-wraps them).
  */
 export function isMeaningfullyUpdated(
   createdAt: string | Date | null | undefined,

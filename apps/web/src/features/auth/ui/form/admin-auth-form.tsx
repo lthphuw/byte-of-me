@@ -55,10 +55,9 @@ export function AdminAuthForm({ className, ...props }: AdminAuthFormProps) {
   });
 
   function onSubmit(data: UserAuthLoginFormValues) {
-    // Passed through raw. Deciding what a missing or hostile `from` means is
-    // `sanitizeCallbackUrl`'s job, server-side — a second copy of that rule
-    // here is both unenforceable (the action is callable directly) and the way
-    // the two versions drift apart.
+    // Passed through raw: what a missing or hostile `from` means is `sanitizeCallbackUrl`'s job,
+    // server-side; a client copy of that rule is unenforceable (the action is callable directly)
+    // and drifts.
     sendLink.mutate({ email: data.email.toLowerCase(), from: fromParam });
   }
 

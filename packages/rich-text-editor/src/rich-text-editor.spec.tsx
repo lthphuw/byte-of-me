@@ -1,23 +1,7 @@
 /**
- * What `onChange` means.
- *
- * An editor that opens a stored document does not always leave it alone: the
- * `TableOfContents` extension (registered whenever `compact` is false)
- * assigns an id to every heading that lacks one, in a transaction it
- * dispatches from `onCreate` — and Tiptap fires `onUpdate` for any
- * doc-changing transaction, its own included. So `onChange` carries two
- * different things: what the author did, and what the editor had to do to
- * show them their document. A consumer that autosaves cannot tell those
- * apart from the JSON alone (the reported document is normalised too —
- * parse-time attribute defaults — so it never equals the string that was
- * loaded), which once made an autosaving consumer write every document back
- * over itself on open. `RichTextChangeMeta.initial` is the distinction, reported
- * from the editor because the editor is the only thing that knows.
- *
- * These tests mount the real component — no double. That is deliberate: the
- * bug this file exists for got through a 192-test suite precisely because
- * the double in `apps/web` was more passive than the component it replaced,
- * and a second double would only move the problem.
+ * What `onChange` means: `TableOfContents` assigns heading ids from `onCreate`, and Tiptap fires
+ * `onUpdate` for that too, so `RichTextChangeMeta.initial` separates it from author edits.
+ * Mounts the real component, no double: the `apps/web` double hid the bug past a 192-test suite.
  */
 import * as React from 'react';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
@@ -45,12 +29,9 @@ const HEADING_DOC: JSONContent = {
   ],
 };
 
-// `@testing-library/react` only auto-registers this when it detects a
-// Jest/Vitest-shaped global; `bun:test`'s `afterEach` is imported, so it
-// never fires here. Without it every editor this file mounts stays in
-// `document.body` — and the last test reaches its editor through the DOM,
-// which would then find the first test's dead one instead. (Observed: that
-// test passed alone and failed in a full-suite run before this was added.)
+// `@testing-library/react` only auto-registers this under a Jest/Vitest-shaped global; `bun:test`
+// imports `afterEach`, so it never fires. Without it a dead editor stays in `document.body` and
+// the last test finds it instead (passed alone, failed in the full suite).
 afterEach(() => {
   cleanup();
 });
@@ -72,17 +53,9 @@ async function open(value: JSONContent, compact = false): Promise<Emit[]> {
     );
   });
 
-  // Tiptap emits `create` from a `setTimeout(0)` after the view mounts, and
-  // the extension `onCreate` handlers that change the document run inside
-  // that emit — so the initial `onUpdate` lands a macrotask after render,
-  // not during it.
-  //
-  // Waited on as a condition, not as a duration. This was a flat 50ms sleep,
-  // which is a bet on how long mounting takes: it held when the suite ran
-  // alone and lost under `turbo run test build`, where the build has the CPU
-  // and the two tests that assert on the initial emit failed on every push
-  // while passing on every isolated run. The editor also mounts more
-  // extensions than it used to, so the bet had been getting worse.
+  // Tiptap emits `create` from a `setTimeout(0)` after mount and `onCreate` handlers run inside
+  // it, so the initial `onUpdate` lands a macrotask after render. Waited on as a condition: a
+  // flat 50ms sleep failed under `turbo run test build`, where the build has the CPU.
   await React.act(async () => {
     const deadline = Date.now() + 5000;
 
@@ -92,10 +65,8 @@ async function open(value: JSONContent, compact = false): Promise<Emit[]> {
       await new Promise((resolve) => setTimeout(resolve, 10));
     }
 
-    // Then the create macrotask, and whatever the `onCreate` handlers do
-    // inside it. A document that needs no rewrite emits nothing at all, so
-    // this cannot wait on `emits` alone — it drains a bounded number of
-    // macrotasks so "silent" is a conclusion rather than a race.
+    // Then the create macrotask and its `onCreate` handlers. A document needing no rewrite emits
+    // nothing, so drain a bounded number of macrotasks: "silent" is then a conclusion, not a race.
     for (let i = 0; i < 10 && emits.length === 0; i++) {
       await new Promise((resolve) => setTimeout(resolve, 10));
     }
@@ -120,11 +91,8 @@ describe('RichTextEditor onChange', () => {
   });
 
   test('stays silent opening a document it does not have to rewrite', async () => {
-    // No heading, so nothing assigns an id and no transaction changes the
-    // doc. Documents the boundary: the initial emit is not "always one emit
-    // on mount" that a consumer could count and skip — skipping "the first
-    // emit" would eat a genuine first edit for exactly these documents,
-    // which is why the flag, and not a counter, is the answer.
+    // No heading, so no transaction changes the doc. The initial emit is not "always one on mount":
+    // skipping "the first emit" would eat a genuine first edit, hence a flag rather than a counter.
     expect(await open(PLAIN_DOC)).toEqual([]);
   });
 
@@ -147,13 +115,9 @@ describe('RichTextEditor onChange', () => {
     });
     emits.length = 0;
 
-    // Reaches the live editor the way Tiptap itself exposes it — it hangs the
-    // instance off the editable element (`view.dom.editor`, which its own
-    // `unmount` deletes again). Typing through happy-dom would exercise
-    // ProseMirror's `contentEditable`/Selection handling, which happy-dom
-    // does not fully implement; a command produces the same transaction the
-    // author's keystroke would. Scoped to THIS render's container, never
-    // `document`, so it cannot pick up an editor another test left behind.
+    // Reach the live editor via `view.dom.editor` (Tiptap hangs it there; `unmount` deletes it).
+    // Typing through happy-dom would hit its partial `contentEditable`/Selection support; a command
+    // makes the same transaction. Scoped to THIS container, never `document`, to skip stale editors.
     type EditableWithEditor = Element & {
       editor?: { commands: { insertContent: (value: string) => boolean } };
     };
@@ -181,12 +145,9 @@ describe('RichTextEditor onChange', () => {
 });
 
 /**
- * Author edits are reported after a pause, not per keystroke — `onChange`
- * lands in react-hook-form, which deep-clones the whole form on every call
- * while anything watches it. The cost of that is why this exists; the
- * condition it has to meet is that the delay never loses an edit. So most of
- * what is asserted here is "the final document still arrives, by every route
- * a form can be left through".
+ * Author edits are reported after a pause, not per keystroke: `onChange` lands in react-hook-form,
+ * which deep-clones the whole form per call. The delay must never lose an edit, so most assertions
+ * are "the final document still arrives, by every route a form can be left through".
  */
 describe('RichTextEditor onChange timing', () => {
   type EditableWithEditor = Element & { editor?: Editor };
@@ -312,12 +273,9 @@ describe('RichTextEditor onChange timing', () => {
 });
 
 /**
- * `value` seeds the document once. A form hands the editor a fresh object on
- * every keystroke (react-hook-form clones, `toEditorContent` re-parses), and
- * Tiptap compares its options by identity — so a `content` that follows the
- * prop turns every parent render into `setOptions` -> `view.updateState`, a walk
- * of the whole document that changes nothing, since `content` is only read when
- * the document is built.
+ * `value` seeds the document once. A form passes a fresh object per keystroke and Tiptap compares
+ * options by identity, so a `content` following the prop runs `setOptions` -> `view.updateState`
+ * (a whole-document walk that changes nothing) on every parent render.
  */
 describe('RichTextEditor value prop', () => {
   type EditableWithEditor = Element & { editor?: Editor };
@@ -371,10 +329,9 @@ describe('RichTextEditor value prop', () => {
 });
 
 /**
- * The toolbar's pressed and disabled states, now that the host does not
- * re-render on every transaction. They have to arrive through the toolbar's own
- * subscription; a control that still read `editor.isActive()` during render
- * would stay as it was drawn and look correct until the first selection move.
+ * Pressed and disabled toolbar states must arrive through the toolbar's own subscription (the host
+ * no longer re-renders per transaction); a render-time `editor.isActive()` stays stale until the
+ * first selection move.
  */
 describe('RichTextEditor toolbar state', () => {
   type EditableWithEditor = Element & { editor?: Editor };
@@ -510,10 +467,8 @@ async function waitForSurface(): Promise<void> {
 }
 
 /**
- * A row of images is a document node, so it has to survive being *opened* —
- * the render pipeline test in `lib/render-pipeline.spec.ts` covers the
- * published page, and this covers the editor's own node views, which are the
- * half that can fail on `NodeViewContent` without the schema being wrong.
+ * A row of images must survive being *opened*. `lib/render-pipeline.spec.ts` covers the
+ * published page; this covers the editor's node views, which can fail on `NodeViewContent`.
  */
 describe('RichTextEditor image rows', () => {
   test('opens a stored row with both images and an editable row caption', async () => {
@@ -618,10 +573,8 @@ describe('RichTextEditor image rows', () => {
       editor?.commands.deleteSelection();
     });
 
-    // The row's content is `image*`, so ProseMirror leaves an EMPTY row behind
-    // rather than repairing it with a blank image node (what `image+` did —
-    // measured). The cleanup plugin has to take it from there, or the author
-    // is left with an empty captioned figure they never asked for.
+    // Content is `image*`, so ProseMirror leaves an EMPTY row (`image+` made a blank image,
+    // measured); the cleanup plugin must remove it.
     const types = JSON.stringify(editor?.getJSON());
     expect(types).not.toContain('imageGroup');
     expect(types).not.toContain('One left');
@@ -629,14 +582,9 @@ describe('RichTextEditor image rows', () => {
 });
 
 /**
- * Pasted Markdown source becomes blocks.
- *
- * ProseMirror read `text/plain` as paragraphs, so `## Title` arrived as those characters; only
- * `**bold**` and `` `code` `` converted, through their mark paste rules. Found by pasting a
- * README section into the featured-work details editor in a real browser.
- *
- * The event is built by hand, with the clipboard as a plain object, and goes through
- * ProseMirror's own paste handler; the contract is the document that results.
+ * Pasted Markdown source becomes blocks: ProseMirror read `text/plain` as paragraphs, so
+ * `## Title` arrived literally (only `**bold**` and `` `code` `` converted via mark rules).
+ * The event and its plain-object clipboard are hand-built.
  */
 describe('RichTextEditor markdown paste', () => {
   type Surface = HTMLElement & { editor?: Editor };
@@ -832,21 +780,9 @@ describe('RichTextEditor image paste', () => {
 });
 
 /**
- * `scope` on the header cells of a table, in the EDITOR's DOM.
- *
- * The published render pipeline has carried it since `ScopedTable`, and
- * `lib/render-pipeline.spec.ts` guards that half. This is the other half, and
- * it was missing entirely: `ScopedTable`/`NumericTableHeader` are registered
- * only in `renderExtensions`, so the editor — which is the surface its author
- * reads their document on — mounted a stock `TableKit` and produced 184 `<th>`
- * with not one `scope` among them. Measured on a live document in the editor:
- * `document.querySelectorAll('.ProseMirror th[scope]')` returned 0.
- *
- * The mutation cases below are the point of the file. A scope that is right on
- * first render and wrong after a row is inserted is worse than no scope: it
- * tells assistive tech, with authority, which header a number belongs to, and
- * is lying. Each one edits through the editor's own commands and re-reads the
- * DOM, so what is asserted is what a screen reader would meet.
+ * `scope` on header cells in the EDITOR's DOM (`render-pipeline.spec.ts` guards the published half).
+ * A stock `TableKit` gave 184 `<th>` with 0 `scope` (measured on a live document).
+ * Mutation cases re-read the DOM after edits: a stale scope tells assistive tech the wrong header.
  */
 describe('RichTextEditor table header scopes', () => {
   const cell = (

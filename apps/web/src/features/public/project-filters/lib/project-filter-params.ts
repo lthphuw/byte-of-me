@@ -7,12 +7,9 @@ export interface ProjectFilterState {
 }
 
 /**
- * Mirrors the unfiltered first page rendered server-side in `projects/page.tsx`.
- *
- * No `'use client'` directive here on purpose — see the same note on
- * `DEFAULT_BLOG_FILTERS`: exported from a client module, this object reached
- * the server prefetch as a client-reference proxy and the query hash drifted
- * from the browser's, so the prerendered page shipped "No projects".
+ * Mirrors the unfiltered first page rendered in `projects/page.tsx`. No `'use client'` on purpose
+ * (see `DEFAULT_BLOG_FILTERS`): as a client reference the query hash drifted and the page shipped
+ * "No projects".
  */
 export const DEFAULT_PROJECT_FILTERS: ProjectFilterState = {
   tagSlugs: [],

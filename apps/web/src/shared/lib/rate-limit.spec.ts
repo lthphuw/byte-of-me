@@ -16,13 +16,8 @@ import {
 
 import { checkRateLimit } from './rate-limit';
 
-// `prisma.rateLimitHit` is a stable object, but Prisma 7's generated client
-// synthesizes a *new* function for each method access on it
-// (`prisma.rateLimitHit.upsert !== prisma.rateLimitHit.upsert`), so
-// `spyOn(prisma.rateLimitHit, 'upsert')` patches a value the client never
-// reads back — the real method still runs underneath the spy. Replacing the
-// whole model delegate with a plain stub object sidesteps that per-access
-// synthesis while still needing no module mocking.
+// Prisma 7 synthesizes a new function per method access (`upsert !== upsert`), so spyOn patches a value
+// the client never reads back. Replacing the whole delegate with a plain stub avoids module mocking.
 const upsert = mock();
 const deleteMany = mock();
 Object.defineProperty(prisma, 'rateLimitHit', {

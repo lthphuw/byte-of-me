@@ -6,12 +6,8 @@ import { cn } from '@/shared/lib/utils';
 import { useSharedArticleHeadings } from '@/widgets/public/blog-details-content/lib/article-headings-context';
 
 /**
- * The sticky rail beside the article, from `xl`.
- *
- * Only the rail: below `xl` the same headings are reached through
- * `BlogReaderNav`, which also carries the bibliography. This used to grow a
- * second `collapsible` variant for that width — a sticky bar over the running
- * text — and shedding it is most of why this file is now short.
+ * The sticky rail beside the article, from `xl`. Below `xl` the same headings are reached through
+ * `BlogReaderNav`, which also carries the bibliography.
  */
 export function BlogTableOfContents({ label }: { label: string }) {
   const { headings, activeId } = useSharedArticleHeadings();

@@ -1,18 +1,13 @@
 /**
- * The featured work's classes, in a plain module: the loading skeleton is a server
- * component and imports these, so they must not sit in a `'use client'` file.
- *
- * A work is a rule, then its title and its proof links, then its demo, then its details,
- * one column at every width. The homepage column is `max-w-3xl`, too narrow for a split.
- * The demo and the details share the card's full inner width, so their edges line up. The demo is
- * the shared media carousel (`@/shared/ui/media-carousel`), which owns its own geometry.
+ * Plain module (no `'use client'`): the server-component skeleton imports these classes. One column
+ * at every width (the homepage column is `max-w-3xl`, too narrow for a split): rule, title and
+ * proof links, demo, details. Demo and details share the card's inner width.
  */
 
 /**
- * One work, inside the list's card (`divide-y` draws the rules). The card and its side
- * padding match the open-source and education blocks, so the page has one edge. The gap
- * between the head, the demo and the details is the public rhythm's "elements inside a
- * block" step (16 then 24px), so the three read as equal parts between the row's padding.
+ * One work inside the list's card (`divide-y` draws the rules). The card and side padding match the
+ * open-source and education blocks (one page edge); the head/demo/details gap is the in-block step
+ * (16 then 24px).
  */
 export const WORK_ROW = 'grid gap-y-4 py-5 md:gap-y-6 md:py-7';
 
@@ -30,10 +25,9 @@ export const WORK_TITLE =
 export const WORK_LINKS = 'flex flex-wrap items-center gap-x-3';
 
 /**
- * One proof link as plain text, `#123`: no box, no border. Underlined at rest like every link
- * on the site. `min-h-11 -my-2` is a 44px-tall hit area that adds no height to the title's
- * line. It has no side padding, so the numbers sit as close as the row's `gap-x-3` says and
- * their hit areas stay 12px apart.
+ * One proof link as plain `#123` text, underlined like every site link. `min-h-11 -my-2` gives a
+ * 44px hit area without adding line height; with no side padding, numbers sit at the row's
+ * `gap-x-3`, hit areas 12px apart.
  */
 export const WORK_LINK =
   '-my-2 inline-flex min-h-11 items-center rounded-sm text-sm font-medium tabular-nums text-primary underline underline-offset-4 hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';

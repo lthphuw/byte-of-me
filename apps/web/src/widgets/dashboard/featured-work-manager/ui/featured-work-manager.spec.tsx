@@ -1,7 +1,6 @@
 /**
- * What the owner can do on the featured-work dashboard: read the list, reorder
- * it, and edit an entry. An edit opens on the full row loaded by id, and a save
- * must write every language's body back, even when the owner never touched it.
+ * Featured-work dashboard: read the list, reorder it, edit an entry. An edit opens on the row
+ * loaded by id; a save must write every language's body back, even untouched ones.
  * Drives the real manager, dialog, form and server actions; only Prisma is replaced.
  */
 import type { ApiResponse } from '@byte-of-me/api-core';
@@ -220,7 +219,7 @@ const demoRow = (
   media: { id, url: `https://cdn.example/${id}`, mimeType },
 });
 
-/** What the database hands the by-id read: the list row's fields, each body, and the demo pair's join rows. */
+/** The by-id read: the list row's fields, each body, and the demo pair's join rows. */
 function detailOf(
   list: AdminFeaturedWork,
   bodies: Record<string, string> = {},
@@ -843,11 +842,8 @@ describe('FeaturedWorkManager edit loads the full row', () => {
 });
 
 /**
- * The form releases Save one commit AFTER the clip's slot renders: the slot
- * (and its label) appears when the upload lands, but the manager learns the
- * upload is over from an effect, which re-renders the button later. A click
- * on a still-disabled button is dropped, so wait for Save to be live (the
- * signal that the upload is fully over) instead of racing it off the label.
+ * Save goes live one commit AFTER the clip's slot renders (the manager learns the upload is over
+ * from an effect), and a click on a still-disabled button is dropped: wait for Save, not the label.
  */
 const save = async () => {
   await waitFor(() => expect(button('Save').disabled).toBe(false));

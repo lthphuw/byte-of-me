@@ -1,11 +1,7 @@
 /**
- * `getAdminWorkspaceSettings` is the action behind the dashboard's settings
- * query. What this defends is its contract: the owner gets the whole settings
- * object in a success envelope; a non-owner is refused before any read, which
- * throws rather than returning an envelope; and a failed read comes back as a
- * failure envelope with its message, never as defaults.
- *
- * Prisma is replaced at the delegate, as in `get-admin-tag-options.spec.ts`.
+ * Defends `getAdminWorkspaceSettings`: the owner gets the whole object in a success envelope, a
+ * non-owner is refused before any read (throws), and a failed read is a failure envelope, never
+ * defaults. Prisma is replaced at the delegate, as in `get-admin-tag-options.spec.ts`.
  */
 import type { ImageCompressionConfig } from '@byte-of-me/contracts';
 import { prisma } from '@byte-of-me/db';

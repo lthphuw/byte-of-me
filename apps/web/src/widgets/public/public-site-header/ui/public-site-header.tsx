@@ -26,13 +26,9 @@ const DOCK_AT = 64;
 const UNDOCK_AT = 24;
 
 /**
- * Space between the preferences island and the account island beside it.
- *
- * Docked it is the visible gutter between two cards; at rest, with both
- * islands transparent and their facing edges unpadded, it is the only thing
- * keeping the language flag and the avatar from touching. Kept in CSS rather
- * than animated, so the group lays out correctly on a cold load before
- * `<LazyMotion>` has fetched its features.
+ * Gap between the preferences and account islands: a gutter when docked, and at rest (both
+ * transparent, facing edges unpadded) all that keeps the flag and avatar apart. CSS, not
+ * animated, so it holds on a cold load before `<LazyMotion>` has fetched its features.
  */
 const RIGHT_GROUP = 'transition-[gap] duration-300 ease-out';
 
@@ -68,17 +64,9 @@ export function PublicSiteHeader() {
           renders — so this is the document's first tab stop. */}
       <PublicHeaderSkipLink />
 
-      {/* `--scrollbar-lock` is set by `useLockBody` while the mobile menu is
-          open. A fixed element is laid out against the viewport, so it never
-          sees the padding the body gets — without this the header alone slides
-          sideways by the scrollbar's width every time the menu opens.
-
-          The three `env(safe-area-inset-*)` terms are the same fix for a
-          different cause: `fixed inset-x-0 top-0` is laid out against the
-          viewport too, so it sits under the iOS status bar / notch with no
-          gap, and in landscape the left or right edge can land under the
-          sensor housing. `paddingRight` adds to the scrollbar lock rather
-          than replacing it — both can be non-zero at once. */}
+      {/* A fixed shell is laid out against the viewport: `--scrollbar-lock` (set by `useLockBody`)
+          offsets the scrollbar padding the body gets, and `env(safe-area-inset-*)` clears the
+          iOS notch and status bar. paddingRight adds both: both can be non-zero. */}
       <div
         className="pointer-events-none fixed inset-x-0 top-0 z-50"
         style={{
@@ -94,21 +82,15 @@ export function PublicSiteHeader() {
               items={globalConfig.header.nav}
               minimized={docked}
             >
-              {/* The account, on a phone. `PublicHeaderMainNav` passes its
-                  children straight to the foot of the mobile nav panel — a
-                  slot that existed and had never been filled. Theme and
-                  language stay in the header at every size; only the account
-                  moved, and only because the row had run out of room. */}
+              {/* The account, on a phone: PublicHeaderMainNav passes children to the foot of the
+                  mobile nav panel. Theme and language stay in the header. */}
               <PublicHeaderAccountPanel />
             </PublicHeaderMainNav>
           </HeaderIsland>
 
-          {/* The right-hand group.
-              A flex row rather than two independently pinned islands: `right`
-              is a framer-animated value, and under `<LazyMotion>` there is a
-              window on every cold load where no inline style has been applied
-              yet — long enough for both islands to paint stacked in the same
-              corner. Flex needs no JavaScript to get this right. */}
+          {/* Right-hand group: a flex row, not two pinned islands. `right` is framer-animated, and
+              on a cold load under `<LazyMotion>` no inline style exists yet, so both would paint
+              stacked in one corner; flex needs no JavaScript. */}
           <HeaderIslandGroup
             side="right"
             docked={docked}

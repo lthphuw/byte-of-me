@@ -9,18 +9,9 @@ import { beforeAll, describe, expect, it } from 'bun:test';
 import { headerScopeDecorations } from './header-scopes-plugin';
 
 /**
- * `scope` is a fact about a header cell's POSITION, so every edit that moves a
- * cell between roles has to move its scope with it. The incremental path is
- * what makes that affordable and is therefore also what can get it wrong: a
- * decoration mapped forward through a transaction lands where the cell went,
- * which is exactly the wrong answer when the cell did not move but changed
- * meaning — the header row deleted, so the row beneath becomes the header row.
- *
- * Every test below asserts the same invariant: whatever the edit, carrying the
- * decorations forward must land where rebuilding from scratch would, with the
- * same scope on each. `rich-text-editor.spec.tsx` asserts the resulting DOM;
- * this asserts the bookkeeping underneath it, including the cases the DOM test
- * cannot isolate — a second table inserted before the first, a table deleted.
+ * `scope` follows a cell's POSITION, so a decoration mapped forward is wrong when the cell stays put
+ * but changes role (header row deleted). Each test asserts carrying decorations forward lands where
+ * a rebuild would; `rich-text-editor.spec.tsx` covers the DOM, this the bookkeeping beneath it.
  */
 
 let schema: ReturnType<typeof getSchema>;
@@ -69,10 +60,8 @@ function scoped(set: DecorationSet, doc: Node): [string, unknown][] {
     .sort((a, b) => a.from - b.from)
     .map((decoration): [string, unknown] => [
       doc.nodeAt(decoration.from)?.textContent ?? '',
-      // A node decoration's attributes live on its `type`, which
-      // prosemirror-view does not declare — asserted through `unknown` rather
-      // than reached for with `any`, because they ARE the output under test:
-      // the DOM half is what `rich-text-editor.spec.tsx` reads back.
+      // A node decoration's attributes live on its `type`, which prosemirror-view does not declare;
+      // read through `unknown`, not `any`, because they ARE the output under test.
       (
         decoration as unknown as {
           type: { attrs: Record<string, unknown> };

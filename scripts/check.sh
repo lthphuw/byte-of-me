@@ -1,12 +1,8 @@
 #!/usr/bin/env sh
 #
-# Full verification suite for the monorepo: type-check -> lint -> boundaries ->
-# test -> build. Runs the fast checks first so a type or lint error fails before
-# the slow build. Any failing step aborts the script (turbo exits non-zero).
-#
-# Usage:
-#   bun run check       # from the repo root
-#   sh scripts/check.sh
+# Full verification: type-check -> lint -> boundaries -> test -> build, cheapest first.
+# Any failing step aborts the script (turbo exits non-zero).
+# Usage: `bun run check` or `sh scripts/check.sh`.
 #
 set -e
 

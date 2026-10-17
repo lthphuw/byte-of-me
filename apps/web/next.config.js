@@ -28,24 +28,9 @@ const storageHost = process.env.SUPABASE_S3_STORAGE_PUBLIC_ENDPOINT
   ? new URL(process.env.SUPABASE_S3_STORAGE_PUBLIC_ENDPOINT).hostname
   : undefined;
 
-// The one file `sharp` cannot start without, resolved rather than globbed.
-//
-// `@img/sharp-libvips-<platform>` publishes a `./binary` export pointing at its
-// own `libvips-cpp.so.<version>`, so this asks the resolver for the exact file
-// the INSTALLED sharp will dlopen — no version in this file to fall out of date,
-// and no wildcard.
-//
-// It used to be a wildcard (`@img+sharp-libvips-*/.../lib/**`) on the theory
-// that a pinned glob would stop matching after a sharp upgrade and stop
-// silently. The theory was right and the remedy was wrong: the wildcard also
-// matched Next's own nested `sharp@0.34.5` copy (libvips 1.2.4, 16 MB), and the
-// two together pushed `/dashboard/user-profile` to 250.22 MB against Vercel's
-// 250 MB uncompressed function limit. Resolution fixes both halves — it selects
-// exactly one libvips, and a missing one throws HERE, at config load, which
-// fails the build loudly instead of shipping a function that 500s on upload.
-//
-// The path is returned relative to this directory because include globs are
-// resolved with the Next project directory as cwd, not `outputFileTracingRoot`.
+// Resolves the exact libvips file the INSTALLED sharp dlopens (no version to go stale; a missing one
+// throws at config load). A wildcard also matched Next's nested sharp copy (16 MB) and pushed
+// /dashboard/user-profile to 250.22 MB against Vercel's 250 MB uncompressed function limit.
 function sharpLibvipsBinary() {
   const require = createRequire(import.meta.url);
   // musl second: on Alpine `process.platform` still reports 'linux', so the
@@ -65,6 +50,7 @@ function sharpLibvipsBinary() {
       const binary = require.resolve(`@img/sharp-libvips-${platform}/binary`, {
         paths: [from],
       });
+      // Relative: include globs resolve from the Next project dir, not outputFileTracingRoot.
       return path.relative(import.meta.dirname, binary);
     } catch {
       // try the next candidate
@@ -118,45 +104,17 @@ const nextConfig = {
 
   experimental: {
     serverActions: {
-      // A flat '20mb', not computed from the per-file ceilings — MAX_UPLOAD_TOTAL_MB
-      // (16: five 3 MB images, or one 15 MB clip with at most 1 MB beside it) is sized to
-      // fit comfortably under it, not the other way around; see
-      // `docs(day-entry): correct why the photo limits are what they are`.
-      //
-      // It used to be '3mb', exactly one image's worth. A single file at the
-      // limit already exceeded it once multipart framing was added, so Next
-      // rejected the request at the framework boundary — before the action ran
-      // and before any of our validation could say which file was too big or
-      // why. The upload just failed. Keeping headroom here is what lets
-      // `findUploadViolation` be the thing that answers.
+      // A flat '20mb', headroom over MAX_UPLOAD_TOTAL_MB (16): at one file's size, multipart framing
+      // makes Next reject the request before the action runs, so `findUploadViolation` cannot answer.
       bodySizeLimit: '20mb',
     },
     // 87 MB of `.map` files across .next/server, all of it shipped inside the
     // serverless function. Stack traces stay readable through the framework's
     // own frames; the trade is deploy size and cold start, which users feel.
     serverSourceMaps: false,
-    // No `optimizePackageImports`. It used to list nine barrel packages, and
-    // it was measured out rather than argued out.
-    //
-    // Method (2026-08-19): noise floor first — the same config built twice
-    // landed 25 B apart out of 9.51 MB — then five clean builds with `.next`
-    // deleted between each, invoking `next build --turbopack` directly in
-    // apps/web so turbo's task cache could not serve a stale result. Next
-    // 16.2.3 no longer prints the Size / First Load JS table, so per-route
-    // numbers were derived from the static JS each prerendered HTML references
-    // and from `page_client-reference-manifest.js` for the dynamic routes. The
-    // config was proved to be read at all by renaming the key and checking
-    // Next printed `(invalid experimental key)` — otherwise "no change" and
-    // "silently ignored" look identical.
-    //
-    // Result: removing the ENTIRE option moved total client JS by 47 B —
-    // 0.0005%, twice the noise floor. Dropping just 'lucide-react', with 136
-    // import sites, moved 5 B. Both builds here are `--turbopack`, and
-    // Turbopack does this tree-shaking itself; the option is a webpack-era
-    // remedy for a problem this bundler does not have.
-    //
-    // Kept as a comment because the list looked useful and was not: anyone
-    // reaching for it as a bundle fix should see the number first.
+    // No `optimizePackageImports`: measured on Next 16.2.3 `--turbopack` (noise floor 25 B of 9.51 MB),
+    // removing all nine barrel packages moved client JS by 47 B (0.0005%), 'lucide-react' alone by 5 B.
+    // Turbopack tree-shakes itself; the option is a webpack-era remedy, so check the number first.
   },
 
   turbopack: {
@@ -165,10 +123,8 @@ const nextConfig = {
 
   transpilePackages: workspacePackageNames(),
 
-  // The build runs `next build --turbopack`, which ignores a `webpack` hook
-  // entirely — so the PrismaPlugin that used to live here never ran. It is not
-  // needed either: Prisma 7 talks to Postgres through `@prisma/adapter-pg`, so
-  // there is no query-engine binary for the plugin to copy.
+  // No PrismaPlugin: `next build --turbopack` ignores `webpack`; Prisma 7 (`@prisma/adapter-pg`) has no
+  // query-engine binary to copy.
 
   // Bun workspace: without this, file tracing starts at apps/web and Next
   // cannot follow symlinks into the root node_modules, which on Vercel shows up
@@ -178,24 +134,14 @@ const nextConfig = {
   // requires only) drops it and the first upload dies with ERR_DLOPEN_FAILED.
   // The `dashboard` key below ships it; sharpLibvipsBinary() resolves the path.
   outputFileTracingIncludes: {
-    // Keys are matched against the route with picomatch's `contains` option, so
-    // a bare SUBSTRING is the form that works: 'dashboard' covers every
-    // `/[locale]/dashboard/*`.
-    //
-    // Do not "improve" this into a real path. `'**/dashboard/**/*'` was tried
-    // first and matched NOTHING — any key containing a `/` silently fails here, and a key
-    // that matches nothing produces no warning, no build error, and a function
-    // that 500s on the first upload. Each form above was proved by building with
-    // a distinct throwaway file per key and reading the emitted `.nft.json`.
+    // picomatch `contains` matching: a bare SUBSTRING works, 'dashboard' covers `/[locale]/dashboard/*`.
+    // Any key with a `/` (e.g. '**/dashboard/**/*') matches NOTHING, with no warning or build error, and
+    // the function 500s on first upload (verified by reading the emitted `.nft.json`).
     dashboard: SHARP_LIBVIPS,
   },
   outputFileTracingExcludes: {
-    // Nothing server-rendered needs these at runtime; they are pure build-time
-    // or editor-only weight in the serverless function. Bun's isolated linker
-    // stores real package contents under node_modules/.bun/<pkg>@<version>/
-    // node_modules/<pkg>, with flat node_modules/<pkg> symlinks per consumer
-    // pointing at that store — file tracing resolves symlinks to their real
-    // path, so the excludes target the store path directly, not the flat symlinks.
+    // Build-time and editor-only weight. Tracing resolves symlinks to Bun's isolated store
+    // (node_modules/.bun/<pkg>@<version>/), so the excludes target that path, not the flat symlinks.
     '**/*': [
       'node_modules/.bun/typescript@*/**',
       'node_modules/.bun/esbuild@*/**',
@@ -238,18 +184,9 @@ const nextConfig = {
 
     return [
       {
-        // Public pages only. Two exclusions matter here:
-        //
-        // `api` — NextAuth serves per-user session/CSRF JSON under /api/auth,
-        // and a shared CDN that honors `public, s-maxage` would replay one
-        // user's session to another.
-        //
-        // `_next` — this rule OVERRIDES the framework's own header rather than
-        // adding to it, and /_next/static filenames already carry a content
-        // hash. Without the exclusion those assets answered with `s-maxage`
-        // and no `max-age` at all, so browsers revalidated every chunk on
-        // every navigation instead of reading their own disk cache. Leaving
-        // them out restores `public, max-age=31536000, immutable`.
+        // Public pages only. Excludes `api` (a CDN with `s-maxage` would replay /api/auth session JSON
+        // across users) and `_next`: this rule OVERRIDES the framework header, so hashed assets lost
+        // `max-age` and revalidated each navigation; omitting it restores `max-age=31536000, immutable`.
         source: '/((?!api|_next|.*dashboard).*)/:path*',
         headers: [
           {

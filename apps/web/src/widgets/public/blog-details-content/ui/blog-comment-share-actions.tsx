@@ -10,18 +10,9 @@ import { Link } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
 
 /**
- * All three actions drop their label below `sm` and keep only the icon.
- *
- * They used to disagree — comment and share stayed labelled while PDF went
- * icon-only, because four labelled controls plus the like/clap pair overflow a
- * 375px viewport and Vietnamese runs longer than English ("Bình luận" /
- * "Chia sẻ"). One unlabelled button in a row of labelled ones reads as a
- * rendering fault, not as a decision, so the whole group now drops together.
- *
- * The icon-only form is square and a notch taller than the `sm` height it
- * replaces: without a label there is far less to hit, and 32px is under the
- * comfortable tap target. `variant="ghost"` has no background, so the extra
- * height is hit area only and the row still lines up with like/clap.
+ * All three actions drop their label below `sm`: four labelled controls plus like/clap overflow
+ * 375px (Vietnamese runs longer), and one unlabelled button in a labelled row reads as a fault.
+ * Icon-only is square and 36px, as 32px is under a comfortable tap target (ghost: hit area only).
  */
 const ACTION_BUTTON = 'h-9 w-9 gap-2 p-0 sm:h-8 sm:w-auto sm:px-3';
 

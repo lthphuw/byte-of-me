@@ -16,11 +16,9 @@ interface GlobalProviderProps {
 export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
   return (
     <TanStackQueryProvider>
-      {/* MotionProvider sits at the root so `m.*` components animate on every
-          route group. Anything rendered outside LazyMotion's tree falls back
-          to a static render with no warning — dashboard and auth used to sit
-          outside it, which forced shared components (Loading, CopyButton)
-          onto eager `motion.*` imports and full framer in every bundle. */}
+      {/* MotionProvider sits at the root: anything outside LazyMotion's tree renders statically with no
+          warning, which forced shared components (Loading, CopyButton) onto eager `motion.*` imports
+          and full framer in every bundle. */}
       <MotionProvider>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {/* Main content */}

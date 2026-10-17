@@ -15,15 +15,9 @@ import { buildBlogFilterQuery, parseBlogFilters } from './blog-filter-params';
 import { usePathname, useRouter } from '@/shared/i18n/navigation';
 
 /**
- * Blog list filters and pagination backed by the URL query
- * (`?tags=a,b&q=...&page=2`). The URL is the single source of truth, so
- * filtered/paginated lists are shareable/bookmarkable, survive refresh and
- * back/forward, and the tag links from a blog detail page apply immediately.
- * Same shape as `useProjectFilters`, minus the tech-stack facet.
- *
- * The state shape, defaults and the URL parse/serialise pair live in
- * `./blog-filter-params` — a module without `'use client'`, so the server page
- * can share the defaults without them turning into a client reference.
+ * Blog filters and pagination in the URL query (`?tags=a,b&q=...&page=2`), the single source of
+ * truth. State shape, defaults and parse/serialise live in `./blog-filter-params` (no
+ * `'use client'`), so the server page can share the defaults.
  */
 export function useBlogFilters() {
   const searchParams = useSearchParams();
@@ -37,10 +31,8 @@ export function useBlogFilters() {
     (query: string, history: FilterHistoryMode) => {
       const href = query ? `${pathname}?${query}` : pathname;
 
-      // `push` keeps filter changes undoable — the audit's other half was "the
-      // back button surprises users", and `replace` everywhere left Back
-      // leaving the list entirely. Callers opt into `replace` for the
-      // debounced search write only.
+      // `push` keeps filter changes undoable (`replace` everywhere made Back leave the list);
+      // only the debounced search write opts into `replace`.
       if (history === 'replace') router.replace(href, { scroll: false });
       else router.push(href, { scroll: false });
     },

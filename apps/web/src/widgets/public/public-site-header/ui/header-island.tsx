@@ -19,10 +19,8 @@ export interface IslandGeometry {
   /** Inline padding, i.e. how far the content sits inside the island. */
   paddingX: number;
   /**
-   * Padding for an island of icon buttons. Smaller, because a 44px touch
-   * target already carries 10px around its 24px mark — the general value on
-   * top of that reads as a gap, while the same value around a wordmark is
-   * what stops it touching the edge.
+   * Padding for an island of icon buttons: smaller, because a 44px touch target already
+   * carries 10px around its 24px mark, and the general value on top reads as a gap.
    */
   paddingXIcons: number;
   height: number;
@@ -30,10 +28,8 @@ export interface IslandGeometry {
 }
 
 /**
- * Alignment contract: at rest the island is invisible, so its TEXT sits on the
- * content column (inset 0 + padding 32). Docked it becomes a visible card, so
- * its EDGE sits on the content column (inset 32) — same line every page card
- * starts on.
+ * Alignment: at rest the TEXT sits on the content column (inset 0 + padding 32); docked, the
+ * card EDGE does (inset 32), the line every page card starts on.
  */
 const AT_REST: IslandGeometry = {
   top: 0,
@@ -71,9 +67,8 @@ const DOCKED_DESKTOP: IslandGeometry = {
 };
 
 /**
- * Critically damped (ζ ≈ 1.0): the island arrives and stops. The previous
- * spring was underdamped (ζ ≈ 0.65), so every dock overshot and wobbled back —
- * playful on a card, unstable on page chrome.
+ * Critically damped (ζ ≈ 1.0): the island arrives and stops. Underdamped (ζ ≈ 0.65)
+ * overshot and wobbled back on every dock, which is unstable on page chrome.
  */
 const DOCK_TRANSITION: Transition = {
   type: 'spring',
@@ -83,15 +78,9 @@ const DOCK_TRANSITION: Transition = {
 };
 
 /**
- * `top-0 h-16 px-8 rounded-none` restates AT_REST as utilities. Under
- * `<LazyMotion>` the animation features arrive in a separate chunk, so until it
- * lands the element carries no inline style at all — without these the header
- * paints collapsed against the container edge and then snaps into place on
- * every cold load. Framer's inline styles override them the moment it takes
- * over, with identical values, so nothing moves.
- *
- * `absolute`, not `fixed`: insets are measured from the container-aligned
- * wrapper in PublicSiteHeader, not the viewport.
+ * `top-0 h-16 px-8 rounded-none` restates AT_REST: under `<LazyMotion>` no inline style exists
+ * until the features chunk lands, so the header would paint collapsed, then snap into place.
+ * `absolute`, not `fixed`: insets are measured from PublicSiteHeader's wrapper, not the viewport.
  */
 const ISLAND_BASE =
   'pointer-events-auto flex h-16 min-w-0 items-center gap-1 rounded-none border px-8 md:gap-2 transition-[background-color,border-color,box-shadow] duration-300 ease-out';
@@ -103,14 +92,9 @@ const ISLAND_BASE =
 const ISLAND_AT_REST = 'border-transparent bg-transparent shadow-none';
 
 /**
- * Light mode carries a soft two-layer shadow. Dark mode drops it to a hairline
- * highlight plus a much deeper shadow, because a black shadow is invisible
- * against a near-black background — the reason the previous implementation
- * reached for a white glow, a treatment nothing else in the app uses.
- *
- * Kept as a class swap rather than an animated `boxShadow` value so the surface
- * cross-fades in CSS and reads the theme straight from the `dark` class. No
- * `resolvedTheme` branch, so no hydration-sensitive shadow.
+ * Dark mode swaps the soft shadow for a hairline highlight and a deeper one: black vanishes on
+ * near-black. A class swap, not an animated `boxShadow`: it cross-fades in CSS off the `dark`
+ * class, so no `resolvedTheme` branch and no hydration-sensitive shadow.
  */
 const ISLAND_DOCKED =
   'container-bg border-border shadow-[0_2px_6px_-2px_rgb(0_0_0/0.08),0_8px_24px_-12px_rgb(0_0_0/0.18)] dark:shadow-[0_8px_24px_-12px_rgb(0_0_0/0.7)]';
@@ -127,25 +111,9 @@ export function useIslandGeometry(docked: boolean): IslandGeometry {
 }
 
 /**
- * Pins a row of islands to one edge and docks them as a unit.
- *
- * The right edge carries two — preferences, then the account — and they have
- * to arrive and leave together. Positioning the group once and letting flex
- * lay the islands out inside it is what guarantees that: there is one animated
- * `top`/`right` between them, so they cannot dock out of step, and no
- * arithmetic anywhere that could put one on top of the other.
- *
- * The group also owns the OUTER padding while the islands are at rest. That
- * padding is what pulls an island's contents back onto the content column —
- * `inset: 0` sits on the container's border edge, 32px outside it — and it has
- * to be applied exactly once across the row. Left on each island it would be
- * counted twice and open a gutter in the middle; stripped from the outermost
- * one it would leave the row hanging off the edge of the page. So at rest the
- * group carries it and the islands carry none, and docked, where every island
- * is a card that needs its own breathing room, the reverse.
- *
- * `gap` is a class rather than an animated value so the row is laid out
- * correctly before `<LazyMotion>` has fetched its features.
+ * Docks a row of islands as a unit: one animated `top`/`right`, flex inside, so none can overlap.
+ * At rest the group carries the outer padding, islands none (docked: reverse), or it is doubled.
+ * `gap` is a class so the row lays out before `<LazyMotion>` has loaded its features.
  */
 export function HeaderIslandGroup({
   side,
@@ -189,24 +157,14 @@ interface HeaderIslandProps {
   docked: boolean;
   geometry: IslandGeometry;
   /**
-   * Set `false` for an island that sits inside a group which does its own
-   * positioning. The right edge carries two — preferences, then the account —
-   * and they are laid out by a flex row rather than by each island pinning
-   * itself, so neither can ever be drawn on top of the other.
-   *
-   * Flex rather than an offset measured from the outer island's width, which
-   * is what this tried first: `left`/`right` are animated by framer, and under
-   * `<LazyMotion>` the features arrive in a separate chunk, so on a cold load
-   * there is a window with no inline styles at all — and every right-pinned
-   * island stacked in the same corner until it landed.
+   * `false` inside a group that positions its islands with flex. Per-island `left`/`right` are
+   * animated, so on a cold load (LazyMotion chunk not yet loaded, no inline style) every
+   * right-pinned island stacked in one corner.
    */
   pinned?: boolean;
   /**
-   * Overrides `geometry.paddingX` on one side. Used to close the gap between
-   * two adjacent islands while they are at rest and invisible: with no card
-   * drawn there is nothing to pad, and 32px on each of the facing edges left
-   * the controls floating a third of the way across the header away from the
-   * avatar they sit beside.
+   * Overrides `geometry.paddingX` on one side. Closes the gap between adjacent islands at rest:
+   * with no card drawn, 32px on each facing edge floated the controls a third of the header away.
    */
   padding?: { left?: number; right?: number };
   /** Handed the island's own element, for a caller that needs to measure it. */

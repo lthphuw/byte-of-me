@@ -8,16 +8,9 @@ import { useAccount } from '@/widgets/public/public-site-header/lib/use-account'
 import { UserAvatar } from '@/widgets/public/public-site-header/ui/user-avatar';
 
 /**
- * The account, as one row at the foot of the mobile nav panel.
- *
- * It moved here because three 44px targets and a wordmark did not fit in a
- * phone header — the two islands measured 396px of a 500px viewport. Theme and
- * language stayed; only the account left.
- *
- * The email rather than the name: `useAccount` falls back to the role when
- * there is no name, and "Admin" identifies nobody. Sign out is an icon on the
- * right — it is the only action here, so it needs a position, not a label.
- * While the session loads, the row is a skeleton with the same three columns.
+ * Account row at the foot of the mobile nav: three 44px targets and a wordmark overflowed the
+ * phone header (islands measured 396px of 500px). Email, not name: `useAccount` falls back to
+ * the role, and "Admin" identifies nobody. Skeleton while loading has the same three columns.
  */
 export function PublicHeaderAccountPanel() {
   const t = useTranslations('global.userToggle');

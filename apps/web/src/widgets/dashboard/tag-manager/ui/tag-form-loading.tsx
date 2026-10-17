@@ -1,6 +1,6 @@
 import { Skeleton } from '@byte-of-me/ui';
 
-/** Stands in for the tag form while its record loads: the slug field, then the language tabs and a name field. */
+/** Stands in for the tag form while its record loads: slug field, language tabs, name field. */
 export function TagFormLoading() {
   return (
     <div className="space-y-5" aria-busy="true">

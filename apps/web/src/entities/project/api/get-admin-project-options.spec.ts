@@ -1,13 +1,7 @@
 /**
- * `getAdminProjectOptions` feeds a select, so what it defends is the shape of
- * that handoff: three fields and nothing else (the admin list rows carry
- * descriptions, tech stacks, tags and coauthors the picker never renders), an
- * explicit row ceiling instead of `clampPagination`'s silent 50, and the same
- * admin gate as every other admin read.
- *
- * Prisma is replaced at the delegate, as in `get-paginated-public-blogs.spec.ts`
- * (Prisma 7 hands out a fresh function per method access, so `spyOn` is
- * bypassed); the identity comes from the preload's auth stub.
+ * Defends the picker handoff: three fields only, an explicit row ceiling (not `clampPagination`'s
+ * silent 50), and the admin gate. Prisma is replaced at the delegate, as in
+ * `get-paginated-public-blogs.spec.ts`.
  */
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';

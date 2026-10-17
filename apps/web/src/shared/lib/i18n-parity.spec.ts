@@ -1,9 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
-// The catalogues live outside `src/`, so the `@/` alias cannot reach them and a
-// relative path is the only option. `shared/i18n/request.ts` loads them the same
-// way; it escapes this rule only because a dynamic import isn't a static import
-// statement. Same exemption as packages/storage/__tests__/storage.spec.ts.
+// The catalogues live outside `src/`, so the `@/` alias cannot reach them; a relative path is the
+// only option (same exemption as packages/storage/__tests__/storage.spec.ts).
 // eslint-disable-next-line import-alias/import-alias
 import en from '../../../messages/en.json';
 // eslint-disable-next-line import-alias/import-alias
@@ -19,16 +17,8 @@ import {
 } from '@/shared/i18n/messages';
 
 /**
- * The two catalogues must stay key-for-key identical.
- *
- * A key present in `en` but missing from `vi` renders as the key itself to a
- * Vietnamese visitor — a silent, visible defect that no type check catches,
- * because next-intl generates its declarations from `en` alone. A key present
- * only in `vi` is dead weight: it survives a rename in `en` and then quietly
- * misleads whoever greps the catalogue next.
- *
- * This is the guard for the dashboard i18n migration, where 41 components'
- * worth of strings land in both files.
+ * The two catalogues must stay key-for-key identical: a key missing from `vi` renders as the key itself
+ * (no type check catches it, next-intl types come from `en` alone); a key only in `vi` is dead weight.
  */
 function flattenKeys(value: unknown, prefix = ''): string[] {
   if (value === null || typeof value !== 'object') return [prefix];
@@ -52,21 +42,9 @@ describe('message catalogues', () => {
 });
 
 /**
- * The provider lists in `shared/i18n/messages.ts` fail the same way the
- * catalogues do: silently, at runtime, on screen.
- *
- * `pickMessages` skips a namespace it cannot reach rather than throwing, so a
- * list naming `dashboard.blogs` (or naming a namespace after someone renames it
- * in `en.json`) mounts a provider that is simply missing that branch, and every
- * component under it paints its own key path. Nothing in `tsc` sees this: the
- * lists are plain strings and next-intl's generated declarations only type the
- * `t('...')` calls, never the provider's contents.
- *
- * What is NOT asserted here, deliberately: that each subtree's client
- * components only read namespaces its own provider supplies. That needs the
- * import graph, and module reachability is a superset of render reachability.
- * The audit is done by hand and written up in each list's comment; these tests
- * guard the part a machine can actually decide.
+ * `pickMessages` skips a namespace it cannot reach instead of throwing, so a provider list naming a
+ * missing or renamed namespace silently paints key paths. tsc cannot see it; only this part is asserted.
+ * Whether subtrees read only their own provider's namespaces is audited by hand in each list's comment.
  */
 describe('client message namespace lists', () => {
   const lists = {

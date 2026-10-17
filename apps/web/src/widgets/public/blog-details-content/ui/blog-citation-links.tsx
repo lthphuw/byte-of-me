@@ -7,12 +7,9 @@ const FLASH_CLASS = 'is-flash';
 const FLASH_MS = 1600;
 
 /**
- * Wires up the citation markers rendered inside `#{targetId}`.
- *
- * Clicking `[1]` jumps to its bibliography entry; the `↩` on that entry jumps
- * back to the marker the reader actually came from, not just the first one on
- * the page. Both work without this component (they are plain anchors) — this
- * only adds the smooth scroll and the highlight that shows where you landed.
+ * Wires up the citation markers inside `#{targetId}`: `[1]` jumps to its bibliography entry, and
+ * `↩` back to the marker the reader came from. Both work as plain anchors; this adds the smooth
+ * scroll and the highlight.
  */
 export function BlogCitationLinks({ targetId }: { targetId: string }) {
   useEffect(() => {
