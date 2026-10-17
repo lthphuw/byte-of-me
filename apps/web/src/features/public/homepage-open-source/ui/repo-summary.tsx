@@ -35,7 +35,7 @@ export function RepoSummary({
         alt=""
         width={28}
         height={28}
-        className="mt-0.5 h-7 w-7 shrink-0 rounded-md border"
+        className="mt-0.5 h-7 w-7 shrink-0 rounded-md"
       />
 
       <div className="min-w-0 flex-1">
