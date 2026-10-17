@@ -17,6 +17,11 @@ import {
 } from '@/features/public/project-filters/lib';
 import { FilterSearchInput } from '@/shared/ui';
 
+// 24px tall like a chip, with the touch floor as an invisible hit area: the size's own `min-h`
+// made the See more button 32px (44px on touch) and pushed its row a chip-and-a-half tall.
+const FACET_BUTTON =
+  'relative h-6 min-h-6 can-hover:min-h-6 gap-1 px-2 text-[11px] text-muted-foreground before:absolute before:inset-x-0 before:-inset-y-2.5';
+
 interface ProjectFiltersProps {
   value: ProjectFilterState;
   onChange: (
@@ -102,65 +107,69 @@ export function ProjectFilters({ value, onChange }: ProjectFiltersProps) {
         )}
       </div>
 
-      <FacetRow
-        label={t('tags')}
-        isLoading={tagRead.isLoading}
-        isError={tagRead.isError}
-        isEmpty={allTags.length === 0}
-        onRetry={() => void tagRead.refetch()}
-      >
-        {allTags.map((tag) => (
-          <TagClickableBadge
-            key={tag.id}
-            tag={tag}
-            active={value.tagSlugs.includes(tag.slug)}
-            onClick={toggleTag}
-          />
-        ))}
+      {/* Below `sm` each row stacks its label over its chips; from `sm` the rows share one grid, so
+          the label column is as wide as the longest label and the chips still line up. */}
+      <div className="flex flex-col gap-4 empty:hidden sm:grid sm:grid-cols-[max-content_1fr] sm:items-start sm:gap-x-2 sm:gap-y-3">
+        <FacetRow
+          label={t('tags')}
+          isLoading={tagRead.isLoading}
+          isError={tagRead.isError}
+          isEmpty={allTags.length === 0}
+          onRetry={() => void tagRead.refetch()}
+        >
+          {allTags.map((tag) => (
+            <TagClickableBadge
+              key={tag.id}
+              tag={tag}
+              active={value.tagSlugs.includes(tag.slug)}
+              onClick={toggleTag}
+            />
+          ))}
 
-        {tagRead.hasNextPage && (
-          <Button
-            variant="ghost"
-            size="sm"
-            disabled={tagRead.isFetchingNextPage}
-            onClick={() => tagRead.fetchNextPage()}
-            className="h-6 gap-1 px-2 text-[11px] text-muted-foreground"
-          >
-            <Plus className="size-3" />
-            {t('seeMore')}
-          </Button>
-        )}
-      </FacetRow>
+          {tagRead.hasNextPage && (
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={tagRead.isFetchingNextPage}
+              onClick={() => tagRead.fetchNextPage()}
+              className={FACET_BUTTON}
+            >
+              <Plus className="size-3" />
+              {t('seeMore')}
+            </Button>
+          )}
+        </FacetRow>
 
-      <FacetRow
-        label={t('techStack')}
-        isLoading={techRead.isLoading}
-        isError={techRead.isError}
-        isEmpty={allTechStacks.length === 0}
-        onRetry={() => void techRead.refetch()}
-      >
-        {allTechStacks.map((tech) => (
-          <TechStackClickableBadge
-            key={tech.id}
-            tech={tech}
-            active={value.techStackSlugs.includes(tech.slug)}
-            onClick={toggleTech}
-          />
-        ))}
+        <FacetRow
+          label={t('techStack')}
+          isLoading={techRead.isLoading}
+          isError={techRead.isError}
+          isEmpty={allTechStacks.length === 0}
+          onRetry={() => void techRead.refetch()}
+        >
+          {allTechStacks.map((tech) => (
+            <TechStackClickableBadge
+              key={tech.id}
+              tech={tech}
+              active={value.techStackSlugs.includes(tech.slug)}
+              onClick={toggleTech}
+            />
+          ))}
 
-        {techRead.hasNextPage && (
-          <Button
-            variant="ghost"
-            size="sm"
-            disabled={techRead.isFetchingNextPage}
-            onClick={() => techRead.fetchNextPage()}
-            className="h-6 gap-1 px-2 text-[11px] text-muted-foreground"
-          >
-            <Plus className="size-3" />
-            {t('seeMore')}
-          </Button>
-        )}
-      </FacetRow>
+          {techRead.hasNextPage && (
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={techRead.isFetchingNextPage}
+              onClick={() => techRead.fetchNextPage()}
+              className={FACET_BUTTON}
+            >
+              <Plus className="size-3" />
+              {t('seeMore')}
+            </Button>
+          )}
+        </FacetRow>
+      </div>
     </div>
   );
 }
@@ -201,7 +210,7 @@ function FacetRow({
           variant="ghost"
           size="sm"
           onClick={onRetry}
-          className="h-6 gap-1 px-2 text-[11px] text-muted-foreground"
+          className={FACET_BUTTON}
         >
           {t('retry')}
         </Button>
@@ -212,8 +221,8 @@ function FacetRow({
   }
 
   return (
-    <div className="space-y-2 sm:flex sm:items-start sm:gap-x-2 sm:space-y-0">
-      <span className="block pt-1 meta-label sm:w-20 sm:shrink-0">{label}</span>
+    <div className="space-y-2 sm:contents sm:space-y-0">
+      <span className="block meta-label sm:pt-1">{label}</span>
 
       <div
         className="flex flex-wrap items-center gap-2"
