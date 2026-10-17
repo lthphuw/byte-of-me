@@ -25,9 +25,6 @@ export const ADMIN_OAUTH_PROVIDER_IDS = {
   GOOGLE: 'google-admin',
 } as const;
 
-export type AdminOAuthProviderId =
-  (typeof ADMIN_OAUTH_PROVIDER_IDS)[keyof typeof ADMIN_OAUTH_PROVIDER_IDS];
-
 export function isAdminOAuthProviderId(providerId: string): boolean {
   return ADMIN_OAUTH_PROVIDER_ID_SET.has(providerId);
 }

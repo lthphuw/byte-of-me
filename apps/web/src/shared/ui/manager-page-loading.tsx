@@ -2,11 +2,6 @@ import { Skeleton } from '@byte-of-me/ui';
 
 import { RecordListSkeleton } from './record-list';
 
-export interface FormSkeletonProps {
-  /** The accessible name of the loading region, when the form has one. */
-  label?: string;
-}
-
 function FieldSkeleton() {
   return (
     <div className="space-y-2">
@@ -17,9 +12,9 @@ function FieldSkeleton() {
 }
 
 /** A record's form while the record loads: each field at its input's height. */
-export function FormSkeleton({ label }: FormSkeletonProps) {
+function FormSkeleton() {
   return (
-    <div className="space-y-6" aria-busy="true" aria-label={label}>
+    <div className="space-y-6" aria-busy="true">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <FieldSkeleton />
         <FieldSkeleton />
@@ -33,7 +28,7 @@ export function FormSkeleton({ label }: FormSkeletonProps) {
   );
 }
 
-export interface ManagerPageLoadingProps {
+interface ManagerPageLoadingProps {
   variant: 'list' | 'grid' | 'form';
 }
 

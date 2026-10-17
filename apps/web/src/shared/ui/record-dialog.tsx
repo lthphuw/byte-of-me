@@ -19,7 +19,7 @@ import { cn } from '@/shared/lib/utils';
 
 export type RecordDialogSize = 'md' | 'lg' | 'xl';
 
-export interface RecordDialogProps {
+interface RecordDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;

@@ -131,18 +131,11 @@ export function createSingleMediaRecordUploader(
 }
 
 /**
- * Builds the editors' single-image uploader, which answers with the public URL.
- * Same dependencies as `createSingleMediaRecordUploader`, which it wraps, minus
- * video: the editors only draw an `<img>`, and `accept="image/*"` is a picker
- * hint a drop or a pasted blob walks straight past.
+ * The editors' single-image uploader, which answers with the public URL. It
+ * refuses video: the editors only draw an `<img>`, and `accept="image/*"` is a
+ * picker hint a drop or a pasted blob walks straight past.
  */
-export function createSingleMediaUploader(
-  deps: SingleMediaUploaderDeps = defaultDeps
-) {
-  return wrapAsUrlUploader(createSingleMediaRecordUploader(deps));
-}
-
-function wrapAsUrlUploader(
+export function wrapAsUrlUploader(
   uploadRecord: ReturnType<typeof createSingleMediaRecordUploader>
 ) {
   return async function uploadSingleMedia(

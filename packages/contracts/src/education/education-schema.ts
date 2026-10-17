@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const educationTranslationSchema = z.object({
+const educationTranslationSchema = z.object({
   id: z.string().optional(),
   language: z.string().min(1),
 
@@ -8,7 +8,7 @@ export const educationTranslationSchema = z.object({
   description: z.string().nullable().optional(),
 });
 
-export const educationAchievementTranslationSchema = z.object({
+const educationAchievementTranslationSchema = z.object({
   id: z.string().optional(),
   language: z.string().min(1),
 
@@ -16,7 +16,7 @@ export const educationAchievementTranslationSchema = z.object({
   content: z.string().nullable().optional(),
 });
 
-export const educationAchievementSchema = z.object({
+const educationAchievementSchema = z.object({
   id: z.string().optional(),
 
   sortOrder: z.number(),

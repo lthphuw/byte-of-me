@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const tagTranslationSchema = z.object({
+const tagTranslationSchema = z.object({
   id: z.string().optional(),
   language: z.string().min(1, 'validation.required'),
   name: z.string().trim().min(1, 'validation.required'),

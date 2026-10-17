@@ -9,7 +9,7 @@
  * track; the caller then keeps the size the browser measures.
  */
 
-export interface VideoDimensions {
+interface VideoDimensions {
   width: number;
   height: number;
 }

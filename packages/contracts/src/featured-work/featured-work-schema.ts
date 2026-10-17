@@ -16,7 +16,7 @@ export const FEATURED_WORK_MEDIA_LABEL_MAX_LENGTH = 24;
 
 /** A card gathers at most this many proof links (PRs, commits, posts). */
 export const FEATURED_WORK_LINKS_MAX = 6;
-export const FEATURED_WORK_LINK_LABEL_MAX_LENGTH = 24;
+const FEATURED_WORK_LINK_LABEL_MAX_LENGTH = 24;
 const FEATURED_WORK_URL_MAX_LENGTH = 2048;
 
 // '' (an emptied input) and whitespace both mean "no label"; stored as null.
@@ -30,14 +30,14 @@ const tagLabelSchema = (max: number) =>
     .transform((value) => value || null)
     .optional();
 
-export const featuredWorkMediaItemSchema = z.object({
+const featuredWorkMediaItemSchema = z.object({
   mediaId: z.string().min(1, 'validation.required'),
   label: tagLabelSchema(FEATURED_WORK_MEDIA_LABEL_MAX_LENGTH),
 });
 
 // A link is required to have a url: an emptied row in the form is a validation error,
 // not a silently dropped row. Only http(s) is accepted, as the homepage only renders those.
-export const featuredWorkLinkSchema = z.object({
+const featuredWorkLinkSchema = z.object({
   id: z.string().optional(),
   url: z
     .string()
@@ -48,7 +48,7 @@ export const featuredWorkLinkSchema = z.object({
   label: tagLabelSchema(FEATURED_WORK_LINK_LABEL_MAX_LENGTH),
 });
 
-export const featuredWorkTranslationSchema = z.object({
+const featuredWorkTranslationSchema = z.object({
   id: z.string().optional(),
   language: z.string().min(1),
   title: z

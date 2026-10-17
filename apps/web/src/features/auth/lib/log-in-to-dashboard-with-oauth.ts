@@ -26,7 +26,7 @@ const ADMIN_OAUTH_PROVIDERS = {
   google: ADMIN_OAUTH_PROVIDER_IDS.GOOGLE,
 } as const;
 
-export type AdminOAuthProvider = keyof typeof ADMIN_OAUTH_PROVIDERS;
+type AdminOAuthProvider = keyof typeof ADMIN_OAUTH_PROVIDERS;
 
 /**
  * Starts an admin OAuth sign-in and redirects to the provider.

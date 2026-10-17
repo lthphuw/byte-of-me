@@ -17,7 +17,6 @@ export default [
     ignores: [
       '**/node_modules/**',
       '**/.next/**',
-      '**/dist/**',
       '**/build/**',
       '**/coverage/**',
       '**/.turbo/**',
@@ -62,7 +61,6 @@ export default [
         {
           groups: [
             ['^react', '^@?\\w'],
-            ['^@app', '^@widgets', '^@features', '^@entities', '^@shared'],
             ['^\\u0000'],
             ['^\\.\\.'],
             ['^\\.'],
@@ -86,7 +84,6 @@ export default [
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
       'unused-imports/no-unused-imports': 'warn',
-      // 'unused-imports/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
 
       /* ---------------- REACT & HOOKS ---------------- */
       'react/react-in-jsx-scope': 'off',
@@ -95,7 +92,7 @@ export default [
       'react-hooks/exhaustive-deps': 'warn',
 
       /* ---------------- TS & GENERAL ---------------- */
-      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/consistent-type-imports': 'warn',
       'no-console': ['warn', { allow: ['warn', 'error'] }],
     },
@@ -127,9 +124,9 @@ export default [
   },
 
   /* Workspace packages are self-contained: internal imports are relative,
-     the '@' alias belongs to apps/web only. */
+     the '@' alias belongs to apps/web only. Scripts reach into apps by path. */
   {
-    files: ['packages/**/*.{ts,tsx}'],
+    files: ['packages/**/*.{ts,tsx}', 'scripts/**/*.ts'],
     rules: {
       'import-alias/import-alias': 'off',
     },

@@ -2,15 +2,14 @@
  * Filter lists and search text come from anonymous callers and are bounded;
  * an oversized or ill-typed filter is refused with no query run.
  */
-import {
-  MAX_FILTER_SLUGS,
-  MAX_SEARCH_LENGTH,
-  MAX_SLUG_LENGTH,
-} from '@byte-of-me/api-core';
+import { MAX_FILTER_SLUGS } from '@byte-of-me/api-core';
 import { prisma } from '@byte-of-me/db';
 import { beforeEach, describe, expect, it, mock } from 'bun:test';
 
 import { getPaginatedPublicProjects } from './get-paginated-public-projects';
+
+const MAX_SLUG_LENGTH = 64;
+const MAX_SEARCH_LENGTH = 100;
 
 const findMany = mock();
 const count = mock();

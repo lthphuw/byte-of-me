@@ -9,13 +9,13 @@ import 'server-only';
 import { env } from '@/shared/config/env';
 import { getErrorMessage } from '@/shared/lib/utils';
 
-export type PublicActionContext = {
+type PublicActionContext = {
   locale: string;
   userId: string;
   email: string;
 };
 
-export type PublicActionOptions = {
+type PublicActionOptions = {
   cache?: boolean;
   cacheKey?: string[];
   cacheTags?: string[];
@@ -70,7 +70,7 @@ export async function withPublicActionHandler<TData>(
  * a vocabulary the client would have to translate. `'unknown'` is deliberately
  * the same id the contact form already renders (`contact.form.errors.unknown`).
  */
-export type PublicActionFailureCode = 'unknown';
+type PublicActionFailureCode = 'unknown';
 
 /**
  * What a visitor is told when a public read fails.

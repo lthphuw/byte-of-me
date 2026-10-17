@@ -8,7 +8,7 @@ import Image from 'next/image';
 import { cn, formatImageSize } from '@/shared/lib/utils';
 import type { Media } from '@/shared/types/models';
 
-export interface MediaCardProps {
+interface MediaCardProps {
   media: Media;
   onDeleteMedia?: (id: string) => void;
   isDeleting?: boolean;

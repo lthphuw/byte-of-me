@@ -13,7 +13,7 @@ import {
 
 import { FieldMessage } from './field-message';
 
-export interface TextFieldProps<T extends FieldValues = FieldValues> {
+interface TextFieldProps<T extends FieldValues = FieldValues> {
   control: Control<T>;
   name: FieldPath<T>;
   label: string;

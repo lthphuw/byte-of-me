@@ -9,7 +9,7 @@ import type sharpModule from 'sharp';
 
 import 'server-only';
 
-export interface CompressedImage {
+interface CompressedImage {
   buffer: Buffer;
   mimeType: string;
   width: number;

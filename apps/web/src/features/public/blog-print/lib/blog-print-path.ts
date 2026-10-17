@@ -10,7 +10,7 @@
  * footer and the reading shell, and a page whose entire job is to become a
  * clean PDF must inherit none of it.
  */
-export const BLOG_PRINT_PATH = '/print/blogs';
+const BLOG_PRINT_PATH = '/print/blogs';
 
 /**
  * Href for a blog's print view, relative to the locale root — pass it to the

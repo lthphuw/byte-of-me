@@ -21,7 +21,7 @@ export const HYDRATED_LIST_BEHAVIOR = {
   refetchOnWindowFocus: false,
 } as const satisfies InfiniteListQueryBehavior;
 
-export type InfiniteListQueryOptions<T> = InfiniteListQueryBehavior & {
+type InfiniteListQueryOptions<T> = InfiniteListQueryBehavior & {
   /** Query key from the entity's key factory — never an inline array. */
   queryKey: readonly unknown[];
   /** Server action returning one page of the list. */

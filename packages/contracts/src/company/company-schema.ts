@@ -1,20 +1,20 @@
 import { z } from 'zod';
 
-export const companyTranslationSchema = z.object({
+const companyTranslationSchema = z.object({
   id: z.string().optional(),
   language: z.string().min(1),
 
   description: z.string().nullable().optional(),
 });
 
-export const companyTaskTranslationSchema = z.object({
+const companyTaskTranslationSchema = z.object({
   id: z.string().optional(),
   language: z.string().min(1),
 
   content: z.string().min(1, 'validation.required'),
 });
 
-export const companyTaskSchema = z.object({
+const companyTaskSchema = z.object({
   id: z.string().optional(),
 
   sortOrder: z.number(),
@@ -22,7 +22,7 @@ export const companyTaskSchema = z.object({
   translations: z.array(companyTaskTranslationSchema).min(1),
 });
 
-export const companyRoleTranslationSchema = z.object({
+const companyRoleTranslationSchema = z.object({
   id: z.string().optional(),
   language: z.string().min(1),
 
@@ -30,7 +30,7 @@ export const companyRoleTranslationSchema = z.object({
   description: z.string().nullable().optional(),
 });
 
-export const companyRoleSchema = z.object({
+const companyRoleSchema = z.object({
   id: z.string().optional(),
 
   startDate: z.date().nullable().optional(),

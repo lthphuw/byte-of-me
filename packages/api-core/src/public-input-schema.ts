@@ -13,8 +13,8 @@ export const cuidSchema = z.string().regex(CUID_PATTERN, 'Invalid id');
 
 /** Filter chips on a list page are a handful; this bounds the OR/AND fan-out. */
 export const MAX_FILTER_SLUGS = 10;
-export const MAX_SLUG_LENGTH = 64;
-export const MAX_SEARCH_LENGTH = 100;
+const MAX_SLUG_LENGTH = 64;
+const MAX_SEARCH_LENGTH = 100;
 
 export const slugSchema = z.string().min(1).max(MAX_SLUG_LENGTH);
 

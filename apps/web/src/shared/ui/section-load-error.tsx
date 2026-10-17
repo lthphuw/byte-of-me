@@ -3,7 +3,7 @@
 import { Button, StateBlock } from '@byte-of-me/ui';
 import { useRouter } from 'next/navigation';
 
-export type SectionLoadErrorProps = {
+type SectionLoadErrorProps = {
   title: string;
   description?: string;
   /** Given only on a dynamic route, where a retry re-runs the read. */

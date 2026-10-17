@@ -5,8 +5,7 @@
 
 ```
 apps/web/src/features/
-├── auth/                  one slice, no sub-groups: sign-in and sign-out
-│   ├── index.ts           re-exports lib, model, ui
+├── auth/                  one slice, no sub-groups: sign-in and sign-out; no slice barrel (callers import lib/ and ui/ by path)
 │   ├── lib/               six 'use server' actions
 │   ├── model/             userAuthLoginSchema (zod)
 │   └── ui/                AuthModal (client), AdminAuthForm, Github/GoogleAuthButton
@@ -90,7 +89,7 @@ apps/web/src/features/
 
 ## Gotchas
 
-- `apps/web/src/features/public/index.ts` and `apps/web/src/features/dashboard/index.ts` are root barrels. Their 9 importers are server files today. Client files must use slice paths (AGENTS §3 gives the same rule for `@/entities`).
+- `apps/web/src/features/public/index.ts` and `apps/web/src/features/dashboard/index.ts` are root barrels. Their 9 importers are server files today. Client files must use slice paths (`@/entities` has no root barrel at all).
 - `apps/web/src/entities/{tag,media,tech-stack,comment,blog}/index.ts` do not re-export `query/`. Import hooks from `@/entities/<slice>/query`, as `apps/web/src/features/public/blog-filters/ui/blog-filters.tsx:9` does.
 - `requireAdmin()` stays outside the `unstable_cache` callback, which runs with no cookies, headers or session. Pass the owner id or locale into the key instead (`apps/web/src/features/dashboard/dashboard-stats/lib/get-dashboard-stats.ts:128-137`, `apps/web/src/features/dashboard/blog-analytics-overview/lib/get-analytics-overview.ts:268-308`).
 - `toggle-blog-interaction` takes `_blogSlug` and ignores it: a caller's slug would let any signed-in visitor purge any tag. The purged tag comes from the blog row (`apps/web/src/entities/blog/api/toggle-blog-interaction.ts:20-22`, `:84`).
@@ -110,12 +109,12 @@ cd apps/web && bun test src/features/public    # one subtree, run from the works
 
 ## AGENTS.md deviations
 
-- `apps/web/src/features/public/blog-comment/ui/blog-comment-section.tsx:21` and `apps/web/src/features/public/toggle-blog-interactions/ui/blog-interaction-button.tsx:13` — §3 names a deep import into another slice (`@/features/auth/ui/auth-modal`). Kept on purpose: the bundle-boundaries rule says client files import subpaths, not feature barrels. Not re-measured.
 - `apps/web/src/features/dashboard/blog-editor/ui/form/blog-meta-fields.tsx:24` — §3: reaches into another feature's internals (`media-library/ui/media-select`). Fix: `@/features/dashboard/media-library`.
-- Deep entity imports, 41 non-spec lines (`rg -o "from '@/entities/[^'/]+/[^']+'" apps/web/src/features -g '!*.spec.*'`; 49 before the schemas, keys and upload constraints moved to `@byte-of-me/contracts`), §3 barrel rule:
-  - 31 target a module the slice barrel already re-exports, e.g. `apps/web/src/features/public/blog-related-posts/ui/blog-related-posts.tsx:1` (re-exported at `apps/web/src/entities/blog/api/index.ts:15`). Fix: import `@/entities/<slice>`.
-  - 3 target a module the barrel omits: `apps/web/src/features/public/homepage-featured-works/ui/homepage-featured-works-loading.tsx:10`, `apps/web/src/features/dashboard/blog-editor/lib/use-blog-reference-options.ts:6`, `apps/web/src/features/dashboard/blog-editor/ui/form/blog-meta-fields.tsx:22` (type-only).
-  - 7 import `query/`, which no slice barrel re-exports (see Gotchas): `apps/web/src/features/public/blog-filters/ui/blog-filters.tsx:9`, `apps/web/src/features/public/project-filters/ui/project-filters.tsx:11` and `:13`, `apps/web/src/features/public/blog-comment/ui/blog-comment-section.tsx:25`, `apps/web/src/features/dashboard/media-library/ui/media-select.tsx:17`, `apps/web/src/features/dashboard/media-library/ui/media-multi-select.tsx:17`, `apps/web/src/features/dashboard/blog-editor/lib/use-blog-reference-options.ts:7`.
+- Deep entity imports, 38 non-spec lines (`rg -o "from '@/entities/[^'/]+/[^']+'" apps/web/src/features -g '!*.spec.*'`), §3 barrel rule:
+  - 12 target a module the slice barrel already re-exports, e.g. `apps/web/src/features/public/blog-related-posts/ui/blog-related-posts.tsx:3` (re-exported at `apps/web/src/entities/blog/api/index.ts:16`). Fix: import `@/entities/<slice>`.
+  - 2 target a module the barrel omits: `apps/web/src/features/dashboard/blog-editor/lib/use-blog-reference-options.ts:5` and `apps/web/src/features/dashboard/blog-editor/ui/form/blog-meta-fields.tsx:22` (type-only).
+  - 17 import `query/`, which no slice barrel re-exports (see Gotchas), e.g. `apps/web/src/features/public/blog-filters/ui/blog-filters.tsx:9` and `apps/web/src/features/dashboard/media-library/ui/media-select.tsx:17`.
+  - 7 target `featured-work`, `open-source` or `social-link`, which have no barrel: not deviations.
 - `apps/web/src/entities/blog/api/toggle-blog-interaction.ts:84` — §6 table says `revalidateTag(CACHE_TAGS.X)`; this uses the post's slug as a per-post tag. Deliberate, documented at `:83` and `apps/web/src/features/dashboard/blog-analytics-overview/lib/get-analytics-overview.ts:28`.
 
 Checked clean (rg, 2026-10-10): no `@/widgets` or `@/app` import; no `@/entities` root-barrel import; no `public/` slice reaches `requireAdmin` or `getAuthenticatedAdmin`; no inline query keys, `console.*`, `any`, `@ts-ignore`, `mock.module` or `jest.mock`. Direct `@byte-of-me/ui|db|logger` imports are allowed: AGENTS §3 lets a layer import the layers below it, and packages sit below shared.

@@ -11,7 +11,7 @@ import { SAFE_SCHEMES, schemeOf } from '@byte-of-me/ui-utils';
  */
 
 /** An entry that could not become a reference, and why. */
-export type SkippedBibtexEntry = { key: string; reason: string };
+type SkippedBibtexEntry = { key: string; reason: string };
 
 type BibtexParseResult = {
   entries: ReferenceItem[];

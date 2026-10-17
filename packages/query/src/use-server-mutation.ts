@@ -9,7 +9,7 @@ import {
 } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
-export type ServerMutationOptions<TVariables, TData> = {
+type ServerMutationOptions<TVariables, TData> = {
   mutationFn: (variables: TVariables) => Promise<ApiResponse<TData>>;
   /**
    * Localised generic failure text, the fallback for every failure (D2). Omit

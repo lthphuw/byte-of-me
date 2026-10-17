@@ -3,7 +3,7 @@ import { Quote } from 'lucide-react';
 
 import { cn } from '@/shared/lib/utils';
 
-export interface ProfileQuoteProps {
+interface ProfileQuoteProps {
   quote: string;
   author?: string | null;
   className?: string;

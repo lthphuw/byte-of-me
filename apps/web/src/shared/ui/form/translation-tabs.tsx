@@ -37,7 +37,7 @@ type FieldArrayItem<
   ? U
   : never;
 
-export interface TranslationTabsProps<
+interface TranslationTabsProps<
   T extends FieldValues = FieldValues,
   TName extends ArrayPath<T> = ArrayPath<T>
 > {

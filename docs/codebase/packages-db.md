@@ -92,8 +92,8 @@ Relations show the schema's `onDelete` (`cascade`, `setNull`, or `no onDelete`).
 
 ## Key flows
 
-- Import: `apps/web/src/entities/tag/api/create-tag.ts:10` uses `import { prisma } from '@byte-of-me/db'`; types come from `@byte-of-me/db/types` (e.g. `apps/web/src/entities/tech-stack/model/types.ts:1`). The root import throws when `DATABASE_URL` is unset (`packages/db/src/index.ts:8-12`).
-- Client: `createPrismaClient(deps?)` (`packages/db/src/index.ts:23-37`) builds `new PrismaPg({ connectionString })` from `@prisma/adapter-pg` and passes it as `adapter` to `new PrismaClient`. `PrismaDeps` (`:18-21`) is the test seam. No query engine (AGENTS §1).
+- Import: `apps/web/src/entities/tag/api/create-tag.ts:10` uses `import { prisma } from '@byte-of-me/db'`; types come from `@byte-of-me/db/types` (e.g. `apps/web/src/entities/tech-stack/model/types.ts:1`). The root import throws when `DATABASE_URL` is unset (`packages/db/src/index.ts:8-12`), and loads `.env` through `dotenv/config` (`:4`), so `dotenv` is a runtime dependency, not a dev one.
+- Client: `createPrismaClient(deps?)` (`packages/db/src/index.ts:23-37`) builds `new PrismaPg({ connectionString })` from `@prisma/adapter-pg` and passes it as `adapter` to `new PrismaClient`. `PrismaDeps` (`:18-21`, file-private) is the shape of that test seam. No query engine (AGENTS §1).
 - Singleton: `prisma = globalThis.prisma ?? createPrismaClient()` (`packages/db/src/index.ts:53-58`), cached on `global` outside production only.
 - Logging: `$on('query')` is attached outside production only and logs SQL, params and duration via `logger.debug` (`packages/db/src/index.ts:42-48`). Error, info and warn go to stdout (`:31-36`).
 - Generated client: the `prisma-client` generator writes `packages/db/src/generated/prisma` (`packages/db/prisma/schema.prisma:1-7`); `packages/db/src/index.ts:60` re-exports it, so `PrismaClient`, `Prisma` and model types come from the package root.

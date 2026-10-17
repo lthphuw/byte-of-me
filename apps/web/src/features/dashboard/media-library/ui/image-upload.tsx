@@ -16,7 +16,7 @@ import { toast } from 'sonner';
 
 import { compressInBrowser } from '@/shared/lib/media/compress-in-browser';
 
-export interface ImageUploadProps {
+interface ImageUploadProps {
   /**
    * Rejects when the batch is refused. The mutation behind it reports the
    * refusal, so this component keeps the files listed for a retry.

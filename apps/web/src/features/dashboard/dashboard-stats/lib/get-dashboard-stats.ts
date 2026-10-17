@@ -9,7 +9,7 @@ import { unstable_cache } from 'next/cache';
 import { requireAdmin } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
 
-export type DashboardStats = {
+type DashboardStats = {
   totalMessages: number;
   totalProjects: number;
   totalBlogs: number;

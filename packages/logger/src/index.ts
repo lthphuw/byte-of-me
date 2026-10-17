@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'silent';
+type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'silent';
 
 const LEVELS: LogLevel[] = ['debug', 'info', 'warn', 'error', 'silent'];
 let currentLevel: LogLevel =

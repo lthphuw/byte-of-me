@@ -19,7 +19,7 @@ type LibraryQuery = Pick<
   | 'isFetchingNextPage'
 >;
 
-export interface MediaPickerGridProps {
+interface MediaPickerGridProps {
   query: LibraryQuery;
   /** True when the loaded pages hold no image to offer. */
   isEmpty: boolean;

@@ -9,11 +9,9 @@ import { isSiteOwnerEmail } from '@/shared/lib/auth/site-owner';
  * `./auth.ts` (stubbed under `bun test`) so it can be tested. Account linking
  * makes the email address the credential, so it must be verified.
  */
-export type SignInDecision =
-  | { allowed: true }
-  | { allowed: false; reason: string };
+type SignInDecision = { allowed: true } | { allowed: false; reason: string };
 
-export type SignInInput = {
+type SignInInput = {
   user: { email?: string | null };
   account?: { provider: string; type: string } | null;
   profile?: { email_verified?: unknown } | null;

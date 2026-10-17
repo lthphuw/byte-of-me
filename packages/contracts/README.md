@@ -13,18 +13,15 @@ them. No `react`, no `next/*`, no `@/` alias, and no database: `contracts` is on
 
 One subpath per entity that has something to export:
 
-- `./blog`: `blogFormSchema`, `blogTranslationSchema`, `publicBlogsParamsSchema`,
+- `./blog`: `blogFormSchema`, `publicBlogsParamsSchema`,
   `relatedPublicBlogsParamsSchema`, `MAX_RELATED_BLOGS`, `BlogFormValues`, `blogKeys`.
 - `./comment`: `publicCommentsParamsSchema`, `commentKeys`.
-- `./company`: `companySchema` and its role, task and translation schemas, `CompanyFormValues`,
-  `companyKeys`.
+- `./company`: `companySchema`, `CompanyFormValues`, `companyKeys`.
 - `./contact-message`: `contactMessageSchema`, `createContactMessageSchema`,
-  `ContactMessageErrorKey`, `ContactMessageFormValues`, the message length limits,
-  `contactMessageKeys`.
-- `./education`: `educationSchema` and its achievement and translation schemas,
-  `EducationFormValues`, `educationKeys`.
-- `./featured-work`: `featuredWorkSchema` and its link, media and translation schemas, the
-  `FEATURED_WORK_*` limits, `FeaturedWorkFormValues`, `featuredWorkKeys`.
+  `ContactMessageFormValues`, `MESSAGE_MAX_LENGTH`, `contactMessageKeys`.
+- `./education`: `educationSchema`, `EducationFormValues`, `educationKeys`.
+- `./featured-work`: `featuredWorkSchema`, the `FEATURED_WORK_*` limits,
+  `FeaturedWorkFormValues`, `featuredWorkKeys`.
 - `./media`: `mediaScopeSchema`, the video upload schemas, `mediaKeys`, and
   `upload-constraints` (size and batch limits, accepted MIME types, `MEDIA_SCOPES`,
   `findUploadViolation`, `pickUploadPath`, the byte-signature sniffers
@@ -35,10 +32,10 @@ One subpath per entity that has something to export:
 - `./tag`: `tagSchema`, `TagFormValues`, `tagKeys`, `TAG_MUTATION_TAGS`.
 - `./tech-stack`: `techStackSchema`, `TechStackFormValues`, `techStackKeys`,
   `TECH_MUTATION_TAGS`.
-- `./user-profile`: `userProfileSchema`, `createUserProfileSchema`, `UserProfileErrorKey`,
+- `./user-profile`: `userProfileSchema`, `createUserProfileSchema`,
   `UserProfileFormValues`, `userProfileKeys`.
-- `./workspace-settings`: `workspaceSettingsSchema`, `workspaceSettingsPatchSchema`,
-  `parseWorkspaceSettings`, `WORKSPACE_SETTINGS_DEFAULTS`, `workspaceSettingsKeys`.
+- `./workspace-settings`: `workspaceSettingsPatchSchema`, `parseWorkspaceSettings`,
+  `WORKSPACE_SETTINGS_DEFAULTS`, `workspaceSettingsKeys`.
 
 The root (`.`) holds what more than one entity or compressor shares: `richTextDocSchema`
 and `RichTextDoc` (blog and user-profile), and the image-compression config and rules

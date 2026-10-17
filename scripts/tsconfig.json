@@ -1,4 +1,4 @@
 {
   "extends": "../packages/config/typescript/library.json",
-  "include": ["check-boundaries.ts", "new-package.ts"]
+  "include": ["check-boundaries.ts", "gen-icons.ts", "new-package.ts"]
 }

@@ -12,7 +12,7 @@ const ITEM_CLASS = 'flex items-center gap-4 rounded-xl border bg-card p-4';
 /** 44px on touch; 36px only with a fine pointer, under `can-hover:`. */
 const ACTION_CLASS = 'min-h-11 min-w-11 can-hover:min-h-9 can-hover:min-w-9';
 
-export interface RecordListItemProps {
+interface RecordListItemProps {
   leading?: ReactNode;
   /** The main slot: the title and its meta, truncated by the caller. */
   children: ReactNode;
@@ -37,7 +37,7 @@ export function RecordListItem({
   );
 }
 
-export interface RecordRowActionsProps {
+interface RecordRowActionsProps {
   /** The item's visible name, used in both accessible names. */
   name: string;
   onEdit?: () => void;
@@ -85,7 +85,7 @@ export function RecordRowActions({
   );
 }
 
-export interface RecordListSkeletonProps {
+interface RecordListSkeletonProps {
   /** Rows, or cards in the grid, to show while the list loads. */
   rows?: number;
   variant?: 'list' | 'grid';

@@ -17,7 +17,7 @@ import { cn } from '@/shared/lib/utils';
 import { ColorSchemeModeToggle } from '@/shared/ui/color-scheme-toggle';
 import { I18nToggle } from '@/shared/ui/language-toggle';
 
-export interface NavDrawerItem {
+interface NavDrawerItem {
   href: string;
   label: string;
   icon: ComponentType<{ className?: string }>;

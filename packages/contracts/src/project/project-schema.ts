@@ -1,14 +1,14 @@
 import { safeHttpUrl } from '@byte-of-me/api-core';
 import { z } from 'zod';
 
-export const projectTranslationSchema = z.object({
+const projectTranslationSchema = z.object({
   language: z.string(),
   title: z.string(),
   description: z.string(),
 });
 
 // Messages are `validation.*` keys: the form translates them at display time.
-export const projectCoauthorSchema = z.object({
+const projectCoauthorSchema = z.object({
   fullName: z.string().min(1, 'validation.required'),
   email: z
     .string()

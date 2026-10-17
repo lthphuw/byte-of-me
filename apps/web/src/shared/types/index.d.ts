@@ -6,13 +6,10 @@ declare global {
 
 export type LocaleType = 'vi' | 'en';
 
-export type NavItem = {
+export type MainNavItem = {
   title: string;
   href: string;
   disabled?: boolean;
-};
-
-export type MainNavItem = NavItem & {
   onlyMobile?: boolean;
 };
 

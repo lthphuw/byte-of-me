@@ -3,14 +3,14 @@
 import { useEffect, useState } from 'react';
 
 /** An `h2`/`h3` in the article, and the id a link can jump to. */
-export interface ArticleHeading {
+interface ArticleHeading {
   id: string;
   text: string;
   level: 2 | 3;
 }
 
 /** One bibliography entry, as the rendered article already carries it. */
-export interface ArticleReference {
+interface ArticleReference {
   /** The `ref-…` element id — the jump target. */
   id: string;
   /** Its number, which is its position in the rendered list. */

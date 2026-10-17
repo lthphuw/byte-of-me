@@ -23,7 +23,7 @@ import type { PublicProject } from '@/entities/project/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import { PUBLIC_MEDIA_SELECT } from '@/shared/lib/public-media';
 
-export type GetPublicProjectsParams = PaginatedParams & {
+type GetPublicProjectsParams = PaginatedParams & {
   tagSlugs?: string[];
   techStackSlugs?: string[];
   search?: string;

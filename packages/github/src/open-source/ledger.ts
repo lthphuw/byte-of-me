@@ -15,7 +15,7 @@ export function toLedger(repos: OpenSourceRepo[]): OpenSourceLedgerItem[] {
     .sort((a, b) => b.mergedAt.localeCompare(a.mergedAt));
 }
 
-export interface LedgerFilter {
+interface LedgerFilter {
   /** Matches the title, the repo name or the PR number (`#1612`). */
   text: string;
   /** `owner/name`, or `null` for every repo. */
@@ -41,7 +41,7 @@ export function filterLedger(
   });
 }
 
-export interface LedgerPage {
+interface LedgerPage {
   items: OpenSourceLedgerItem[];
   pagination: {
     currentPage: number;
@@ -72,7 +72,7 @@ export function pageLedger(
   };
 }
 
-export interface LedgerMonth {
+interface LedgerMonth {
   /** `YYYY-MM` in UTC. Formatted for the heading in UTC too, so server and browser agree. */
   key: string;
   items: OpenSourceLedgerItem[];

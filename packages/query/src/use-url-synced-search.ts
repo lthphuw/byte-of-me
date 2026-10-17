@@ -7,9 +7,9 @@ import { searchHistoryMode } from '@byte-of-me/api-core';
 import { useDebounce } from '@byte-of-me/ui-hooks';
 
 /** One typing pause. Long enough to swallow a word, short enough to feel live. */
-export const SEARCH_DEBOUNCE_MS = 400;
+const SEARCH_DEBOUNCE_MS = 400;
 
-export interface UseUrlSyncedSearchParams {
+interface UseUrlSyncedSearchParams {
   /** The term the URL currently carries — the single source of truth. */
   urlSearch: string;
   /** Called once per typing pause, never for a term the URL already holds. */
@@ -18,7 +18,7 @@ export interface UseUrlSyncedSearchParams {
   delay?: number;
 }
 
-export interface UrlSyncedSearch {
+interface UrlSyncedSearch {
   /** What the input shows. Always the user's latest keystroke. */
   search: string;
   setSearch: Dispatch<SetStateAction<string>>;

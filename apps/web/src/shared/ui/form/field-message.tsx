@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 
 const VALIDATION_PREFIX = 'validation.';
 
-export interface FieldMessageProps {
+interface FieldMessageProps {
   /** Shown in place of the field's own error, e.g. a list-level one. */
   message?: string;
 }

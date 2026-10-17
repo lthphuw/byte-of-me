@@ -12,7 +12,7 @@ import { describe, expect, it, mock } from 'bun:test';
 
 import {
   createSingleMediaRecordUploader,
-  createSingleMediaUploader,
+  wrapAsUrlUploader,
 } from './upload-single-media';
 
 import type { Media } from '@/shared/types/models';
@@ -41,19 +41,21 @@ function clock(start = 1_000) {
 }
 
 function setup(
-  overrides: Partial<Parameters<typeof createSingleMediaUploader>[0]> = {}
+  overrides: Partial<Parameters<typeof createSingleMediaRecordUploader>[0]> = {}
 ) {
   const time = clock();
   const fetchCompressionConfig = mock(async () => config);
   const compress = mock(async (file: File) => file);
   const upload = mock(async (files: File[]) => stored(files));
-  const uploadSingleMedia = createSingleMediaUploader({
-    fetchCompressionConfig,
-    compress,
-    upload,
-    now: time.now,
-    ...overrides,
-  });
+  const uploadSingleMedia = wrapAsUrlUploader(
+    createSingleMediaRecordUploader({
+      fetchCompressionConfig,
+      compress,
+      upload,
+      now: time.now,
+      ...overrides,
+    })
+  );
   return { uploadSingleMedia, fetchCompressionConfig, compress, upload, time };
 }
 

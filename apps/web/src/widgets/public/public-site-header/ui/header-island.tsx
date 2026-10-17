@@ -183,7 +183,7 @@ export function HeaderIslandGroup({
   );
 }
 
-export interface HeaderIslandProps {
+interface HeaderIslandProps {
   /** Viewport edge the island is pinned to. */
   side: 'left' | 'right';
   docked: boolean;

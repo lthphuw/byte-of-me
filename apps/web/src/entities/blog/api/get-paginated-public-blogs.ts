@@ -33,7 +33,7 @@ import {
 import { getAuthenticatedAdmin } from '@/shared/lib/auth';
 import { PUBLIC_MEDIA_SELECT } from '@/shared/lib/public-media';
 
-export type GetPublicBlogsParams = PaginatedParams & {
+type GetPublicBlogsParams = PaginatedParams & {
   tagSlugs?: string[];
   search?: string;
   /**

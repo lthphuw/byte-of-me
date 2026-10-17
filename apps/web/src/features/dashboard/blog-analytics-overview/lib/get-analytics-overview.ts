@@ -41,18 +41,18 @@ const TOP_BLOGS = 5;
  */
 const ANALYTICS_REVALIDATE_SECONDS = 5 * 60;
 
-export type DailyViews = {
+type DailyViews = {
   date: string;
   views: number;
 };
 
-export type TopBlog = {
+type TopBlog = {
   id: string;
   title: string;
   views: number;
 };
 
-export type AnalyticsOverviewData = {
+type AnalyticsOverviewData = {
   viewsByDay: DailyViews[];
   totalViewsLast30Days: number;
   topBlogs: TopBlog[];

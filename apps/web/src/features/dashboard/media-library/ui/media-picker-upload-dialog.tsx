@@ -7,7 +7,7 @@ import { useMediaUpload } from '@/entities/media/query';
 import { ImageUpload } from '@/features/dashboard/media-library/ui/image-upload';
 import { RecordDialog } from '@/shared/ui/record-dialog';
 
-export interface MediaPickerUploadDialogProps {
+interface MediaPickerUploadDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   compressionConfig: ImageCompressionConfig;

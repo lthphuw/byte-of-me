@@ -28,7 +28,7 @@ type CookieJar = Pick<
 >;
 type RequestHeaders = Awaited<ReturnType<typeof headers>>;
 
-export type RequestScope = { cookieJar: CookieJar; headerList: RequestHeaders };
+type RequestScope = { cookieJar: CookieJar; headerList: RequestHeaders };
 
 // A single heartbeat can never legitimately report more than a few minutes.
 const MAX_SECONDS_PER_UPDATE = 300;

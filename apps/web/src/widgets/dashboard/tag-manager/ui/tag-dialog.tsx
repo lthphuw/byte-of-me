@@ -18,7 +18,7 @@ import {
 
 const FORM_ID = 'tag-editor-form';
 
-export interface TagDialogProps extends EditRecordDialogControls {
+interface TagDialogProps extends EditRecordDialogControls {
   /** The full tag, with one row per language. `null` for a new tag. */
   initialData: Nullable<AdminTag>;
   onSubmit: (values: TagFormValues) => void;

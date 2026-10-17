@@ -37,8 +37,8 @@ src/
 └── shared/     # api · config · hooks · i18n · lib · types · ui
 ```
 
-A layer may only import from the layers below it. Cross-imports within a layer go
-through the slice's `index.ts` barrel.
+A layer may only import from the layers below it. Cross-slice imports go through the
+slice's `index.ts` barrel where it has one.
 
 ## Internationalization
 

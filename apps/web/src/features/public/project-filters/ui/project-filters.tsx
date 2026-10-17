@@ -17,7 +17,7 @@ import {
 } from '@/features/public/project-filters/lib';
 import { FilterSearchInput } from '@/shared/ui';
 
-export interface ProjectFiltersProps {
+interface ProjectFiltersProps {
   value: ProjectFilterState;
   onChange: (
     value: ProjectFilterState,

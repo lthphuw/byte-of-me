@@ -13,7 +13,7 @@ const ZOOM_STEPS = [1, 1.5, 2, 3, 4];
 const DRAG_SLOP = 6;
 const EPSILON = 0.001;
 
-export interface DemoView {
+interface DemoView {
   zoom: number;
   /** Offsets from the centre, in CSS pixels, of the zoomed picture. */
   x: number;

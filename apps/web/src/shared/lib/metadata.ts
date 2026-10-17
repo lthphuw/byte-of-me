@@ -6,7 +6,7 @@ import { routing } from '@/shared/i18n/routing';
 import type { BrandLayer } from '@/shared/lib/brand-mark';
 
 /** A JSON value, which is all schema.org payloads ever are. */
-export type JsonLdValue =
+type JsonLdValue =
   | string
   | number
   | boolean

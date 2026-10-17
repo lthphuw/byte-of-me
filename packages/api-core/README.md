@@ -11,7 +11,7 @@ pagination and the shared constants. Layer 1, not 0, because `parseInput` logs t
 The root (`src/index.ts`) is client-safe: a `'use client'` file may import it, and it
 pulls neither `chalk` nor `node:*`.
 
-- `ApiResponse`, `PaginatedData`, `PaginatedMetadata`, `PaginatedParams`: the envelope and
+- `ApiResponse`, `PaginatedData`, `PaginatedParams`: the envelope and
   the page shape. `errorMsg` is the failure field; `errorCode` is set only when the action
   names its reason.
 - `unwrapApiResponse`, `ServerActionError`: throw on `{ success: false }` so TanStack sees
@@ -20,7 +20,7 @@ pulls neither `chalk` nor `node:*`.
   `page` and `limit`; build the page metadata.
 - `parsePageParam`, `parseSlugListParam`, `searchHistoryMode`, `FilterHistoryMode`,
   `FilterNavigationOptions`: URL filter parsing for the list pages.
-- `cuidSchema`, `slugSchema`, `slugListSchema`, `searchTextSchema` and their limits: zod for
+- `cuidSchema`, `slugSchema`, `slugListSchema`, `searchTextSchema` and `MAX_FILTER_SLUGS`: zod for
   ids and filters an anonymous caller sends.
 - `safeHttpUrl`, `isSafeHttpUrl`, `toSafeHref`: http(s)-only URLs, for a form and for an
   `href` read from the database.

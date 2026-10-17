@@ -11,11 +11,7 @@ export {
 } from './filter-params';
 export { getTranslatedContent, getTranslationLanguages } from './i18n-utils';
 export { normalizeEmail } from './normalize-email';
-export type {
-  PaginatedData,
-  PaginatedMetadata,
-  PaginatedParams,
-} from './paginated-api.type';
+export type { PaginatedData, PaginatedParams } from './paginated-api.type';
 export {
   buildPaginatedMeta,
   clampPagination,
@@ -24,8 +20,6 @@ export {
 export {
   cuidSchema,
   MAX_FILTER_SLUGS,
-  MAX_SEARCH_LENGTH,
-  MAX_SLUG_LENGTH,
   searchTextSchema,
   slugListSchema,
   slugSchema,

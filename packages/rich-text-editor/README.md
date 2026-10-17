@@ -4,8 +4,8 @@ Layer 3 in `packages/config/boundaries.json`: it may import only lower layers.
 Consumed as TypeScript source through `transpilePackages`; there is no build step.
 
 The TipTap editor the dashboard writes rich text with, and the vaul drawer its mobile
-toolbar uses. One export, the root (`src/index.ts`): `RichTextEditor`,
-`RichTextChangeMeta` and the `EditorLabels` type. The app reaches it only through
+toolbar uses. One export, the root (`src/index.ts`): `RichTextEditor` and the
+`EditorLabels` type. The app reaches it only through
 `LazyRichTextEditor` (`next/dynamic`, `ssr: false`) so TipTap, ProseMirror and vaul
 land in one dashboard chunk and never in a public page. Nothing re-exports it:
 `@byte-of-me/ui` must not, and `editor-surface.css` is imported by the editor, hence

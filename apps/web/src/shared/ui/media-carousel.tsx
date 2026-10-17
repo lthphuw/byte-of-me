@@ -20,7 +20,7 @@ import {
 
 import { cn } from '@/shared/lib/utils';
 
-export interface MediaCarouselSlide {
+interface MediaCarouselSlide {
   /** Stable across renders: it is the slide's React key. */
   id: string;
   node: ReactNode;

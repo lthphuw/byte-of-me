@@ -5,8 +5,8 @@
   "description": "Shared tooling for the byte-of-me monorepo: TypeScript presets, package layers, test preloads.",
   "scripts": {
     "check-types": "tsc --noEmit && tsc --noEmit -p ../../scripts",
-    "lint": "eslint test ../../scripts/check-boundaries.ts ../../scripts/new-package.ts",
-    "lint:fix": "eslint test ../../scripts/check-boundaries.ts ../../scripts/new-package.ts --fix"
+    "lint": "eslint test ../../scripts/check-boundaries.ts ../../scripts/gen-icons.ts ../../scripts/new-package.ts",
+    "lint:fix": "eslint test ../../scripts/check-boundaries.ts ../../scripts/gen-icons.ts ../../scripts/new-package.ts --fix"
   },
   "devDependencies": {
     "@types/node": "catalog:",

@@ -21,7 +21,7 @@ import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 const MAX_REPLIES_PER_LEVEL = 250;
 const MAX_REPLIES_PER_PAGE = 500;
 
-export type GetPaginatedPublicCommentsForBlog = PaginatedParams & {
+type GetPaginatedPublicCommentsForBlog = PaginatedParams & {
   blogId: string;
 };
 

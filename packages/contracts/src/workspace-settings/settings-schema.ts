@@ -12,7 +12,7 @@ import {
  */
 
 /** Every setting, flat. */
-export const workspaceSettingsSchema = z.object({
+const workspaceSettingsSchema = z.object({
   /**
    * How uploads are compressed, in the browser and again on the server. One
    * nested object, so a write carries the WHOLE config: the jsonb merge in

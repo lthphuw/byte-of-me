@@ -8,7 +8,7 @@ import { useTranslations } from 'next-intl';
 
 import { cn } from '@/shared/lib/utils';
 
-export interface CommentFormProps {
+interface CommentFormProps {
   blogId: string;
   isPending?: boolean;
   onComment: (content: string, parentId?: string) => void;

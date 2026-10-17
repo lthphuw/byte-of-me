@@ -15,7 +15,7 @@ const globalForPrisma = global as unknown as {
   prisma?: PrismaClient;
 };
 
-export interface PrismaDeps {
+interface PrismaDeps {
   PrismaClient: typeof PrismaClient;
   PrismaPg: typeof PrismaPg;
 }

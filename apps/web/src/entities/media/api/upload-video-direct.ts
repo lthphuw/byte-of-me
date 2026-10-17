@@ -14,7 +14,7 @@ const defaultDeps = {
   put: (url: string, init: RequestInit) => fetch(url, init),
 };
 
-export type DirectVideoUploadDeps = typeof defaultDeps;
+type DirectVideoUploadDeps = typeof defaultDeps;
 
 /**
  * Uploads a clip browser → storage with a signed URL, then records it.

@@ -83,13 +83,13 @@
 ### packages/config (presets, package layers, test preloads)
 
 - `typescript/base.json`: `strict`, `esModuleInterop`, `skipLibCheck`, `resolveJsonModule`. Extended by the presets below; `packages/db` extends it directly.
-- `typescript/nextjs.json` (extends base): ESNext modules, `moduleResolution: node`, ES2023, `jsx: preserve`, `noEmit`, `isolatedModules`, Next plugin. Used by `apps/web`, `packages/ui`.
+- `typescript/nextjs.json` (extends base): ESNext modules, `moduleResolution: node`, ES2023, `jsx: preserve`, `noEmit`, `isolatedModules`, Next plugin. Used by `apps/web`.
 - `typescript/node-library.json` (extends base): `module: commonjs`, ES2019. Used by `packages/storage`, `packages/logger`.
-- `typescript/library.json` (extends base): ESNext modules, `moduleResolution: bundler`, ES2023, DOM libs, `jsx: react-jsx`, `noEmit`, `isolatedModules`; no `incremental`, no Next plugin. The preset `new-package` gives every new package; used by `packages/api-core`, `packages/contracts`, `packages/query`, `packages/github`, `packages/ui-utils`, `packages/ui-hooks`, `packages/ui-motion`, `packages/rich-text-schema`, `packages/ui-primitives`, `packages/ui-toast`, `packages/ui-forms`, `packages/ui-carousel`, `packages/rich-text-render`, `packages/rich-text-editor`.
+- `typescript/library.json` (extends base): ESNext modules, `moduleResolution: bundler`, ES2023, DOM libs, `jsx: react-jsx`, `noEmit`, `isolatedModules`; no `incremental`, no Next plugin. The preset `new-package` gives every new package; used by `packages/api-core`, `packages/contracts`, `packages/query`, `packages/github`, `packages/ui`, `packages/ui-utils`, `packages/ui-hooks`, `packages/ui-motion`, `packages/rich-text-schema`, `packages/ui-primitives`, `packages/ui-toast`, `packages/ui-forms`, `packages/ui-carousel`, `packages/rich-text-render`, `packages/rich-text-editor`.
 - `boundaries.json`: `layers` (package names per layer, index = layer), `dbTypesOnly`, `noReact`. Read by `check-boundaries.ts` and rewritten by `new-package.ts`. Rules: [../architecture.md](../architecture.md) ("Package layers").
 - `test/happydom.ts`: registers happy-dom on `globalThis` and sets `IS_REACT_ACT_ENVIRONMENT`. Preloaded by `apps/web`, `packages/rich-text-editor`, `packages/query`, `packages/ui-hooks`, `packages/ui-primitives`, `packages/ui-forms` and `packages/ui-carousel`.
 - `test/db-guard.ts`: forces `DATABASE_URL` and `DIRECT_URL` to `postgres://test:test@127.0.0.1:1/test`, then throws if either is non-local. Preloaded by `apps/web` and `packages/db`; details in [packages-db.md](packages-db.md).
-- The package has its own `check-types` (the preloads and `scripts/tsconfig.json`) and `lint` (the preloads and the two scripts), so they run in `turbo run check-types lint` and the pre-commit hook. Its `turbo.json` adds `scripts/**` to both tasks' inputs, and the root `turbo.json` adds `test/**` to every package's `test` inputs, so an edit to either re-runs the tasks that read it.
+- The package has its own `check-types` (the preloads and `scripts/tsconfig.json`) and `lint` (the preloads and the three scripts: `check-boundaries.ts`, `gen-icons.ts`, `new-package.ts`), so they run in `turbo run check-types lint` and the pre-commit hook. Its `turbo.json` adds `scripts/**` to both tasks' inputs, and the root `turbo.json` adds `test/**` to every package's `test` inputs, so an edit to either re-runs the tasks that read it.
 
 ### packages/api-core public API
 
@@ -100,12 +100,12 @@ The root `src/index.ts` is client-safe: it pulls neither `logger` (chalk) nor `n
 | export | shape | notes |
 | --- | --- | --- |
 | `ApiResponse<T, TErrorCode>` (type) | `{ success: true, data }` or `{ success: false, errorMsg, errorCode? }` | `api-response.type.ts`; `errorMsg` is an English fallback, `errorCode` the reason a caller can translate |
-| `PaginatedData<T>`, `PaginatedMetadata`, `PaginatedParams` (types) | page of rows plus `currentPage`, `totalPages`, `totalCount`, `hasMore` | `paginated-api.type.ts` |
-| `clampPagination` | `(params, { defaultLimit = 12, maxLimit = 50, maxPage }?)` -> `{ page, limit }` | `pagination.ts`; `MAX_PAGE` (100 000) is not exported |
+| `PaginatedData<T>`, `PaginatedParams` (types) | page of rows plus `currentPage`, `totalPages`, `totalCount`, `hasMore` | `paginated-api.type.ts`, which also holds `PaginatedMetadata`, the `meta` shape, not exported from the root |
+| `clampPagination` | `(params, { defaultLimit = 12, maxLimit = 50, maxPage }?)` -> `{ page, limit }` | `pagination.ts`; `MAX_PAGE` (100 000) is not exported from the root |
 | `buildPaginatedMeta` | `({ page, limit, totalCount })` -> `PaginatedMetadata` | `pagination.ts` |
 | `MAX_CACHED_PAGE` | `50` | deepest page a public list stores in the data cache |
 | `unwrapApiResponse`, `ServerActionError` | returns `data`, or throws `ServerActionError(errorMsg, errorCode)` | `unwrap-api-response.ts` |
-| `cuidSchema`, `slugSchema`, `slugListSchema`, `searchTextSchema`, `MAX_FILTER_SLUGS`, `MAX_SLUG_LENGTH`, `MAX_SEARCH_LENGTH` | zod for what an anonymous caller sends | `public-input-schema.ts` |
+| `cuidSchema`, `slugSchema`, `slugListSchema`, `searchTextSchema`, `MAX_FILTER_SLUGS` | zod for what an anonymous caller sends | `public-input-schema.ts` (the slug and search length limits, 64 and 100, are file-private) |
 | `safeHttpUrl`, `isSafeHttpUrl`, `toSafeHref` | http(s)-only URL (zod, predicate, render-time `null`) | `safe-http-url.ts` |
 | `getTranslationLanguages`, `getTranslatedContent` | the `{ in: [locale, 'en'] }` filter; locale, then `en`, then the first row | `i18n-utils.ts` |
 | `parsePageParam`, `parseSlugListParam`, `searchHistoryMode`, `FilterHistoryMode`, `FilterNavigationOptions` | URL filter parsing for the list pages | `filter-params.ts` |
@@ -125,18 +125,18 @@ One subpath per entity that has something to export, each `src/<slice>/index.ts`
 | subpath | files | exports |
 | --- | --- | --- |
 | `.` | `rich-text-doc-schema.ts`, `image-compression-config.ts`, `image-compression-rules.ts` | `richTextDocSchema`, `RichTextDoc` (blog and user-profile); `imageCompressionConfigSchema`, `IMAGE_COMPRESSION_DEFAULTS`, `ImageCompressionConfig` (the settings row embeds it, both compressors read it); `shouldSkipCompression`, `computeTargetDimensions`, `shouldKeepOriginal` |
-| `./blog` | `blog-schema.ts`, `query-keys.ts` | `blogFormSchema`, `blogTranslationSchema`, `publicBlogsParamsSchema`, `relatedPublicBlogsParamsSchema`, `MAX_RELATED_BLOGS`, `BlogFormValues`, `blogKeys` |
+| `./blog` | `blog-schema.ts`, `query-keys.ts` | `blogFormSchema`, `publicBlogsParamsSchema`, `relatedPublicBlogsParamsSchema`, `MAX_RELATED_BLOGS`, `BlogFormValues`, `blogKeys` |
 | `./comment` | `comment-schema.ts`, `query-keys.ts` | `publicCommentsParamsSchema`, `commentKeys` |
-| `./company` | `company-schema.ts`, `query-keys.ts` | `companySchema` and its role, task and translation schemas, `CompanyFormValues`, `companyKeys` |
-| `./contact-message` | `contact-message-schema.ts`, `query-keys.ts` | `contactMessageSchema`, `createContactMessageSchema(t)`, `ContactMessageErrorKey`, `ContactMessageFormValues`, `MESSAGE_MIN_LENGTH`, `MESSAGE_MAX_LENGTH`, `contactMessageKeys` |
-| `./education` | `education-schema.ts`, `query-keys.ts` | `educationSchema` and its achievement and translation schemas, `EducationFormValues`, `educationKeys` |
-| `./featured-work` | `featured-work-schema.ts`, `query-keys.ts` | `featuredWorkSchema` and its link, media and translation schemas, the `FEATURED_WORK_*` limits, `FeaturedWorkFormValues`, `featuredWorkKeys` |
+| `./company` | `company-schema.ts`, `query-keys.ts` | `companySchema`, `CompanyFormValues`, `companyKeys` |
+| `./contact-message` | `contact-message-schema.ts`, `query-keys.ts` | `contactMessageSchema`, `createContactMessageSchema(t)`, `ContactMessageFormValues`, `MESSAGE_MAX_LENGTH`, `contactMessageKeys` |
+| `./education` | `education-schema.ts`, `query-keys.ts` | `educationSchema`, `EducationFormValues`, `educationKeys` |
+| `./featured-work` | `featured-work-schema.ts`, `query-keys.ts` | `featuredWorkSchema`, the `FEATURED_WORK_*` limits, `FeaturedWorkFormValues`, `featuredWorkKeys` |
 | `./media` | `media-schema.ts`, `query-keys.ts`, `upload-constraints.ts` | `mediaScopeSchema`, `videoUploadRequestSchema`, `videoUploadCompletionSchema`, `mediaKeys`; the size and batch limits, `ACCEPTED_*_MIME_TYPES`, `MEDIA_SCOPES` / `MediaScope`, `findUploadViolation`, `pickUploadPath`, `detectMediaMimeType` / `resolveUploadedMimeType` (byte signatures), `sanitizeStoredFileName`, `MediaViolationError` |
 | `./project` | `project-schema.ts`, `public-project-schema.ts`, `query-keys.ts` | `projectSchema`, `ProjectFromValues`, `publicProjectsParamsSchema`, `PublicProjectFilters`, `projectKeys` |
 | `./tag` | `tag-schema.ts`, `query-keys.ts`, `revalidation.ts` | `tagSchema`, `TagFormValues`, `tagKeys`, `TAG_MUTATION_TAGS` (TAG, BLOG, PROJECT) |
 | `./tech-stack` | `tech-stack-schema.ts`, `query-keys.ts`, `revalidation.ts` | `techStackSchema`, `TechStackFormValues`, `techStackKeys`, `TECH_MUTATION_TAGS` (TECH, PROJECT) |
-| `./user-profile` | `user-profile-schema.ts`, `query-keys.ts` | `userProfileSchema`, `createUserProfileSchema(t)`, `UserProfileErrorKey`, `UserProfileFormValues`, `userProfileKeys` |
-| `./workspace-settings` | `settings-schema.ts`, `query-keys.ts` | `workspaceSettingsSchema`, `workspaceSettingsPatchSchema`, `parseWorkspaceSettings`, `WORKSPACE_SETTINGS_DEFAULTS`, `WorkspaceSettings`, `WorkspaceSettingsPatch`, `workspaceSettingsKeys` |
+| `./user-profile` | `user-profile-schema.ts`, `query-keys.ts` | `userProfileSchema`, `createUserProfileSchema(t)`, `UserProfileFormValues`, `userProfileKeys` |
+| `./workspace-settings` | `settings-schema.ts`, `query-keys.ts` | `workspaceSettingsPatchSchema`, `parseWorkspaceSettings`, `WORKSPACE_SETTINGS_DEFAULTS`, `WorkspaceSettings`, `WorkspaceSettingsPatch`, `workspaceSettingsKeys` |
 
 `social-link` has no subpath: its `model/` holds types only. `open-source` has none either; its types and ledger helpers are in `@byte-of-me/github`.
 
@@ -199,7 +199,7 @@ Not exported from the index: `createS3Client` (`src/s3.factory.ts`, always `forc
 | `Logger` (class) | `new Logger(name = 'byte-of-me')` | `name` becomes `namespace` on each entry |
 | `Logger#debug`, `info`, `warn`, `error` | `(message, meta?)` -> void | debug and info -> `console.log`; warn -> `console.warn`; error -> `console.error` |
 | `Logger#setLogLevel` / `getLogLevel` | `(level)` / `()` -> `LogLevel` | an invalid level logs a warning and keeps the current one |
-| `LogLevel` (type) | `'debug'`, `'info'`, `'warn'`, `'error'`, `'silent'` | `silent` suppresses everything |
+| `LogLevel` (type, file-private) | `'debug'`, `'info'`, `'warn'`, `'error'`, `'silent'` | `silent` suppresses everything |
 
 ### docker-compose.yml
 
@@ -254,7 +254,7 @@ Ports bind to loopback only, so a laptop on public Wi-Fi does not expose the dat
 - A query-key factory in `packages/contracts` is a contract with the server prefetch that uses it: a changed shape leaves the prefetched page unhydrated, raises no error and shows skeletons. Change a factory only with every prefetch and `invalidate` that calls it; `apps/web/src/entities/admin-query-keys.spec.tsx` checks the admin ones through real TanStack behaviour.
 - `contracts` has no `@/` alias, so `Maybe<T>` and the other globals of `apps/web/src/shared/types` are not available there; write `T | null | undefined`.
 - The root package declares `typescript` (catalog) because `check-boundaries.ts` imports the compiler API; Bun's isolated linker does not hoist it from a workspace.
-- `no-explicit-any`, `no-console` (`eslint.config.mjs:98-100`) and `simple-import-sort` are `warn`; no lint script passes `--max-warnings`, so `bun run lint` passes with them.
+- `no-explicit-any` is `error`; `no-console` (`eslint.config.mjs:97`) and `simple-import-sort` are `warn`, and no lint script passes `--max-warnings`, so `bun run lint` passes with warnings.
 - Root `format` and `format:check` run the `prettier` in the root `devDependencies` (`^2.8.8`), so keep it there. `.prettierignore` excludes `packages/db/src/generated`, which `prisma generate` rewrites.
 - `LOG_LEVEL` is never read: the level is `NODE_ENV === 'production' ? 'info' : 'debug'`, so the "Invalid LOG_LEVEL" branch (`packages/logger/src/index.ts:10-13`) cannot fire.
 - The logger level is module-global (`src/index.ts:7`): `setLogLevel` on any instance changes all of them. Each entry is multi-line pretty JSON.

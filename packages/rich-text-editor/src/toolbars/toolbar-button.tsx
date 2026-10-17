@@ -31,8 +31,7 @@ export function formatShortcut(chord: string, mac = isMac()): string {
   return mac ? [...parts, key].join('') : [...parts, key].join('+');
 }
 
-export interface ToolbarButtonProps
-  extends Omit<ButtonProps, 'children' | 'asChild'> {
+interface ToolbarButtonProps extends Omit<ButtonProps, 'children' | 'asChild'> {
   icon: LucideIcon;
   /** The accessible name and the tooltip text, already translated. */
   label: string;

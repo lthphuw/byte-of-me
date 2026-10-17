@@ -15,7 +15,7 @@ import { RecordListItem, RecordRowActions } from '@/shared/ui/record-list';
  * UI strings the card needs. Passed in rather than read here: this is an
  * entity, and the copy belongs to the dashboard namespace that renders it.
  */
-export interface ProjectEditorCardLabels {
+interface ProjectEditorCardLabels {
   noDescription: string;
   githubLink: string;
   liveLink: string;

@@ -11,7 +11,7 @@ import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 // re-run it. Purged with the blog tag, and by the clock for views and likes.
 const STATS_REVALIDATE_SECONDS = 300;
 
-export type PublicBlogStats = {
+type PublicBlogStats = {
   views: number;
   avgTime: number;
   rawSeconds: number;

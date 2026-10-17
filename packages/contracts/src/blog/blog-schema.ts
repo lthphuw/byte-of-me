@@ -12,7 +12,7 @@ import { richTextDocSchema } from '../rich-text-doc-schema';
 /** Lowercase words joined by single hyphens, as the public URL carries them. */
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-export const blogTranslationSchema = z.object({
+const blogTranslationSchema = z.object({
   language: z.string(),
 
   title: z.string().trim().min(1, 'validation.required'),

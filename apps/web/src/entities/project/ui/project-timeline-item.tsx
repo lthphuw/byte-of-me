@@ -15,7 +15,7 @@ import { Link } from '@/shared/i18n/navigation';
 import { cn, formatDate } from '@/shared/lib/utils';
 import { ExpandableRichText } from '@/shared/ui';
 
-export interface ProjectTimelineItemProps {
+interface ProjectTimelineItemProps {
   project: PublicProject;
   onTagClick?: (slug: string) => void;
   onTechClick?: (slug: string) => void;

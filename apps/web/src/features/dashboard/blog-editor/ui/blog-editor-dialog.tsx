@@ -12,7 +12,7 @@ import { EditRecordDialog, type EditRecordDialogControls } from '@/shared/ui';
 
 const FORM_ID = 'blog-editor-form';
 
-export interface BlogEditorDialogProps extends EditRecordDialogControls {
+interface BlogEditorDialogProps extends EditRecordDialogControls {
   /** The full post, translations with `content` included. `null` for a new post. */
   initialData: Nullable<AdminBlog>;
   onSubmit: (values: BlogFormValues, options: { onSaved: () => void }) => void;

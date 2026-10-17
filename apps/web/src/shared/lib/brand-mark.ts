@@ -41,13 +41,13 @@ export const MARK_PATH =
   'M3.1 20.4C2.7 18 2.5 15.9 2.5 14C2.5 6.8 8 2.2 14.2 2.2C19.4 2.2 22.3 6 22.3 10.4C22.3 15.4 18.4 18.8 13.6 18.8C9.8 18.8 7.2 16.3 7.2 13.2C7.2 10.6 9.2 8.6 11.8 8.6C13.8 8.6 15.2 10 15.2 11.8';
 
 /** Where the mark sits inside a 24-unit box, and how heavy its stroke is. */
-export interface MarkPlacement {
+interface MarkPlacement {
   transform: string;
   strokeWidth: number;
 }
 
 /** A rounded rectangle covering most of the box — the frame. */
-export interface MarkEnclosure {
+interface MarkEnclosure {
   x: number;
   y: number;
   size: number;
@@ -55,7 +55,7 @@ export interface MarkEnclosure {
   strokeWidth: number;
 }
 
-export interface LayerGeometry {
+interface LayerGeometry {
   mark: MarkPlacement;
   /** The frame drawn around the mark; absent for the bare layer. */
   enclosure?: MarkEnclosure;
@@ -97,7 +97,7 @@ export const FAVICON_FILES = [
   'maskable.svg',
 ] as const;
 
-export type FaviconFile = (typeof FAVICON_FILES)[number];
+type FaviconFile = (typeof FAVICON_FILES)[number];
 
 function markPath(
   { transform, strokeWidth }: MarkPlacement,

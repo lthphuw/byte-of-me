@@ -19,7 +19,7 @@ export type CrudSaveOptions = {
   onSaved?: () => void;
 };
 
-export type CrudManagerOptions<TItem extends { id: string }, TSaveInput> = {
+type CrudManagerOptions<TItem extends { id: string }, TSaveInput> = {
   /**
    * Only `ADMIN_PAGE_SIZE`. The page key is built from the page number alone, so
    * another size would share its cache entry with the page the server prefetched.

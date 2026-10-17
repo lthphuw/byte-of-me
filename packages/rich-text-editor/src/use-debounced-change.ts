@@ -19,7 +19,7 @@ export interface RichTextChangeMeta {
   initial: boolean;
 }
 
-export type RichTextChangeHandler = (
+type RichTextChangeHandler = (
   value: JSONContent,
   meta: RichTextChangeMeta
 ) => void;

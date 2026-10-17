@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 /** Stable ids for the validation messages, so the public form can translate
  *  them (`contact.validation.*`) without this package importing next-intl. */
-export type ContactMessageErrorKey =
+type ContactMessageErrorKey =
   | 'nameTooShort'
   | 'nameTooLong'
   | 'emailInvalid'
@@ -20,7 +20,7 @@ const DEFAULT_MESSAGES: Record<ContactMessageErrorKey, string> = {
   messageTooLong: 'Message is too long',
 };
 
-export const MESSAGE_MIN_LENGTH = 10;
+const MESSAGE_MIN_LENGTH = 10;
 export const MESSAGE_MAX_LENGTH = 2000;
 
 export function createContactMessageSchema(

@@ -12,7 +12,7 @@ const aboutMeSchema = z.union([richTextDocSchema, z.string()]);
 
 /** Stable ids for the validation messages, so the dashboard form can translate
  *  them (`dashboard.userProfile.validation.*`) without importing next-intl. */
-export type UserProfileErrorKey =
+type UserProfileErrorKey =
   | 'platformRequired'
   | 'urlInvalid'
   | 'languageRequired';

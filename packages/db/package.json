@@ -20,9 +20,7 @@
     "db:seed": "prisma db seed"
   },
   "devDependencies": {
-    "@prisma/client-runtime-utils": "^7.5.0",
     "@types/node": "catalog:",
-    "dotenv": "^16.6.0",
     "eslint": "catalog:",
     "prisma": "^7.7.0",
     "tsx": "^4.20.3",
@@ -31,6 +29,7 @@
   "dependencies": {
     "@byte-of-me/logger": "workspace:*",
     "@prisma/adapter-pg": "^7.0.1",
-    "@prisma/client": "^7.7.0"
+    "@prisma/client": "^7.7.0",
+    "dotenv": "^16.6.0"
   }
 }

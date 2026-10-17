@@ -6,7 +6,7 @@ type GitHubEmail = { email: string; verified: boolean; primary: boolean };
 /** The part of `fetch` this needs, so a spec can pass a plain function. */
 type Fetcher = (input: string, init?: RequestInit) => Promise<Response>;
 
-export type GitHubUserinfoContext = {
+type GitHubUserinfoContext = {
   tokens: { access_token?: string };
   provider: { userinfo?: { url?: URL | string } };
 };

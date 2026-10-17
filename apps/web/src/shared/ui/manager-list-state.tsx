@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 
 import { RecordListSkeleton } from '@/shared/ui/record-list';
 
-export interface ManagerListStateProps {
+interface ManagerListStateProps {
   isLoading: boolean;
   isError?: boolean;
   onRetry?: () => void;

@@ -18,7 +18,7 @@ import {
 
 import type { EditorLabels } from '../editor-labels';
 
-export interface CommandItemType {
+interface CommandItemType {
   title: string;
   description: string;
   icon: React.ComponentType<{ className?: string }>;
@@ -27,7 +27,7 @@ export interface CommandItemType {
   group: string;
 }
 
-export type CommandGroupType = {
+type CommandGroupType = {
   group: string;
   items: Omit<CommandItemType, 'group'>[];
 };

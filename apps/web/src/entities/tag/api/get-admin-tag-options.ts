@@ -11,7 +11,7 @@ import { requireAdmin } from '@/shared/lib/auth';
 import { getErrorMessage } from '@/shared/lib/utils';
 
 /** What a tag picker renders; `name` falls back to the slug. */
-export type TagOption = { id: string; slug: string; name: string };
+type TagOption = { id: string; slug: string; name: string };
 
 /**
  * Every tag for a select — id, slug and a locale-resolved name, without the

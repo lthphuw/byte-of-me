@@ -9,7 +9,7 @@ Shared tooling for the monorepo. It ships no application code.
 | `base.json` | Strict defaults every workspace shares | — |
 | `library.json` | New packages: ESNext, `bundler` resolution, `react-jsx`, DOM libs, no `incremental`, no Next plugin | `base.json` |
 | `node-library.json` | Node packages (`logger`, `storage`) | `base.json` |
-| `nextjs.json` | Next.js apps and `packages/ui` | `base.json` |
+| `nextjs.json` | Next.js apps | `base.json` |
 
 Workspaces extend the presets with **relative paths** so no install step is
 required to resolve them:

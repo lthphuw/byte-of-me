@@ -49,6 +49,8 @@ const LOCKFILE = path.join(ROOT, 'scripts/icons.lock.json');
 
 const BASE_DPI = 72;
 
+const log = (line: string) => process.stdout.write(`${line}\n`);
+
 async function rasterise(svgPath: string, size: number): Promise<Buffer> {
   const svg = await readFile(svgPath);
   return sharp(svg, { density: Math.ceil((BASE_DPI * size) / MARK_VIEWBOX) })
@@ -59,19 +61,19 @@ async function rasterise(svgPath: string, size: number): Promise<Buffer> {
 
 async function emit(svgPath: string, size: number, outPath: string): Promise<void> {
   await writeFile(outPath, await rasterise(svgPath, size));
-  console.log(`  ${path.relative(ROOT, outPath)}  ${size}x${size}`);
+  log(`  ${path.relative(ROOT, outPath)}  ${size}x${size}`);
 }
 
 const icons = (name: string) => path.join(ICONS_DIR, name);
 const pub = (name: string) => path.join(PUBLIC_DIR, name);
 
-console.log('Writing SVG sources…');
+log('Writing SVG sources…');
 for (const file of FAVICON_FILES) {
   await writeFile(icons(file), renderFaviconSvg(file));
-  console.log(`  ${path.relative(ROOT, icons(file))}`);
+  log(`  ${path.relative(ROOT, icons(file))}`);
 }
 
-console.log('Rasterising…');
+log('Rasterising…');
 
 // Per-context tab favicons. 16 and 32 are the two sizes browsers actually ask
 // for; anything larger is served by the SVG.
@@ -92,13 +94,13 @@ const icoFrames = await Promise.all(
   icoSizes.map((size) => rasterise(icons('mark-public.svg'), size)),
 );
 await writeFile(pub('favicon.ico'), await pngToIco(icoFrames));
-console.log(`  ${path.relative(ROOT, pub('favicon.ico'))}  ${icoSizes.join('/')}`);
+log(`  ${path.relative(ROOT, pub('favicon.ico'))}  ${icoSizes.join('/')}`);
 
 const digests: Record<string, string> = {};
 for (const name of FAVICON_FILES) {
   digests[name] = createHash('sha256').update(renderFaviconSvg(name)).digest('hex');
 }
 await writeFile(LOCKFILE, `${JSON.stringify(digests, null, 2)}\n`);
-console.log(`  ${path.relative(ROOT, LOCKFILE)}  ${FAVICON_FILES.length} sources`);
+log(`  ${path.relative(ROOT, LOCKFILE)}  ${FAVICON_FILES.length} sources`);
 
-console.log('Done.');
+log('Done.');

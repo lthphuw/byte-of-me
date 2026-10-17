@@ -4,7 +4,7 @@ import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from '@byte-of-me/ui';
 import { LayoutGrid, SearchX } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-export interface ProjectEmptyProps {
+interface ProjectEmptyProps {
   isSearch?: boolean;
   className?: string;
   style?: React.CSSProperties;

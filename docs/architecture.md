@@ -328,7 +328,7 @@ flowchart TB
 
 The dashed edge is the rule worth stating out loud: an `entity` never imports a `feature`. If an entity seems to need one, the logic belongs in the entity, or the feature needs to pass it in.
 
-Each slice exposes an `index.ts` barrel; cross-slice imports go through it rather than reaching into a file path.
+A slice that other slices import exposes an `index.ts` barrel, and cross-slice imports go through it rather than reaching into a file path. A slice nobody imports through one has none: `company`, `featured-work`, `open-source`, `social-link` and `workspace-settings` (entities), `features/auth` and `widgets/dashboard/dashboard-sidebar` are imported by file path.
 
 Within `widgets/` and `features/`, slices are grouped by audience — `auth`, `dashboard`, `public` — which keeps the "never expose dashboard functionality to a public route" rule visible in the directory listing rather than buried in a guard.
 

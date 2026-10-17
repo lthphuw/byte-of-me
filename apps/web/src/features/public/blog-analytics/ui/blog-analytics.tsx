@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useServerMutation } from '@byte-of-me/query';
-import { useTranslations } from 'next-intl';
 
 import {
   trackBlogView,
@@ -10,7 +9,6 @@ import {
 } from '@/features/public/blog-analytics/lib';
 
 export function BlogAnalytics({ blogId }: { blogId: string }) {
-  const t = useTranslations('blogDetails');
   const [logId, setLogId] = useState<string | null>(null);
   const startTime = useRef<number>(Date.now());
   const accumulatedTime = useRef<number>(0);

@@ -23,7 +23,7 @@ import {
 import { Check, Loader2, Settings2, TriangleAlert } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-export interface CompressionSettingsPopoverProps {
+interface CompressionSettingsPopoverProps {
   config: ImageCompressionConfig;
   update: (patch: Partial<ImageCompressionConfig>) => void;
   isSaving: boolean;

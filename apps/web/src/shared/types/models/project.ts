@@ -1,7 +1,7 @@
 import type { Tag } from '@/shared/types/models/tag';
 import type { TechStack } from '@/shared/types/models/tech-stack';
 
-export interface ProjectCoauthor {
+interface ProjectCoauthor {
   id: string;
   fullName: string;
   email: Maybe<string>;

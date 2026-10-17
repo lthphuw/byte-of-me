@@ -83,7 +83,7 @@ function toFormValues(initialData?: AdminBlog): DefaultValues<BlogFormValues> {
   };
 }
 
-export interface BlogFormProps {
+interface BlogFormProps {
   initialData?: AdminBlog;
   /** `options.onSaved` runs once the save has landed, which is when the draft is cleared. */
   onSubmit: (data: BlogFormValues, options: { onSaved: () => void }) => void;

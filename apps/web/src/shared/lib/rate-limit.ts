@@ -3,7 +3,7 @@ import { logger } from '@byte-of-me/logger';
 
 import { getErrorMessage } from '@/shared/lib/utils';
 
-export type RateLimitOptions = {
+type RateLimitOptions = {
   /** Caller-scoped bucket, e.g. `contact:${ip}` or `comment:${userId}`. */
   key: string;
   /** Maximum number of hits allowed inside one window. */

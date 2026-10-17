@@ -18,8 +18,7 @@
     "test": "bun test"
   },
   "peerDependencies": {
-    "react": "^19.2.5",
-    "react-dom": "^19.2.0"
+    "react": "^19.2.5"
   },
   "dependencies": {
     "@byte-of-me/rich-text-schema": "workspace:*",
@@ -31,7 +30,6 @@
   "devDependencies": {
     "@types/katex": "catalog:",
     "@types/react": "catalog:",
-    "@types/react-dom": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:"
   },

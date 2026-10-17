@@ -4,7 +4,7 @@ import { isRichTextBlank } from '@byte-of-me/rich-text-schema/rich-text-content'
 import type { AdminFeaturedWorkDetail } from '@/entities/featured-work/model/types';
 
 /** The two languages the form always shows, in the order the fields appear. */
-export const FEATURED_WORK_LANGUAGES = ['en', 'vi'] as const;
+const FEATURED_WORK_LANGUAGES = ['en', 'vi'] as const;
 
 type Translation = FeaturedWorkFormValues['translations'][number];
 type StoredTranslation = AdminFeaturedWorkDetail['translations'][number];

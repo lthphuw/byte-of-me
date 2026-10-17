@@ -5,8 +5,7 @@
     "allowArbitraryExtensions": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@byte-of-me/ui": ["../../packages/ui/src/index.ts"]
+      "@/*": ["src/*"]
     }
   },
   "include": [

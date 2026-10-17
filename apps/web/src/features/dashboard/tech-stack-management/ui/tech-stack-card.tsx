@@ -5,7 +5,7 @@ import Image from 'next/image';
 import type { AdminTechStack } from '@/entities/tech-stack';
 import { RecordListItem, RecordRowActions } from '@/shared/ui';
 
-export interface TechStackCardProps {
+interface TechStackCardProps {
   techStack: AdminTechStack;
   onEdit: () => void;
   onDelete: () => void;

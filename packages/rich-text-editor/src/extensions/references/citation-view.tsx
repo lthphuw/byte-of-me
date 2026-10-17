@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 import { readReferencesFromDoc } from '@byte-of-me/rich-text-schema';
 import { cn } from '@byte-of-me/ui-utils';
 import {

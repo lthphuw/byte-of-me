@@ -7,7 +7,7 @@ import { Button } from '@byte-of-me/ui-primitives';
 import { Printer } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-export interface BlogPrintTriggerProps {
+interface BlogPrintTriggerProps {
   /**
    * Open the print dialog automatically on load. Set only when the page was
    * opened from the article's action bar (`?print=1`), where the reader has

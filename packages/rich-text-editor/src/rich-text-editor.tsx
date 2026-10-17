@@ -31,8 +31,6 @@ import { useOutline } from './use-outline';
 
 import './editor-surface.css';
 
-export type { RichTextChangeMeta } from './use-debounced-change';
-
 const COMPACT_MAX_HEIGHT = 360;
 
 type RichTextEditorProps = {

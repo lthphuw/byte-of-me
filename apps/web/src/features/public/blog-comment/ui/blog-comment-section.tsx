@@ -20,7 +20,7 @@ import {
 } from '@/entities/comment/query';
 import { AuthModal } from '@/features/auth/ui/auth-modal';
 
-export interface BlogCommentSectionProps {
+interface BlogCommentSectionProps {
   blogId: string;
 }
 

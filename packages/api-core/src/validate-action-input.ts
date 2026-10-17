@@ -18,7 +18,7 @@ export const idSchema = z.string().min(1, 'id is required');
 export const INVALID_INPUT_MESSAGE =
   'The information provided is not valid. Please check it and try again.';
 
-export type ParseInputResult<S extends z.ZodTypeAny> =
+type ParseInputResult<S extends z.ZodTypeAny> =
   | { ok: true; data: z.infer<S> }
   | {
       ok: false;

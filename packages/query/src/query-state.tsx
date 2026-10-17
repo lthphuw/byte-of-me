@@ -8,7 +8,7 @@ import {
   StateBlock,
 } from '@byte-of-me/ui-primitives';
 
-export type QueryStateProps = {
+type QueryStateProps = {
   isLoading: boolean;
   isError: boolean;
   /** Background refetch: the list stays visible and a corner spinner shows. */

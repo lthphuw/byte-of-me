@@ -6,7 +6,7 @@ import { routing } from '@/shared/i18n/routing';
 /** Newest published posts exposed by the RSS feed. */
 const FEED_ITEM_LIMIT = 30;
 
-export type PublicFeedBlog = {
+type PublicFeedBlog = {
   slug: string;
   title: string;
   description: Maybe<string>;

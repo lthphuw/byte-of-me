@@ -1,12 +1,11 @@
 # Web entities: content
 
-> Content entities (blog, company, education, featured-work) and the root barrel. Source: `apps/web/src/entities/{blog,company,education,featured-work}`, `apps/web/src/entities/index.ts`.
+> Content entities (blog, company, education, featured-work). Source: `apps/web/src/entities/{blog,company,education,featured-work}`.
 
 ## Layout
 
 ```
 apps/web/src/entities/                 (* = 'use client')
-├── index.ts                           root barrel: 12 slices; omits featured-work, workspace-settings
 ├── blog/
 │   ├── api/                           create|update|delete-blog (admin) + 10 get-*; toggle-blog-interaction; 2 plain modules
 │   ├── model/                         types.ts  (schema and blogKeys: @byte-of-me/contracts/blog)
@@ -16,8 +15,8 @@ apps/web/src/entities/                 (* = 'use client')
 ├── company/
 │   ├── api/                           create|update|delete-company (admin) + 2 get-*
 │   ├── model/                         types.ts  (schema and companyKeys: @byte-of-me/contracts/company)
-│   ├── query/                         company-queries.ts (companyQueries: adminPage, adminById) + use-admin-company-by-id
-│   └── index.ts                       model only; ./ui export commented out (line 2); no api/index.ts, no ui/ folder
+│   └── query/                         company-queries.ts (companyQueries: adminPage, adminById) + use-admin-company-by-id
+│                                      (no slice barrel, no api/index.ts, no ui/ folder)
 ├── education/
 │   ├── api/                           create|update|delete-education (admin) + 3 get-*
 │   ├── model/                         types.ts  (schema and educationKeys: @byte-of-me/contracts/education)
@@ -31,8 +30,8 @@ apps/web/src/entities/                 (* = 'use client')
     │                                  (fetch and URL parser: `@byte-of-me/github`)
     ├── model/                         types.ts  (schema and featuredWorkKeys: @byte-of-me/contracts/featured-work; `FeaturedWorkGithub`: @byte-of-me/github)
     ├── query/                         featured-work-queries.ts (featuredWorkQueries: adminPage, adminById) + use-admin-featured-work-by-id
-    ├── ui/                            featured-work-row, featured-work-item*, featured-work-link (`#number` text link), featured-work-demo*, use-demo-zoom, featured-work-row-classes
-    └── index.ts                       api + model + ui
+    └── ui/                            featured-work-row, featured-work-item*, featured-work-link (`#number` text link), featured-work-demo*, use-demo-zoom, featured-work-row-classes
+                                       (no slice barrel and no api/ or ui/ barrel: callers import by path)
 ```
 
 ### Entity map
@@ -45,12 +44,6 @@ Action names are files in `apps/web/src/entities/<slice>/api/`. "admin" = `requi
 | company | `apps/web/src/entities/company/model/types.ts` | `create-company`, `update-company`, `delete-company`, 2 × `get-*` | `create`: admin · parse `companySchema` · COMPANY `max`<br>`update`: admin · parse id + `companySchema` · COMPANY `max` (after transaction)<br>`delete`: admin · parse id · COMPANY `max`<br>`get-admin-company-by-id`: admin · parse id · —<br>`get-paginated-admin-companies`: admin · `clampPagination` · — | `packages/contracts/src/company/query-keys.ts` (`companyKeys`); `query/company-queries.ts` (`companyQueries`: `adminPage`, `adminById`); hook `useAdminCompanyById` | none in the slice; admin `apps/web/src/widgets/dashboard/company-manager/ui/` |
 | education | `apps/web/src/entities/education/model/types.ts` | `create-education`, `update-education`, `delete-education`, 3 × `get-*` | `create`: admin · parse `educationSchema` · EDUCATION `max`<br>`update`: admin · parse id + `educationSchema` · EDUCATION `max` (after transaction)<br>`delete`: admin · parse id · EDUCATION `max`<br>`get-admin-education-by-id`: admin · parse id · —<br>`get-paginated-admin-educations`: admin · `clampPagination` · —<br>`get-all-public-educations`: public · none · cache EDUCATION | `packages/contracts/src/education/query-keys.ts` (`educationKeys`); `query/education-queries.ts` (`educationQueries`: `adminPage`, `adminById`); hook `useAdminEducationById` | `apps/web/src/entities/education/ui/`; admin `apps/web/src/widgets/dashboard/education-manager/ui/`; public `apps/web/src/features/public/homepage-education/ui/` |
 | featured-work | `apps/web/src/entities/featured-work/model/types.ts` | `create-featured-work`, `update-featured-work`, `delete-featured-work`, `reorder-featured-work`, 3 × `get-*` | `create`: admin (before `try`) · parse `featuredWorkSchema` + `ownsAllMedia` · FEATURED_WORK `max` · writes `links` with the work (`toLinkRows`)<br>`update`: admin (before `try`) · parse id + `featuredWorkSchema` + `ownsAllMedia` · FEATURED_WORK `max` (after transaction) · `links` replaced when sent, kept when omitted<br>`delete`: admin (before `try`) · parse id · FEATURED_WORK `max`<br>`reorder`: admin (before `try`) · parse id + local `directionSchema` · FEATURED_WORK `max` (only if order changed)<br>`get-admin-featured-work-by-id`: admin (before `try`) · parse id · —<br>`get-paginated-admin-featured-works`: admin (before `try`) · `clampPagination` · —<br>`get-public-featured-works`: public · none · cache FEATURED_WORK (in `lib/load-public-featured-works.ts`) | `packages/contracts/src/featured-work/query-keys.ts` (`featuredWorkKeys`); `query/featured-work-queries.ts` (`featuredWorkQueries`: `adminPage`, `adminById`); hook `useAdminFeaturedWorkById` | `apps/web/src/entities/featured-work/ui/`; admin `apps/web/src/widgets/dashboard/featured-work-manager/ui/`; public `apps/web/src/features/public/homepage-featured-works/ui/` |
-
-### Root barrel
-
-- `apps/web/src/entities/index.ts` re-exports 12 slices. `featured-work` and `workspace-settings` are missing.
-- AGENTS §3: never import the `@/entities` root barrel from a client component; import `@/entities/<slice>`.
-- Nothing imports the root barrel today (`rg "['\"]@/entities['\"]" apps/web/src` returns 0 matches).
 
 ### CACHE_TAGS
 
@@ -96,7 +89,7 @@ Action names are files in `apps/web/src/entities/<slice>/api/`. "admin" = `requi
    3. Scope the Prisma `where` by `userId` (`:24-26`).
    4. After the write, and after any `$transaction` closes, call `revalidateTag(CACHE_TAGS.X, 'max')` (`update-education.ts:141-143`).
    5. Return `ApiResponse<T>`; failures set `errorMsg`.
-   6. Export it from `api/index.ts`, then call it from `apps/web/src/widgets/dashboard/<slice>-manager/ui/`.
+   6. Export it from `api/index.ts` where the slice has one (blog, education), then call it from `apps/web/src/widgets/dashboard/<slice>-manager/ui/`.
 2. **New cached public read** (model: `apps/web/src/entities/blog/api/get-related-public-blogs.ts:102-111`)
    1. Wrap the handler: `handlePublicAction(name, …)` around `withPublicActionHandler(name, handler, { cache: true, cacheKey, cacheTags })` (`apps/web/src/shared/api/public-action-template.ts`).
    2. `cacheKey` lists every argument the query reads (`get-related-public-blogs.ts:104-109`). The locale is appended by the template (`public-action-template.ts:50`).
@@ -116,7 +109,7 @@ Action names are files in `apps/web/src/entities/<slice>/api/`. "admin" = `requi
 - Revalidate only after commit: `update-company.ts:155-157`, `update-education.ts:141-143`, `update-featured-work.ts:97-99`, `reorder-featured-work.ts:91-93`.
 - Public cache keys are string literals, not factories: `featured-works-rows-v8` (`load-public-featured-works.ts`) and `featured-works-github-v2` (`get-featured-work-github.ts`). Bump the version when the cached shape changes. v7 is the move from one `url` to `links`; v8 is the body falling back to `en` per field (`pickDetails`): the title comes from the visitor's language, the body from the first of that language, `en`, any other that is not blank.
 - Per the comment at `get-adjacent-public-blogs.ts:26-28`, a cache hit returns `Date` fields as strings; callers accept `Date | string`.
-- Education `api/index.ts` exports only the public read; company has no `api/index.ts`. Admin actions are imported by deep path (see deviations).
+- Education `api/index.ts` exports only the public read; company and featured-work have no `api/index.ts`. Admin actions are imported by path.
 - Two blog modules are off the barrel on purpose (`apps/web/src/entities/blog/api/index.ts:1-6`). Import them by path: `apps/web/src/app/sitemap.ts:5`, `apps/web/src/app/feed.xml/route.ts:1`.
 
 ## Run
@@ -137,7 +130,7 @@ cd apps/web && bun test src/entities/featured-work   # one slice, bun path filte
 - `apps/web/src/entities/blog/api/get-adjacent-public-blogs.ts:25`: `currentId` is never validated (§8 step 2).
 - `apps/web/src/entities/featured-work/api/reorder-featured-work.ts:14`: `directionSchema` is declared outside `packages/contracts/src/featured-work/featured-work-schema.ts` (§8).
 - `apps/web/src/entities/blog/model/types.ts:3`, `apps/web/src/entities/blog/api/get-paginated-public-blogs.ts:21`: import `@/entities/project/model/types`, another slice's internals (§3 "never sideways").
-- 57 import lines in 40 non-spec files outside these slices reach `api/`, `model/`, `ui/` or `lib/` directly instead of the slice barrel (§3; `rg "from '@/entities/(blog|company|education|featured-work)/(api|model|ui|lib)[/']"` over `apps/web/src`; 66 before the schemas and keys moved to `@byte-of-me/contracts`). Example: `apps/web/src/widgets/dashboard/company-manager/ui/company-manager.tsx:14-17`.
+- 23 import lines in 15 non-spec files outside these slices reach the `api/`, `model/` or `ui/` of `blog` or `education` directly instead of the slice barrel (§3; `rg "from '@/entities/(blog|education)/(api|model|ui|lib)[/']"` over `apps/web/src`). Example: `apps/web/src/widgets/dashboard/education-manager/ui/education-manager.tsx:15-19`. `company` and `featured-work` have no barrel, so their 21 lines in 12 files are not deviations.
 
 ## See also
 

@@ -1,7 +1,7 @@
 /**
  * Configuration options for the shortenName utility.
  */
-export interface ShortenNameOptions {
+interface ShortenNameOptions {
   /**
    * The variation of the shortened name:
    * - 'initials': First letter of the first and last word (e.g., "John Doe" -> "JD").

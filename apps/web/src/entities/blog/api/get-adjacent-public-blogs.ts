@@ -24,7 +24,7 @@ const adjacentBlogsParamsSchema = z.object({
   currentId: cuidSchema,
 });
 
-export interface AdjacentBlogs {
+interface AdjacentBlogs {
   /** The next (newer) post, or null if this is the newest. */
   next: Maybe<BlogSummary>;
   /** The previous (older) post, or null if this is the oldest. */

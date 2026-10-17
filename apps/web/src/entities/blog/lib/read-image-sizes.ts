@@ -4,7 +4,7 @@ import {
   parseRichTextContent,
 } from '@byte-of-me/rich-text-schema/rich-text-content';
 
-export type BodyImageSizes = Record<string, { width: number; height: number }>;
+type BodyImageSizes = Record<string, { width: number; height: number }>;
 
 /**
  * The stored pixel size of each image a post's body uses, by source URL. The body is

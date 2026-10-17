@@ -5,7 +5,7 @@
  */
 
 /** Per-file ceiling. The server rejects anything above this. */
-export const MAX_IMAGE_SIZE_MB = 3;
+const MAX_IMAGE_SIZE_MB = 3;
 export const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
 
 /** A short demo clip. It goes browser → storage, never through `uploadMedia`: a server action body tops out at 4.5 MB on Vercel. */
@@ -23,7 +23,7 @@ export const MAX_UPLOAD_BATCH = 5;
  * The most the images of one request may carry; a clip goes direct and is not
  * counted. Five images at the 3 MB cap are 15 MB, so this binds only if a cap rises.
  */
-export const MAX_UPLOAD_TOTAL_MB = 16;
+const MAX_UPLOAD_TOTAL_MB = 16;
 export const MAX_UPLOAD_TOTAL_BYTES = MAX_UPLOAD_TOTAL_MB * 1024 * 1024;
 
 export const ACCEPTED_IMAGE_MIME_TYPES = [
@@ -35,12 +35,12 @@ export const ACCEPTED_IMAGE_MIME_TYPES = [
   'image/svg+xml',
 ] as const;
 
-export type AcceptedImageMimeType = (typeof ACCEPTED_IMAGE_MIME_TYPES)[number];
+type AcceptedImageMimeType = (typeof ACCEPTED_IMAGE_MIME_TYPES)[number];
 
 /** Two containers every current browser plays; nothing else is stored as video. */
 export const ACCEPTED_VIDEO_MIME_TYPES = ['video/mp4', 'video/webm'] as const;
 
-export type AcceptedVideoMimeType = (typeof ACCEPTED_VIDEO_MIME_TYPES)[number];
+type AcceptedVideoMimeType = (typeof ACCEPTED_VIDEO_MIME_TYPES)[number];
 
 export const ACCEPTED_MEDIA_MIME_TYPES = [
   ...ACCEPTED_IMAGE_MIME_TYPES,
@@ -91,7 +91,7 @@ export function describeVideoNotAllowed(fileName: string): string {
   return `"${fileName}" is a video. Only images can be added here; clips belong to a featured work's demo.`;
 }
 
-export type MediaValidationError =
+type MediaValidationError =
   | { kind: 'type'; fileName: string }
   | { kind: 'video'; fileName: string }
   | { kind: 'size'; fileName: string; maxSizeMb: number }
