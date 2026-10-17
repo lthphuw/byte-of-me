@@ -102,6 +102,7 @@ flowchart TB
 
     UI["@byte-of-me/ui<br/>shadcn/ui · TipTap"]
     SCHEMA["@byte-of-me/rich-text-schema<br/>render schema · sanitize · content codec"]
+    RENDER["@byte-of-me/rich-text-render<br/>server renderer · mermaid · math"]
     UTILS["@byte-of-me/ui-utils<br/>cn · link and scroll helpers"]
     HOOKS["@byte-of-me/ui-hooks<br/>React hooks"]
     MOTION["@byte-of-me/ui-motion<br/>MotionProvider · tokens · variants"]
@@ -116,6 +117,7 @@ flowchart TB
 
     WEB --> UI
     WEB --> SCHEMA
+    WEB --> RENDER
     WEB --> UTILS
     WEB --> HOOKS
     WEB --> MOTION
@@ -124,6 +126,7 @@ flowchart TB
     WEB --> ST
     WEB --> LOG
     UI --> SCHEMA
+    UI --> RENDER
     UI --> UTILS
     UI --> HOOKS
     UI --> MOTION
@@ -132,6 +135,8 @@ flowchart TB
     UI --> FORMS
     UI --> CAROUSEL
     SCHEMA --> UTILS
+    RENDER --> SCHEMA
+    RENDER --> UTILS
     FORMS --> PRIMS
     FORMS --> UTILS
     CAROUSEL --> PRIMS
@@ -150,14 +155,14 @@ flowchart TB
     classDef pkg fill:#0f766e,stroke:#5eead4,color:#f0fdfa
 
     class WEB app
-    class UI,SCHEMA,UTILS,HOOKS,MOTION,PRIMS,TOAST,FORMS,CAROUSEL,DB,ST,LOG,CFG pkg
+    class UI,SCHEMA,RENDER,UTILS,HOOKS,MOTION,PRIMS,TOAST,FORMS,CAROUSEL,DB,ST,LOG,CFG pkg
 ```
 
 Solid arrows are runtime dependencies; dashed arrows are build-time only — `@byte-of-me/config` ships no application code: `tsconfig` presets that each workspace extends by relative path, `boundaries.json` (below), and the `bun test` preloads in `test/`.
 
 Every package is consumed as **TypeScript source** via `transpilePackages`, so there is no build step before `bun run dev`. `next.config.js` derives that list from the root `workspaces` (every directory under `packages/`), so a new package is never added by hand. No package has a `build` script or a `dist/`; `turbo run build` builds only the web app. Turborepo's task cache still follows the package graph: `check-types`, `lint`, `test` and `build` depend on a script-less `transit` task, so editing a package's source re-runs that package's tasks and those of every package that depends on it (directly or not), and nothing else ([codebase/tooling-and-small-packages.md](codebase/tooling-and-small-packages.md), "Turbo graph").
 
-`@byte-of-me/ui` uses **subpath exports** rather than one barrel — `./rich-text-editor`, `./rich-text`. That is deliberate: importing the barrel from a public-site client component would drag all of TipTap into the visitor's bundle. The schema the editor and the server renderer share is `rich-text-schema`: its root is the TipTap schema (server-safe, no React, no `'use client'`, no mermaid), and `sanitizeHtml` and the rich-text content helpers are its `./sanitize` and `./rich-text-content` subpaths, so a client component that needs one never imports the root. The class-name helper, the hooks, the motion tokens, the Radix wrappers, the toaster, the form controls and the carousel are separate packages (`ui-utils`, `ui-hooks`, `ui-motion`, `ui-primitives`, `ui-toast`, `ui-forms`, `ui-carousel`); `apps/web/src/shared/lib/utils.ts` takes `cn` from `ui-utils` because the `ui` barrel breaks `/api/og`, and the `ui` root re-exports hooks, motion, primitives, toast, forms and carousel, so the root-barrel imports in `apps/web` did not move.
+`@byte-of-me/ui` keeps one named subpath, `./rich-text-editor`, beside its root barrel. That is deliberate: importing the barrel from a public-site client component would drag all of TipTap into the visitor's bundle. The schema the editor and the server renderer share is `rich-text-schema`: its root is the TipTap schema (server-safe, no React, no `'use client'`, no mermaid), and `sanitizeHtml` and the rich-text content helpers are its `./sanitize` and `./rich-text-content` subpaths, so a client component that needs one never imports the root. The renderer is `rich-text-render` and has no root at all: `./rich-text` and `./rich-text-render` are server only (`generateHTML` and the schema, about 1 MB), `./rich-text-html` and `./mermaid-size` are client-safe, and `./mermaid-blocks` and `./math-renderer` are client leaves, so each importer names the half it needs. The class-name helper, the hooks, the motion tokens, the Radix wrappers, the toaster, the form controls and the carousel are separate packages (`ui-utils`, `ui-hooks`, `ui-motion`, `ui-primitives`, `ui-toast`, `ui-forms`, `ui-carousel`); `apps/web/src/shared/lib/utils.ts` takes `cn` from `ui-utils` because the `ui` barrel breaks `/api/og`, and the `ui` root re-exports hooks, motion, primitives, toast, forms and carousel, so the root-barrel imports in `apps/web` did not move.
 
 ### Package layers
 
@@ -174,6 +179,7 @@ flowchart TB
     subgraph L2["L2"]
         FORMS["ui-forms"]
         CAROUSEL["ui-carousel"]
+        RENDER["rich-text-render"]
     end
     subgraph L1["L1"]
         DB["db"]
@@ -198,7 +204,9 @@ flowchart TB
     WEB --> MOTION
     WEB --> PRIMS
     WEB --> SCHEMA
+    WEB --> RENDER
     UI --> SCHEMA
+    UI --> RENDER
     UI --> UTILS
     UI --> HOOKS
     UI --> MOTION
@@ -207,6 +215,8 @@ flowchart TB
     UI --> FORMS
     UI --> CAROUSEL
     SCHEMA --> UTILS
+    RENDER --> SCHEMA
+    RENDER --> UTILS
     FORMS --> PRIMS
     FORMS --> UTILS
     CAROUSEL --> PRIMS
@@ -458,7 +468,7 @@ Blog view counts deliberately sit outside all of this: `trackBlogView` writes a 
 | Add a UI string | `apps/web/messages/en.json` **and** `vi.json` (types regenerate on build; `i18n-parity.spec.ts` fails if you touch only one) |
 | Add a dashboard editor | A **separate by-id read** for the form — never reuse the list row. See below |
 | Add a translatable content field | `packages/db/prisma/schema.prisma` → the `*Translation` model → migration |
-| Add a shared component | a Radix wrapper or plain element: `packages/ui-primitives/src/` + a line in its `src/index.ts`; a control that needs react-hook-form, cmdk or react-day-picker: `packages/ui-forms/src/`; one that needs embla: `packages/ui-carousel/src/`; a TipTap node both the editor and the server renderer draw: `packages/rich-text-schema/src/` (the editor's behaviour for it stays in `packages/ui/src/`); one that needs the editor: `packages/ui/src/`; an app-only piece: `apps/web/src/shared/ui/` |
+| Add a shared component | a Radix wrapper or plain element: `packages/ui-primitives/src/` + a line in its `src/index.ts`; a control that needs react-hook-form, cmdk or react-day-picker: `packages/ui-forms/src/`; one that needs embla: `packages/ui-carousel/src/`; a TipTap node both the editor and the server renderer draw: `packages/rich-text-schema/src/` (the editor's behaviour for it stays in `packages/ui/src/`); a server-rendered piece of an article, or a client leaf that finishes one (mermaid, math): `packages/rich-text-render/src/` and a subpath in its `exports`; one that needs the editor: `packages/ui/src/`; an app-only piece: `apps/web/src/shared/ui/` |
 | Add a client read or write | `entities/<slice>/query/` (a `<slice>-queries.ts` factory and a `use-*.ts` hook); writes through `useServerMutation` (`shared/hooks/use-server-mutation.ts`) |
 | Change cache behaviour | `next.config.js` `headers()` for edge, `CACHE_TAGS` for data |
 | Change who can do something | `src/shared/lib/auth/session.ts` |

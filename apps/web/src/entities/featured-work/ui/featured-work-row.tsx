@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { RichTextHtml } from '@byte-of-me/ui/rich-text-html';
+import { RichTextHtml } from '@byte-of-me/rich-text-render/rich-text-html';
 import { useTranslations } from 'next-intl';
 
 import type { FeaturedWorkDemoItem } from './featured-work-demo';

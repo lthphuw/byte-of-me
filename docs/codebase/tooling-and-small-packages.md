@@ -33,6 +33,7 @@
     ├── ui-toast/         layer 1: the sonner Toaster (packages-ui.md)
     ├── ui-forms/         layer 2: form, calendar, date picker, command, multi-select (packages-ui.md)
     ├── ui-carousel/      layer 2: Embla carousel and useEmblaState (packages-ui.md)
+    ├── rich-text-render/ layer 2: the server-side renderer of rich text, mermaid and math leaves (packages-ui.md)
     ├── storage/src       index.ts -> storage.ts, storage.interface.ts, s3.factory.ts
     └── logger/src        index.ts (Logger class + logger singleton)
 ```
@@ -48,7 +49,7 @@
 | `new-package` | `bun run scripts/new-package.ts <name> --layer <n> [--dom] [--tests] [--css]` | extracting code into a new package (Recipes) |
 | `check-types` | `turbo run check-types` | type errors only |
 | `lint` / `lint:fix` | `turbo run lint` / `turbo run lint:fix` | lint, or autofix |
-| `test` | `turbo run test` (`bun test` in the twelve workspaces that have specs: web, db, logger, storage, ui, rich-text-schema, ui-utils, ui-hooks, ui-motion, ui-primitives, ui-forms, ui-carousel) | running all suites |
+| `test` | `turbo run test` (`bun test` in the thirteen workspaces that have specs: web, db, logger, storage, ui, rich-text-schema, rich-text-render, ui-utils, ui-hooks, ui-motion, ui-primitives, ui-forms, ui-carousel) | running all suites |
 | `generate` | `bun run --filter '@byte-of-me/db' generate` (`prisma generate`) | after a Prisma schema change |
 | `postinstall` / `prepare` | `bun run generate` / `husky install` | install time; `prepare` points `core.hooksPath` at `.husky` |
 | `gen:icons` | `bun run scripts/gen-icons.ts` | after editing `brand-mark.ts` |

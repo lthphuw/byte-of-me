@@ -6,10 +6,6 @@
   "exports": {
     ".": "./src/index.ts",
     "./rich-text-editor": "./src/rich-text-editor/index.ts",
-    "./rich-text": "./src/rich-text.tsx",
-    "./rich-text-html": "./src/rich-text-html.tsx",
-    "./rich-text-render": "./src/rich-text-render.ts",
-    "./mermaid-blocks": "./src/mermaid-blocks.tsx",
     "./*": "./src/*.tsx"
   },
   "scripts": {
@@ -23,6 +19,7 @@
     "react-dom": "^19.2.0"
   },
   "dependencies": {
+    "@byte-of-me/rich-text-render": "workspace:*",
     "@byte-of-me/rich-text-schema": "workspace:*",
     "@byte-of-me/ui-carousel": "workspace:*",
     "@byte-of-me/ui-forms": "workspace:*",
@@ -38,20 +35,18 @@
     "@tiptap/extension-table": "catalog:",
     "@tiptap/extension-table-of-contents": "catalog:",
     "@tiptap/extension-typography": "catalog:",
-    "@tiptap/html": "catalog:",
     "@tiptap/markdown": "catalog:",
     "@tiptap/pm": "catalog:",
     "@tiptap/react": "catalog:",
     "highlight.js": "catalog:",
-    "katex": "catalog:",
     "lucide-react": "catalog:",
     "mermaid": "catalog:",
     "sonner": "catalog:",
     "vaul": "catalog:"
   },
   "devDependencies": {
+    "@tiptap/html": "catalog:",
     "@tiptap/starter-kit": "catalog:",
-    "@types/katex": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "eslint": "catalog:",

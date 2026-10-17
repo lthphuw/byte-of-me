@@ -1,4 +1,4 @@
-import { RichText } from '@byte-of-me/ui/rich-text';
+import { RichText } from '@byte-of-me/rich-text-render/rich-text';
 import { Award, GraduationCap } from 'lucide-react';
 import Image from 'next/image';
 

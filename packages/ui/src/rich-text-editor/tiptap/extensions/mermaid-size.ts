@@ -1,8 +1,10 @@
+import {
+  formatMermaidSize,
+  svgNaturalSize,
+} from '@byte-of-me/rich-text-render/mermaid-size';
 import { Extension } from '@tiptap/core';
 import { type EditorState, Plugin, PluginKey } from '@tiptap/pm/state';
 import type { EditorView } from '@tiptap/pm/view';
-
-import { formatMermaidSize, svgNaturalSize } from '../../../mermaid-size';
 
 /**
  * Measures each mermaid diagram into the code block's `mermaidSize` (`MermaidSizeAttribute`,

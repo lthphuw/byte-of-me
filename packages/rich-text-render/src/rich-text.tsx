@@ -7,7 +7,7 @@ import type { ImageSizes } from '@byte-of-me/rich-text-schema';
 import { RichTextHtml, type RichTextHtmlProps } from './rich-text-html';
 import { renderRichTextHtml } from './rich-text-render';
 
-export type RichTextProps = Omit<RichTextHtmlProps, 'html'> & {
+type RichTextProps = Omit<RichTextHtmlProps, 'html'> & {
   content?: string | unknown;
   /** The stored size of each image the content uses, by source URL. */
   imageSizes?: ImageSizes;

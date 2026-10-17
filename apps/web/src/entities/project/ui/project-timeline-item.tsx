@@ -1,9 +1,9 @@
 'use client';
 
-import { Button } from '@byte-of-me/ui';
 // Subpath on purpose: the presentational half of RichText, with no tiptap in
 // it. The HTML itself is rendered by the server action that feeds this list.
-import { RichTextHtml } from '@byte-of-me/ui/rich-text-html';
+import { RichTextHtml } from '@byte-of-me/rich-text-render/rich-text-html';
+import { Button } from '@byte-of-me/ui';
 import { Code, ExternalLink } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 

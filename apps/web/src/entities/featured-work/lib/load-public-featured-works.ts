@@ -1,9 +1,9 @@
 import { prisma } from '@byte-of-me/db';
+import { renderRichTextDocumentHtml } from '@byte-of-me/rich-text-render/rich-text-render';
 import {
   isRichTextBlank,
   parseRichTextContent,
 } from '@byte-of-me/rich-text-schema/rich-text-content';
-import { renderRichTextDocumentHtml } from '@byte-of-me/ui/rich-text-render';
 
 import {
   defaultFeaturedWorkGithubDeps,

@@ -1,5 +1,5 @@
-import { MermaidBlocks } from '@byte-of-me/ui/mermaid-blocks';
-import { RichText } from '@byte-of-me/ui/rich-text';
+import { MermaidBlocks } from '@byte-of-me/rich-text-render/mermaid-blocks';
+import { RichText } from '@byte-of-me/rich-text-render/rich-text';
 
 import type { PublicBlog } from '@/entities/blog';
 

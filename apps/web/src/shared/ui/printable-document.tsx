@@ -2,8 +2,8 @@
 // barrel would pull the whole UI package — TipTap included — onto a page that
 // renders one document.
 import type { ReactNode } from 'react';
-import { MathRenderer } from '@byte-of-me/ui/math-renderer';
-import { RichText } from '@byte-of-me/ui/rich-text';
+import { MathRenderer } from '@byte-of-me/rich-text-render/math-renderer';
+import { RichText } from '@byte-of-me/rich-text-render/rich-text';
 
 /**
  * The page Chrome prints to PDF (`/print/blogs/[slug]`). Server `RichText`, no editor JS:

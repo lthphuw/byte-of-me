@@ -1,13 +1,12 @@
 'use client';
 
 import { memo } from 'react';
-import type { JSONContent } from '@tiptap/core';
-
-import { MermaidBlocks } from '../../mermaid-blocks';
+import { MermaidBlocks } from '@byte-of-me/rich-text-render/mermaid-blocks';
 // A client module importing the server renderer is deliberate: the preview matches the
 // public page through the same `RichText` (schema, sanitizer, citation numbering). It loads
 // only in the dashboard's lazy editor chunk, which already holds the schema.
-import { RichText } from '../../rich-text';
+import { RichText } from '@byte-of-me/rich-text-render/rich-text';
+import type { JSONContent } from '@tiptap/core';
 
 /**
  * Read-only render of the current document as the public site shows it, mermaid included.

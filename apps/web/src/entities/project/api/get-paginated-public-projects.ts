@@ -1,8 +1,8 @@
 'use server';
 
 import { type Prisma, prisma } from '@byte-of-me/db';
+import { renderRichTextHtml } from '@byte-of-me/rich-text-render/rich-text-render';
 import { richTextToPlainText } from '@byte-of-me/rich-text-schema/rich-text-content';
-import { renderRichTextHtml } from '@byte-of-me/ui/rich-text-render';
 
 import { publicProjectsParamsSchema } from '@/entities/project/model/public-project-schema';
 import type { PublicProject } from '@/entities/project/model/types';

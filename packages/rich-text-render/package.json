@@ -1,0 +1,41 @@
+{
+  "name": "@byte-of-me/rich-text-render",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./rich-text": "./src/rich-text.tsx",
+    "./rich-text-html": "./src/rich-text-html.tsx",
+    "./rich-text-render": "./src/rich-text-render.ts",
+    "./mermaid-blocks": "./src/mermaid-blocks.tsx",
+    "./mermaid-size": "./src/mermaid-size.ts",
+    "./math-renderer": "./src/math-renderer.tsx"
+  },
+  "scripts": {
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "test": "bun test"
+  },
+  "peerDependencies": {
+    "react": "^19.2.5",
+    "react-dom": "^19.2.0"
+  },
+  "dependencies": {
+    "@byte-of-me/rich-text-schema": "workspace:*",
+    "@byte-of-me/ui-utils": "workspace:*",
+    "@tiptap/html": "catalog:",
+    "katex": "catalog:",
+    "mermaid": "catalog:"
+  },
+  "devDependencies": {
+    "@types/katex": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ]
+}
