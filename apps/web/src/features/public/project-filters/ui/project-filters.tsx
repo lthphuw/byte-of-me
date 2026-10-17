@@ -80,7 +80,7 @@ export function ProjectFilters({ value, onChange }: ProjectFiltersProps) {
     search.length > 0;
 
   return (
-    <div className="flex flex-col gap-4 md:gap-6">
+    <div className="flex flex-col gap-4">
       <div className="flex items-center gap-2">
         <FilterSearchInput
           value={search}

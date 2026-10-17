@@ -52,7 +52,7 @@ export function ProjectTimelineItem({
         )}
       />
 
-      <div className="flex flex-col gap-4 md:gap-6">
+      <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
           <h3 className="font-heading text-xl tracking-tight">
             {project.title}
@@ -75,23 +75,32 @@ export function ProjectTimelineItem({
           </ExpandableRichText>
         )}
 
-        {project.techStacks.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {project.techStacks.map((tech) => (
-              <TechStackClickableBadge
-                key={tech.id}
-                tech={tech}
-                onClick={onTechClick}
-              />
-            ))}
-          </div>
-        )}
+        {/* One group: the two chip rows label the same project, so they sit at the chip gap. */}
+        {(project.techStacks.length > 0 || project.tags.length > 0) && (
+          <div className="space-y-2">
+            {project.techStacks.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {project.techStacks.map((tech) => (
+                  <TechStackClickableBadge
+                    key={tech.id}
+                    tech={tech}
+                    onClick={onTechClick}
+                  />
+                ))}
+              </div>
+            )}
 
-        {project.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {project.tags.map((tag) => (
-              <TagClickableBadge key={tag.id} tag={tag} onClick={onTagClick} />
-            ))}
+            {project.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {project.tags.map((tag) => (
+                  <TagClickableBadge
+                    key={tag.id}
+                    tag={tag}
+                    onClick={onTagClick}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         )}
 

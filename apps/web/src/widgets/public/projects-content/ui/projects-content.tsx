@@ -152,13 +152,14 @@ export function ProjectsContent({ openSource }: ProjectsContentProps) {
       <Tabs
         value={view}
         onValueChange={setView}
-        className="flex flex-col gap-6 md:gap-8"
+        className="flex flex-col gap-6"
       >
         {/* No `description`, same as Blogs: the strapline restated the page title
             in more words. The count is the subtitle. */}
         {/* One header for both views, so the TabsList is the same element across
             a switch and its pill can transition instead of remounting. */}
         <ListPageHeader
+          className="md:gap-4"
           title={isOpenSourceView ? t('tabOpenSource') : t('pageTitle')}
           count={
             isOpenSourceView && openSource
@@ -181,7 +182,7 @@ export function ProjectsContent({ openSource }: ProjectsContentProps) {
           value="projects"
           forceMount
           className={cn(
-            'mt-0 space-y-6 data-[state=inactive]:hidden md:space-y-8',
+            'mt-0 space-y-6 data-[state=inactive]:hidden',
             hasSwitched && !isOpenSourceView && PANEL_ENTER
           )}
         >

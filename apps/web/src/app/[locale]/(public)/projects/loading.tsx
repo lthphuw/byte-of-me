@@ -13,7 +13,7 @@ export default function ProjectsLoading() {
     <ProjectsShell>
       {/* Mirrors ListPageHeader: title/subtitle pair, then the filter row,
           over a rule. */}
-      <div className="flex flex-col gap-4 border-b border-border/60 pb-5 md:gap-6 md:pb-6">
+      <div className="flex flex-col gap-4 border-b border-border/60 pb-5 md:pb-6">
         {/* Title over the count line. There is no description strapline, so
             the second bar stands in for "8 projects", not a sentence. */}
         <div className="space-y-2">

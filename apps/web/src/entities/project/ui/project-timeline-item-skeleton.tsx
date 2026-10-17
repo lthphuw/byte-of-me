@@ -2,13 +2,13 @@ import { Skeleton } from '@byte-of-me/ui';
 
 export function ProjectTimelineItemSkeleton() {
   return (
-    <li className="relative pb-6 pl-8 last:pb-0 md:pb-8">
+    <li className="relative pb-6 pl-8 last:pb-0">
       <span
         aria-hidden
         className="absolute left-0 top-2 size-2.5 -translate-x-1/2 rounded-full border border-border bg-background ring-4 ring-background"
       />
 
-      <div className="flex flex-col gap-4 md:gap-6">
+      <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
           <Skeleton className="h-6 w-48" />
           <Skeleton className="h-3 w-36 shrink-0" />

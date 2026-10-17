@@ -63,7 +63,7 @@ export function ProjectsTimeline({
     <div className="flex flex-col gap-6 md:gap-8">
       {groups.map(([year, items], groupIndex) => (
         <section key={year ?? 'undated'}>
-          <div className="mb-4 flex items-center gap-4 md:mb-6">
+          <div className="mb-4 flex items-center gap-4">
             {/* Spelled out rather than `meta-label` + `text-sm`: both set a
                 font size, and which one wins depends on CSS emission order
                 rather than the order they appear in here. */}
@@ -87,7 +87,7 @@ export function ProjectsTimeline({
                   index={index}
                   immediate={isFirstScreen}
                   entrance={isFirstScreen && playEntrance}
-                  className="relative pb-6 pl-8 last:pb-0 md:pb-8"
+                  className="relative pb-6 pl-8 last:pb-0"
                 >
                   <ProjectTimelineItem
                     project={project}
