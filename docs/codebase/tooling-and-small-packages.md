@@ -7,7 +7,7 @@
 ```text
 .
 ├── package.json          root scripts; workspaces apps/* packages/*; workspaces.catalog; bun@1.4.3
-├── turbo.json            task graph, cache rules and size cap, build env allowlist (names only)
+├── turbo.json            task graph (the `transit` task), cache rules and size cap, build env allowlist (names only)
 ├── eslint.config.mjs     the only ESLint config (flat); every workspace uses it
 ├── scripts/
 │   ├── check.sh          bun run check: check-types, lint, boundaries, test, build
@@ -24,7 +24,7 @@
 ├── .vercelignore         dev-only dirs and docs/superpowers are not deployed
 ├── docker-compose.yml    local services (table below)
 └── packages/
-    ├── config/           typescript/ presets, boundaries.json (package layers), test/ preloads
+    ├── config/           typescript/ presets, boundaries.json (package layers), test/ preloads, turbo.json (scripts/ as task inputs)
     ├── ui-utils/         layer 0: cn, link and scroll helpers (packages-ui.md)
     ├── ui-hooks/         layer 0: React hooks (packages-ui.md)
     ├── ui-motion/        layer 0: MotionProvider, tokens, variants (packages-ui.md)
@@ -47,7 +47,7 @@
 | `new-package` | `bun run scripts/new-package.ts <name> --layer <n> [--dom] [--tests] [--css]` | extracting code into a new package (Recipes) |
 | `check-types` | `turbo run check-types` | type errors only |
 | `lint` / `lint:fix` | `turbo run lint` / `turbo run lint:fix` | lint, or autofix |
-| `test` | `turbo run test` (`bun test` in web, ui, db, storage, logger) | running all suites |
+| `test` | `turbo run test` (`bun test` in the eleven workspaces that have specs: web, db, logger, storage, ui, ui-utils, ui-hooks, ui-motion, ui-primitives, ui-forms, ui-carousel) | running all suites |
 | `generate` | `bun run --filter '@byte-of-me/db' generate` (`prisma generate`) | after a Prisma schema change |
 | `postinstall` / `prepare` | `bun run generate` / `husky install` | install time; `prepare` points `core.hooksPath` at `.husky` |
 | `gen:icons` | `bun run scripts/gen-icons.ts` | after editing `brand-mark.ts` |
@@ -55,10 +55,12 @@
 
 ### Turbo graph (`turbo.json`, Turbo 2.11.7)
 
-- `build` has no dependsOn, so it does not build dependency workspaces first; outputs `.next/**` minus `.next/cache` and `.next/dev`; inputs add `.env*`. Web's build reads its packages from source (`transpilePackages`, derived from the workspace in `apps/web/next.config.js`). No package builds a `dist/`: every `exports` map points at `src`.
+- `build` outputs `.next/**` minus `.next/cache` and `.next/dev`; inputs add `.env*`. Web's build reads its packages from source (`transpilePackages`, derived from the workspace in `apps/web/next.config.js`), so there is no dependency build to wait for. No package builds a `dist/`: every `exports` map points at `src`.
+- `check-types`, `lint`, `test` and `build` `dependsOn` `^transit`, and `transit` `dependsOn` `^transit`. No package has a `transit` script, so nothing runs for it, but turbo still hashes it per package (the package's files plus its dependencies' `transit` hashes). Without it a source edit in a package changed only that package's hashes: web's four tasks stayed cache hits and `bun run check` and both hooks reported green from a stale cache. Now an edit re-runs the package and every package that depends on it, directly or not, and nothing else; the tasks still run in parallel. Measured: editing `ui-utils` re-ran `ui-utils`, `ui-primitives`, `ui-forms`, `ui-carousel`, `ui` and `web` (19 of 38 tasks) and hit `ui-hooks`, `ui-motion`, `ui-toast`, `db`, `logger`, `storage` and `config`; editing only `apps/web` re-ran the four `web` tasks. A chain (`dependsOn: ["^check-types"]` and so on) was rejected: it serialises each task behind its dependencies' and a cold `bun run check` took 59.9 s against 47.6 s. `^build` alone would also invalidate (a missing script still has a hash) but would start running a package's build the day one is added.
+- Files a task reads from outside its package, with no dependency on the package that owns them, are `inputs` globs relative to the repo root (`$TURBO_ROOT$`), or an edit leaves the cache green: `test` adds `$TURBO_ROOT$/packages/config/test/**` (the `bunfig.toml` preloads of seven workspaces) and `packages/config/turbo.json` (extends `//`) adds `$TURBO_ROOT$/scripts/**` to config's `check-types` and `lint`.
 - Local cache cap: `cacheMaxSize` `5GB` and `cacheMaxAge` `14d` (eviction runs at the start of each `turbo run`). Without them the cache never shrinks, and the web build entry is about 6 MB compressed.
 - Vercel: `apps/web/vercel.json` sets `framework` (nextjs), `buildCommand` (`cd ../.. && bunx turbo run build --filter=web`), `ignoreCommand` and `regions` (`hnd1`, Tokyo, next to Supabase in `ap-northeast-1`). The file is read from the Root Directory, so the dashboard's Root Directory must be `apps/web`; the repo cannot show that setting. `ignoreCommand` runs `turbo query affected` and skips the build (exit 0) when no package affects `web`; any other result builds. Vercel's install step is left to auto-detection (bun.lock).
-- `generate` dependsOn `^generate`. Nothing else has a dependsOn.
+- `generate` dependsOn `^generate`. Nothing besides `generate`, `transit` and the four tasks above has a dependsOn.
 - `cache: false` on `dev`, `lint:fix`, `generate`, all `db:*`; `persistent` on `dev` and `db:migrate:dev`.
 - `globalDependencies`: `eslint.config.mjs`, `packages/config/typescript/*.json`. `db:*` have no root script: `bun run --filter '@byte-of-me/db' db:push`.
 
@@ -79,7 +81,7 @@
 - `boundaries.json`: `layers` (package names per layer, index = layer), `dbTypesOnly`, `noReact`. Read by `check-boundaries.ts` and rewritten by `new-package.ts`. Rules: [../architecture.md](../architecture.md) ("Package layers").
 - `test/happydom.ts`: registers happy-dom on `globalThis` and sets `IS_REACT_ACT_ENVIRONMENT`. Preloaded by `apps/web`, `packages/ui`, `packages/ui-hooks`, `packages/ui-primitives`, `packages/ui-forms` and `packages/ui-carousel`.
 - `test/db-guard.ts`: forces `DATABASE_URL` and `DIRECT_URL` to `postgres://test:test@127.0.0.1:1/test`, then throws if either is non-local. Preloaded by `apps/web` and `packages/db`; details in [packages-db.md](packages-db.md).
-- The package has its own `check-types` (the preloads and `scripts/tsconfig.json`) and `lint` (the preloads and the two scripts), so they run in `turbo run check-types lint` and the pre-commit hook.
+- The package has its own `check-types` (the preloads and `scripts/tsconfig.json`) and `lint` (the preloads and the two scripts), so they run in `turbo run check-types lint` and the pre-commit hook. Its `turbo.json` adds `scripts/**` to both tasks' inputs, and the root `turbo.json` adds `test/**` to every package's `test` inputs, so an edit to either re-runs the tasks that read it.
 
 ### packages/storage public API
 
@@ -151,7 +153,7 @@ Ports bind to loopback only, so a laptop on public Wi-Fi does not expose the dat
 
 ## Gotchas
 
-- Editing `eslint.config.mjs` or `packages/config/typescript/*.json` misses every task's cache (`globalDependencies`).
+- Editing `eslint.config.mjs` or `packages/config/typescript/*.json` misses every task's cache (`globalDependencies`). Editing a package's source misses that package's tasks and its dependants' (`transit`), never an unrelated package's; a new package joins the graph through its `package.json` dependencies, with no `turbo.json` change.
 - `check-types`, `lint`, `test` and `build` have no `dependsOn` on `generate`, and no `build` script runs `prisma generate` any more (the db one did). Run `bun run generate` after a schema change; `postinstall` runs it too.
 - `bun test` exits non-zero when it finds no specs, so `new-package` adds a `test` script only with `--tests` or `--dom`.
 - The root package declares `typescript` (catalog) because `check-boundaries.ts` imports the compiler API; Bun's isolated linker does not hoist it from a workspace.

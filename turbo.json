@@ -7,8 +7,21 @@
   "cacheMaxSize": "5GB",
   "cacheMaxAge": "14d",
   "tasks": {
-    "check-types": {},
+    "transit": {
+      "description": "No package has this script. It only carries each package's file hash to its dependants, so their tasks re-run when a dependency changes while still running in parallel.",
+      "dependsOn": [
+        "^transit"
+      ]
+    },
+    "check-types": {
+      "dependsOn": [
+        "^transit"
+      ]
+    },
     "build": {
+      "dependsOn": [
+        "^transit"
+      ],
       "inputs": [
         "$TURBO_DEFAULT$",
         ".env*"
@@ -75,8 +88,20 @@
       ],
       "cache": false
     },
-    "lint": {},
-    "test": {},
+    "lint": {
+      "dependsOn": [
+        "^transit"
+      ]
+    },
+    "test": {
+      "dependsOn": [
+        "^transit"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/packages/config/test/**"
+      ]
+    },
     "lint:fix": {
       "cache": false
     }

@@ -176,7 +176,7 @@ Storage URLs are never hardcoded. Always go through the helpers in `shared/api/s
 
 ## Scripts
 
-Run from the repo root (Turborepo fans each task out across the workspace):
+Run from the repo root (Turborepo fans each task out across the workspace and caches it per package: an edit re-runs that package and every package that depends on it, never an unrelated one):
 
 | Command | Description |
 | --- | --- |
