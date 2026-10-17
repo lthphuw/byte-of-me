@@ -104,7 +104,7 @@ flowchart TB
     DB["@byte-of-me/db<br/>Prisma schema · client · seed"]
     ST["@byte-of-me/storage<br/>S3-compatible client"]
     LOG["@byte-of-me/logger<br/>structured logging"]
-    CFG["@byte-of-me/config<br/>TypeScript presets"]
+    CFG["@byte-of-me/config<br/>presets · layers · test preloads"]
 
     WEB --> UI
     WEB --> DB
@@ -124,11 +124,53 @@ flowchart TB
     class UI,DB,ST,LOG,CFG pkg
 ```
 
-Solid arrows are runtime dependencies; dashed arrows are build-time only — `@byte-of-me/config` ships no code, only `tsconfig` presets that each workspace extends by relative path.
+Solid arrows are runtime dependencies; dashed arrows are build-time only — `@byte-of-me/config` ships no application code: `tsconfig` presets that each workspace extends by relative path, `boundaries.json` (below), and the `bun test` preloads in `test/`.
 
-Every package is consumed as **TypeScript source** via `transpilePackages`, so there is no build step before `bun run dev`. `turbo run build` still runs `build` for the packages that have a build script (`db`, `storage`, `logger`), but nothing consumes their `dist/`. The `build` task has no `^build` dependency, so `turbo run build --filter=web` builds only the web app.
+Every package is consumed as **TypeScript source** via `transpilePackages`, so there is no build step before `bun run dev`. `next.config.js` derives that list from the root `workspaces` (every directory under `packages/`), so a new package is never added by hand. No package has a `build` script or a `dist/`; `turbo run build` builds only the web app.
 
 `@byte-of-me/ui` uses **subpath exports** rather than one barrel — `./rich-text-editor`, `./rich-text`, `./lib/sanitize`. That is deliberate: importing the barrel from a public-site client component would drag all of TipTap into the visitor's bundle.
+
+### Package layers
+
+A package imports only packages in a lower layer, and `apps/web` sits above them all. The layers are declared in `packages/config/boundaries.json`; layers 2 and 3 are empty until packages are extracted into them.
+
+```mermaid
+flowchart TB
+    subgraph APP["apps/web"]
+        WEB["web"]
+    end
+    subgraph L4["L4"]
+        UI["ui"]
+    end
+    subgraph L1["L1"]
+        DB["db"]
+    end
+    subgraph L0["L0"]
+        LOG["logger"]
+        ST["storage"]
+    end
+
+    WEB --> UI
+    WEB --> DB
+    WEB --> ST
+    WEB --> LOG
+    DB --> LOG
+```
+
+`bun run check-boundaries` (step 3 of `bun run check`) reads every source file with the TypeScript compiler API and prints `file:line  rule  message` per violation, exiting 1 on any. It runs in under a second and enforces:
+
+| Rule | Id | Meaning |
+| --- | --- | --- |
+| 1 | `layers` | A package imports only lower layers; same-layer and upward imports, and so cycles, are violations. A package that exports code must be listed in `boundaries.json`. |
+| 2 | `facade`, `no-app` | No package imports `@byte-of-me/ui` (the facade), `apps/`, or the `@/` alias. |
+| 3 | `exports`, `deps` | A cross-package import goes through the target's `exports` map, and the importer lists the target in `dependencies` or `peerDependencies`. |
+| 4 | `no-react` | Packages named in `noReact` never import `react` or `react-dom` and never carry `'use client'`. This list is explicit, not "all of L0", because the React hooks and motion packages are L0. |
+| 5 | `db-types` | Packages named in `dbTypesOnly`, and any `'use client'` file, import `@byte-of-me/db/types`, never the db root. |
+| 6 | `fsd` | Inside `apps/web/src`, no `@/entities` root-barrel import and no import of a layer above the importing one (`shared` to `entities`, `entities` to `features`, and so on). |
+
+Rule 7, that a heavy dependency belongs to exactly one package and `react`, `framer-motion`, `sonner` and `@tanstack/react-query` are peers, is review advice and is not checked.
+
+`bun run new-package <name> --layer <n> [--dom] [--tests] [--css]` creates `packages/<name>` from the `library.json` preset, lists it in `boundaries.json` and adds it to `apps/web/package.json`; it then prints the manual steps.
 
 ---
 

@@ -52,16 +52,16 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.16",
-    "@types/node": "^25.5.0",
+    "@types/node": "catalog:",
     "@types/nodemailer": "^8.0.2",
-    "@types/react": "19.2.14",
-    "@types/react-dom": "19.2.3",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
     "autoprefixer": "^10.4.14",
-    "eslint": "^9.30.0",
+    "eslint": "catalog:",
     "postcss": "^8.4.23",
     "tailwindcss": "^3.3.1",
     "tailwindcss-animate": "^1.0.7",
     "tsx": "^4.20.3",
-    "typescript": "5.8.3"
+    "typescript": "catalog:"
   }
 }

@@ -13,8 +13,9 @@ only what a consuming app has to do.
 
 1. `"@byte-of-me/ui": "workspace:*"` in dependencies. The app declares only what
    it imports itself; Radix, TipTap and the rest belong to this package.
-2. Add `'@byte-of-me/ui'` to `transpilePackages`.
-3. Add `'../../packages/ui/src/**/*.{ts,tsx}'` to the Tailwind `content` globs.
+2. `transpilePackages` needs no entry: `next.config.js` lists every workspace
+   package.
+3. Cover `'../../packages/*/src/**/*.{ts,tsx}'` in the Tailwind `content` globs.
    The components use the app's theme and CSS variables (`--input`, `--scrim`,
    `--destructive-text` and the rest).
 4. Mount `MotionProvider` once near the root: it runs `LazyMotion` in `strict`

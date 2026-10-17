@@ -2,5 +2,15 @@
   "name": "@byte-of-me/config",
   "version": "1.0.0",
   "private": true,
-  "description": "Shared tooling configuration (TypeScript presets) for the byte-of-me monorepo."
+  "description": "Shared tooling for the byte-of-me monorepo: TypeScript presets, package layers, test preloads.",
+  "scripts": {
+    "check-types": "tsc --noEmit && tsc --noEmit -p ../../scripts",
+    "lint": "eslint test ../../scripts/check-boundaries.ts ../../scripts/new-package.ts",
+    "lint:fix": "eslint test ../../scripts/check-boundaries.ts ../../scripts/new-package.ts --fix"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:"
+  }
 }

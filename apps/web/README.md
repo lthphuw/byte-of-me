@@ -75,3 +75,7 @@ bun run --filter 'web' check-types  # tsc --noEmit
 bun run --filter 'web' lint         # eslint .
 bun run --filter 'web' format       # prettier over src
 ```
+
+`bun test` preloads, from `bunfig.toml`: the Next.js runtime stubs in this
+directory, plus the shared `db-guard.ts` and `happydom.ts` in
+`packages/config/test/`. Run it from this directory, not the repo root.

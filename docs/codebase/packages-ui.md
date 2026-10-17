@@ -1,14 +1,13 @@
 # packages/ui (`@byte-of-me/ui`)
 
-> Shared UI package: shadcn-style primitives, TipTap rich-text editor and renderer, motion, hooks. Source: `packages/ui/src/`, `packages/ui/package.json`, `packages/ui/bunfig.toml`, `packages/ui/happydom.ts`.
+> Shared UI package: shadcn-style primitives, TipTap rich-text editor and renderer, motion, hooks. Source: `packages/ui/src/`, `packages/ui/package.json`, `packages/ui/bunfig.toml`, `packages/config/test/happydom.ts`.
 
 ## Layout
 
 ```
 packages/ui/
 ├── package.json             exports map = the public surface (table below)
-├── bunfig.toml              [test] preload = ["./happydom.ts"], resolved against cwd
-├── happydom.ts              GlobalRegistrator.register(): DOM for *.spec.tsx; sets IS_REACT_ACT_ENVIRONMENT
+├── bunfig.toml              [test] preload = ["../config/test/happydom.ts"]: DOM for *.spec.tsx; sets IS_REACT_ACT_ENVIRONMENT
 └── src/
     ├── index.ts             root barrel; omits rich-text*, rich-text-editor, mermaid, math
     ├── <name>.tsx           one file per primitive: shadcn-style wrappers + app-neutral composites
@@ -72,7 +71,7 @@ packages/ui/
 - Scroll reveal: `fadeUp` starts at `motionOpacity.placeholder` (0.2), not 0, so a block below the fold holds its space as a faded placeholder until it reveals (`packages/ui/src/motion/tokens.ts`, `variants.ts`). Every `RevealSection` user gets this, not only the homepage. `RevealSection` takes only `id`, `className` and `immediate`; it reveals once, as a `div`.
 - Programmatic scroll: call `scrollIntoViewBehavior()` (`packages/ui/src/lib/prefers-reduced-motion.ts:16`), never a literal `'smooth'`. Used at `packages/ui/src/rich-text-editor/tiptap/outline-aside.tsx` and `packages/ui/src/rich-text-editor/tiptap/extensions/search-and-replace.tsx`.
 - Public page frame: `ShellBase` (`packages/ui/src/shell.tsx:7`) owns the top/bottom padding and block gap; a page passes only its max-width (AGENTS §14).
-- Styling and build: apps/web scans `packages/ui/src/**` (`apps/web/tailwind.config.ts:8`) and transpiles the package (`apps/web/next.config.js`, `transpilePackages`). Dependencies: this package declares the Radix, TipTap, KaTeX, Mermaid, embla, cmdk, vaul and highlight.js libraries it imports; `apps/web` declares only what its own source imports (it no longer lists the UI-only ones). Versions shared by both packages live in the root `workspaces.catalog`, and every dependency here that has a catalog entry uses `catalog:`.
+- Styling and build: apps/web scans `packages/*/src/**` (`apps/web/tailwind.config.ts:8`) and transpiles the package (`transpilePackages` in `apps/web/next.config.js` lists every workspace package). Dependencies: this package declares the Radix, TipTap, KaTeX, Mermaid, embla, cmdk, vaul and highlight.js libraries it imports; `apps/web` declares only what its own source imports (it no longer lists the UI-only ones). Versions shared by both packages live in the root `workspaces.catalog`, and every dependency here that has a catalog entry uses `catalog:`.
 
 ## Recipes
 
@@ -87,8 +86,8 @@ packages/ui/
 - `RichText` has no `'use client'` on purpose. Imported from client code it ships the whole render schema (`rich-text.tsx:1-16`). Hand HTML to `RichTextHtml` instead.
 - Editor and render schemas must mirror each other. A node the editor can store but `renderExtensions` lacks makes `generateHTML` throw, and the document prints as escaped plain text (`rich-text-render.ts:20-33,55-57`; invariant at `render-extensions.ts:11-13`).
 - `m.*` animates only under `MotionProvider`, which loads the features (`motion-provider.tsx:9-10,19`). `MotionConfig` does not cover raw CSS (AGENTS §14).
-- Classes used only in `packages/ui` are generated because of the `apps/web/tailwind.config.ts:8` content glob. Do not narrow that glob.
-- Run tests from this directory. `bunfig.toml` resolves its preload against cwd, so `bun test packages/ui` from the root skips `happydom.ts` (AGENTS §10). `@happy-dom/global-registrator` and `@testing-library/react` are declared only in the root `package.json`.
+- Classes used only in a package are generated because of the `apps/web/tailwind.config.ts:8` content glob, `../../packages/*/src/**/*.{ts,tsx}` Do not narrow that glob.
+- Run tests from this directory. `bunfig.toml` resolves its preload against cwd, so `bun test packages/ui` from the root skips the happy-dom preload (AGENTS §10). `@happy-dom/global-registrator` and `@testing-library/react` are declared only in the root `package.json`.
 - `packages/ui/README.md` is stale. Its "Known flagged code" paths (`src/rich-text-editor/blocks/**`, `src/rich-text-editor/editor/**`) and `lexical` deps do not exist. No file in `packages/ui/src` imports `next-intl`, so `expandable-text` does not translate. `filter-multi-select-section` does not exist. `apps/web/src/shared/lib` re-exports `cn` but not `sanitizeHtml`. "Every module is reachable by subpath" is wrong (see the second bullet).
 - `Button` owns the touch floor at every size: `min-h-11` on touch, and under `can-hover:` `min-h-9` (default, icon), `min-h-8` (sm) or `min-h-10` (lg), plus `min-w-11` / `can-hover:min-w-9` on `icon`. A call site writes its own `min-h-*` only to ask for a different pointer height (the `size="sm"` buttons across the dashboard ask for 36 px). `aria-disabled` dims and blocks the pointer like `disabled`, so a control kept focusable that way needs no class of its own. `Input` and `SelectTrigger` carry the same floor (36 px under `can-hover:`). `TabsTrigger` keeps it as an invisible `before:` hit area (measured 44 px) around a 32 px pill (28 px under `can-hover:`): a 44 px pill around 14 px text read as oversized. `Input`, `Textarea`, `SelectTrigger` and `Checkbox` draw `aria-invalid="true"` as a `--destructive-text` edge and ring (`FormControl` sets the attribute); the message text beside the field is the non-colour cue. `Checkbox`'s edge is `--input`, filling with `--primary` only when checked.
 - `Badge` is a static label: no hover, no focus ring. With `asChild` it styles a `<button>` or `<a>` as interactive (`badgeVariants({ interactive: true })` does the same for a bare element). `TagClickableBadge` and `TechStackClickableBadge` (`apps/web/src/entities/{tag,tech-stack}/ui/`) render a `<button aria-pressed>` when given `onClick` and plain text when not; they were a `div` with `onClick`, which a keyboard could not reach.
@@ -113,7 +112,7 @@ bun run --filter '@byte-of-me/ui' lint            # eslint src (lint:fix autofix
 cd packages/ui && bun test src/lib/utils.spec.ts  # one spec file, from this directory
 ```
 
-- Preload: `packages/ui/bunfig.toml` → `packages/ui/happydom.ts`. 20 spec files; DOM rendering uses `*.spec.tsx` with `@testing-library/react`.
+- Preload: `packages/ui/bunfig.toml` → `packages/config/test/happydom.ts`, shared with `apps/web`. 41 spec files (355 tests, measured 2026-10-17); DOM rendering uses `*.spec.tsx` with `@testing-library/react`.
 
 ## AGENTS.md deviations
 

@@ -1,27 +1,25 @@
 {
   "name": "@byte-of-me/logger",
   "version": "0.0.0",
+  "private": true,
   "type": "module",
   "main": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts"
   },
   "scripts": {
-    "build": "bun build ./src/index.ts --outdir dist --target node --format esm && bun run types",
-    "types": "tsc --skipLibCheck --declaration --emitDeclarationOnly --esModuleInterop --declarationDir dist --rootDir src",
-    "prepublishOnly": "cd ../../ && turbo run build",
     "test": "bun test",
     "check-types": "tsc --noEmit",
-    "lint": "eslint src",
-    "lint:fix": "eslint src --fix"
+    "lint": "eslint src __tests__",
+    "lint:fix": "eslint src __tests__ --fix"
   },
   "dependencies": {
     "chalk": "^5.4.1"
   },
   "devDependencies": {
-    "@types/node": "^25.5.0",
-    "eslint": "^9.30.0",
-    "typescript": "5.8.3"
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:"
   },
   "sideEffects": false
 }

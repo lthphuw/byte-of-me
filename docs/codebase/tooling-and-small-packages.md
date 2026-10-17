@@ -1,6 +1,6 @@
 # Tooling and small packages
 
-> Root toolchain (scripts, Turbo, git hooks, lint and format, Node pin, docker-compose) and the `config`, `storage` and `logger` packages. Source: `package.json`, `turbo.json`, `eslint.config.mjs`, `tsconfig.json`, `scripts/`, `.husky/`, `.commitlintrc.json`, `.prettierrc.json`, `.editorconfig`, `.nvmrc`, `.vercelignore`, `docker-compose.yml`, `packages/config`, `packages/storage`, `packages/logger`.
+> Root toolchain (scripts, Turbo, git hooks, lint and format, Node pin, docker-compose) and the `config`, `storage` and `logger` packages. Source: `package.json`, `turbo.json`, `eslint.config.mjs`, `scripts/`, `.husky/`, `.commitlintrc.json`, `.prettierrc.json`, `.editorconfig`, `.nvmrc`, `.vercelignore`, `docker-compose.yml`, `packages/config`, `packages/storage`, `packages/logger`.
 
 ## Layout
 
@@ -9,9 +9,11 @@
 ├── package.json          root scripts; workspaces apps/* packages/*; workspaces.catalog; bun@1.4.3
 ├── turbo.json            task graph, cache rules and size cap, build env allowlist (names only)
 ├── eslint.config.mjs     the only ESLint config (flat); every workspace uses it
-├── tsconfig.json         extends packages/config nextjs.json; paths @/* @db/* @logger/*
 ├── scripts/
-│   ├── check.sh          bun run check: check-types, lint, test, build
+│   ├── check.sh          bun run check: check-types, lint, boundaries, test, build
+│   ├── check-boundaries.ts  bun run check-boundaries: package layers (docs/architecture.md)
+│   ├── new-package.ts    bun run new-package: scaffold a packages/<name> and register its layer
+│   ├── tsconfig.json     type-checks the two scripts above (run by packages/config check-types)
 │   ├── gen-icons.ts      bun run gen:icons: brand-mark.ts -> SVG, PNG, ICO
 │   └── icons.lock.json   sha256 of the 4 favicon SVG sources (written by gen-icons)
 ├── .husky/               pre-commit, pre-push, commit-msg (husky 8)
@@ -22,7 +24,7 @@
 ├── .vercelignore         dev-only dirs and docs/superpowers are not deployed
 ├── docker-compose.yml    local services (table below)
 └── packages/
-    ├── config/typescript base.json, nextjs.json, node-library.json (tsconfig presets, no code)
+    ├── config/           typescript/ presets, boundaries.json (package layers), test/ preloads
     ├── storage/src       index.ts -> storage.ts, storage.interface.ts, s3.factory.ts
     └── logger/src        index.ts (Logger class + logger singleton)
 ```
@@ -32,8 +34,10 @@
 | script | runs | use it when |
 | --- | --- | --- |
 | `dev` | `turbo run dev` (only `apps/web`: `next dev --turbopack`) | running the site locally |
-| `build` | `turbo run build` (web, db, storage, logger); `turbo run build --filter=web` for web only | production build; db, storage and logger also write `dist/`, which nothing consumes |
+| `build` | `turbo run build` (only `web` has a `build` script); `turbo run build --filter=web` is the same | production build |
 | `check` | `bash scripts/check.sh` (steps in Run) | before you call work done |
+| `check-boundaries` | `bun run scripts/check-boundaries.ts` | package layer violations only; prints `file:line  rule  message`, exits 1 on any |
+| `new-package` | `bun run scripts/new-package.ts <name> --layer <n> [--dom] [--tests] [--css]` | extracting code into a new package (Recipes) |
 | `check-types` | `turbo run check-types` | type errors only |
 | `lint` / `lint:fix` | `turbo run lint` / `turbo run lint:fix` | lint, or autofix |
 | `test` | `turbo run test` (`bun test` in web, ui, db, storage, logger) | running all suites |
@@ -44,7 +48,7 @@
 
 ### Turbo graph (`turbo.json`, Turbo 2.11.7)
 
-- `build` has no dependsOn, so it does not build dependency workspaces first; outputs `dist/**` and `.next/**` minus `.next/cache` and `.next/dev`; inputs add `.env*`. Web's build reads its packages from source (`transpilePackages`).
+- `build` has no dependsOn, so it does not build dependency workspaces first; outputs `.next/**` minus `.next/cache` and `.next/dev`; inputs add `.env*`. Web's build reads its packages from source (`transpilePackages`, derived from the workspace in `apps/web/next.config.js`). No package builds a `dist/`: every `exports` map points at `src`.
 - Local cache cap: `cacheMaxSize` `5GB` and `cacheMaxAge` `14d` (eviction runs at the start of each `turbo run`). Without them the cache never shrinks, and the web build entry is about 6 MB compressed.
 - Vercel: `apps/web/vercel.json` sets `framework` (nextjs), `buildCommand` (`cd ../.. && bunx turbo run build --filter=web`), `ignoreCommand` and `regions` (`hnd1`, Tokyo, next to Supabase in `ap-northeast-1`). The file is read from the Root Directory, so the dashboard's Root Directory must be `apps/web`; the repo cannot show that setting. `ignoreCommand` runs `turbo query affected` and skips the build (exit 0) when no package affects `web`; any other result builds. Vercel's install step is left to auto-detection (bun.lock).
 - `generate` dependsOn `^generate`. Nothing else has a dependsOn.
@@ -59,11 +63,16 @@
 | `commit-msg` | removes `Co-authored-by:` and attribution lines (`Generated/Made/Created with/by`), then `npx commitlint --edit` | message breaks Conventional Commits |
 | `pre-push` | `./node_modules/.bin/turbo run test build` | any test or build failure |
 
-### packages/config (tsconfig presets, no code)
+### packages/config (presets, package layers, test preloads)
 
-- `base.json`: `strict`, `esModuleInterop`, `skipLibCheck`, `resolveJsonModule`. Extended by the two presets below; `packages/db` extends it directly.
-- `nextjs.json` (extends base): ESNext modules, `moduleResolution: node`, ES2023, `jsx: preserve`, `noEmit`, `isolatedModules`, Next plugin. Used by root `tsconfig.json`, `apps/web`, `packages/ui`.
-- `node-library.json` (extends base): `module: commonjs`, ES2019. Used by `packages/storage`, `packages/logger`.
+- `typescript/base.json`: `strict`, `esModuleInterop`, `skipLibCheck`, `resolveJsonModule`. Extended by the presets below; `packages/db` extends it directly.
+- `typescript/nextjs.json` (extends base): ESNext modules, `moduleResolution: node`, ES2023, `jsx: preserve`, `noEmit`, `isolatedModules`, Next plugin. Used by `apps/web`, `packages/ui`.
+- `typescript/node-library.json` (extends base): `module: commonjs`, ES2019. Used by `packages/storage`, `packages/logger`.
+- `typescript/library.json` (extends base): ESNext modules, `moduleResolution: bundler`, ES2023, DOM libs, `jsx: react-jsx`, `noEmit`, `isolatedModules`; no `incremental`, no Next plugin. The preset `new-package` gives every new package.
+- `boundaries.json`: `layers` (package names per layer, index = layer), `dbTypesOnly`, `noReact`. Read by `check-boundaries.ts` and rewritten by `new-package.ts`. Rules: [../architecture.md](../architecture.md) ("Package layers").
+- `test/happydom.ts`: registers happy-dom on `globalThis` and sets `IS_REACT_ACT_ENVIRONMENT`. Preloaded by `apps/web` and `packages/ui`.
+- `test/db-guard.ts`: forces `DATABASE_URL` and `DIRECT_URL` to `postgres://test:test@127.0.0.1:1/test`, then throws if either is non-local. Preloaded by `apps/web` and `packages/db`; details in [packages-db.md](packages-db.md).
+- The package has its own `check-types` (the preloads and `scripts/tsconfig.json`) and `lint` (the preloads and the two scripts), so they run in `turbo run check-types lint` and the pre-commit hook.
 
 ### packages/storage public API
 
@@ -104,7 +113,7 @@ Ports bind to loopback only, so a laptop on public Wi-Fi does not expose the dat
 
 ## Key flows
 
-- `bun run check` -> `scripts/check.sh`: `turbo run check-types` -> `lint` -> `test` -> `build`; `set -e` stops at the first failing step.
+- `bun run check` -> `scripts/check.sh`: `turbo run check-types` -> `lint` -> `bun run check-boundaries` -> `turbo run test` -> `build`; `set -e` stops at the first failing step.
 - Commit: `.husky/pre-commit` (check-types, lint), then `.husky/commit-msg` (strip attribution lines, commitlint). Push: `.husky/pre-push` (test, build).
 - Icons: `apps/web/src/shared/lib/brand-mark.ts` -> `scripts/gen-icons.ts` -> `apps/web/public/` (PNG, ICO), `apps/web/public/icons/` (SVG, 16/32 PNG), `scripts/icons.lock.json`. `apps/web/src/shared/lib/icon-set.spec.ts` reads the lock.
 - Storage: `apps/web/src/shared/api/s3-storage-api.ts` (`supabaseStorage = new Storage(...)`) -> `packages/storage/src/storage.ts` -> S3 client. Callers: `apps/web/src/entities/media/api/`.
@@ -122,6 +131,12 @@ Ports bind to loopback only, so a laptop on public Wi-Fi does not expose the dat
 2. Run `bun run gen:icons`.
 3. Commit the regenerated `apps/web/public/` files with `scripts/icons.lock.json`. Verify with `bun run --filter 'web' test` (runs `icon-set.spec.ts`).
 
+**Add a package**
+1. `bun run new-package <name> --layer <n>` (`--dom` for a React package with specs, `--tests` for specs without a DOM, `--css` for a package that imports CSS). It writes `packages/<name>/{package.json,tsconfig.json,README.md,src/index.ts}`, lists the name in `packages/config/boundaries.json` and adds `"@byte-of-me/<name>": "workspace:*"` to `apps/web/package.json`.
+2. `git mv` the code into `src/`, give `package.json` its third-party dependencies (`catalog:` when the root catalog has the entry), run `bun install`.
+3. `transpilePackages` and the Tailwind `content` glob (`../../packages/*/src/**/*.{ts,tsx}`) pick the package up from the workspace. Nothing to edit.
+4. Add a row to `docs/README.md` ("Keeping these docs current"), then `bun run check`.
+
 **Add a `Storage` operation**
 1. Add the method to `packages/storage/src/storage.ts`, following `copyFileFrom` (line 91).
 2. Add new types to `packages/storage/src/storage.interface.ts`; `src/index.ts` re-exports them.
@@ -130,7 +145,9 @@ Ports bind to loopback only, so a laptop on public Wi-Fi does not expose the dat
 ## Gotchas
 
 - Editing `eslint.config.mjs` or `packages/config/typescript/*.json` misses every task's cache (`globalDependencies`).
-- `check-types`, `lint` and `test` have no `dependsOn`, so they never run `generate`; `check.sh` type-checks before `build` runs `prisma generate`. Run `bun run generate` after a schema change.
+- `check-types`, `lint`, `test` and `build` have no `dependsOn` on `generate`, and no `build` script runs `prisma generate` any more (the db one did). Run `bun run generate` after a schema change; `postinstall` runs it too.
+- `bun test` exits non-zero when it finds no specs, so `new-package` adds a `test` script only with `--tests` or `--dom`.
+- The root package declares `typescript` (catalog) because `check-boundaries.ts` imports the compiler API; Bun's isolated linker does not hoist it from a workspace.
 - `no-explicit-any`, `no-console` (`eslint.config.mjs:98-100`) and `simple-import-sort` are `warn`; no lint script passes `--max-warnings`, so `bun run lint` passes with them.
 - Root `format` and `format:check` run the `prettier` in the root `devDependencies` (`^2.8.8`), so keep it there. `.prettierignore` excludes `packages/db/src/generated`, which `prisma generate` rewrites.
 - `LOG_LEVEL` is never read: the level is `NODE_ENV === 'production' ? 'info' : 'debug'`, so the "Invalid LOG_LEVEL" branch (`packages/logger/src/index.ts:10-13`) cannot fire.
@@ -141,9 +158,10 @@ Ports bind to loopback only, so a laptop on public Wi-Fi does not expose the dat
 ## Run
 
 ```sh
-bun run check          # full gate: the four steps below, fail-fast
+bun run check          # full gate: the five steps below, fail-fast
 bun run check-types
 bun run lint           # bun run lint:fix to autofix
+bun run check-boundaries
 bun run test
 bun run build
 bun run dev            # apps/web only
@@ -151,7 +169,7 @@ bun run gen:icons      # after editing brand-mark.ts
 bun run generate       # after a Prisma schema change
 ```
 
-`bun run check` runs `scripts/check.sh`, which calls `turbo run` in this order: `check-types`, `lint`, `test`, `build`.
+`bun run check` runs `scripts/check.sh`: `turbo run check-types`, `turbo run lint`, `bun run check-boundaries`, `turbo run test`, `turbo run build`.
 
 ## AGENTS.md deviations
 

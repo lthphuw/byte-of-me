@@ -1,9 +1,4 @@
 {
   "extends": "../config/typescript/node-library.json",
-  "compilerOptions": {
-    "declaration": true,
-    "outDir": "dist"
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*", "__tests__"]
 }

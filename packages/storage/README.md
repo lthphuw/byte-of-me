@@ -50,5 +50,4 @@ argument (the tests do this).
 
 ```bash
 bun run --filter '@byte-of-me/storage' test    # bun test
-bun run --filter '@byte-of-me/storage' build   # bun build -> dist + tsc .d.ts
 ```

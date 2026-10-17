@@ -77,10 +77,10 @@ Only the `EMAIL` address can reach `/en/dashboard`.
 ## Verify
 
 ```bash
-bun run check        # type-check, lint, test, build
+bun run check        # type-check, lint, package boundaries, test, build
 ```
 
-Expect `✓ All checks passed.` The last full run, with `turbo --force` (no cache) on Bun 1.4.3 and Node 24.4.1 (2026-10-10): 940 tests passed (web 689 in 76 files, ui 231 in 20, storage 11, logger 6, db 3), lint 0 errors and 4 warnings in `packages/ui`.
+Expect `✓ All checks passed.` Measured 2026-10-17 with `bun test` in each workspace on Bun 1.4.3: 1420 tests passed (web 1045 in 138 files, ui 355 in 41, storage 11, logger 6, db 3), and lint reported no errors and no warnings.
 
 ## Troubleshooting
 

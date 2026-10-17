@@ -1,30 +1,26 @@
 {
   "name": "@byte-of-me/storage",
   "version": "1.0.0",
+  "private": true,
   "description": "Lightweight S3-compatible storage client",
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
   },
   "scripts": {
-    "build": "bun run clean && bun run build:js && bun run build:types",
-    "build:js": "bun build ./src/index.ts --outdir dist --target node --format esm",
-    "build:types": "tsc -p tsconfig.build.json",
-    "clean": "rm -rf dist",
     "test": "bun test",
-    "lint": "eslint src",
-    "prepublishOnly": "bun run build",
+    "lint": "eslint src __tests__",
     "check-types": "tsc --noEmit",
-    "lint:fix": "eslint src --fix"
+    "lint:fix": "eslint src __tests__ --fix"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1009.0",
     "@aws-sdk/s3-request-presigner": "^3.1009.0"
   },
   "devDependencies": {
-    "@types/node": "^25.5.0",
-    "eslint": "^9.30.0",
-    "typescript": "5.8.3"
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:"
   },
   "sideEffects": false
 }

@@ -1,7 +1,6 @@
-import { beforeEach, describe, expect, it, mock } from 'bun:test';
 import type { S3Client } from '@aws-sdk/client-s3';
+import { beforeEach, describe, expect, it, mock } from 'bun:test';
 
-// eslint-disable-next-line import-alias/import-alias
 import { Storage } from '../src/storage';
 
 describe('Storage', () => {

@@ -5,7 +5,7 @@
 preload = [
   "./server-only-stub.ts",
   "./next-runtime-stubs.ts",
-  "./test-setup.ts",
-  "./happydom.ts",
+  "../../packages/config/test/db-guard.ts",
+  "../../packages/config/test/happydom.ts",
   "./src/shared/ui/lazy-rich-text-editor.test-stub.ts",
 ]

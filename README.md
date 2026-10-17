@@ -114,16 +114,18 @@ byte-of-me/
 │   ├── db/                       # Prisma schema, migrations, seed, client (@byte-of-me/db)
 │   ├── storage/                  # S3-compatible storage client (@byte-of-me/storage)
 │   ├── logger/                   # Structured logging (@byte-of-me/logger)
-│   └── config/                   # Shared TypeScript presets (@byte-of-me/config)
+│   └── config/                   # TS presets, package layers, test preloads (@byte-of-me/config)
 ├── docs/                         # index: docs/README.md
 │   ├── setup.md · environment.md # first-time setup, env reference
 │   ├── architecture.md           # System diagrams (Mermaid)
 │   └── codebase/                 # per-area code guides
-├── scripts/check.sh              # Full verification suite
+├── scripts/                      # check.sh (full gate) · check-boundaries.ts · new-package.ts
 └── docker-compose.yml            # PostgreSQL 17.6 + Mailpit
 ```
 
-Workspace packages are consumed as **TypeScript source** through Next.js `transpilePackages` — no build step is required before `bun run dev`.
+Workspace packages are consumed as **TypeScript source** through Next.js `transpilePackages` — no build step is required before `bun run dev`, and no package has a `dist/`. `next.config.js` derives the `transpilePackages` list from the workspace.
+
+Packages are layered: a package imports only lower layers, which `bun run check-boundaries` enforces from `packages/config/boundaries.json` (rules and diagram in [docs/architecture.md](docs/architecture.md)). To add one, run `bun run new-package <name> --layer <n>`; it creates the package from the `library.json` preset, registers the layer and the `apps/web` dependency, and prints what is left to do by hand. Add `--dom` for a React package with specs, `--tests` for specs without a DOM, `--css` if it imports CSS.
 
 ---
 
@@ -172,9 +174,11 @@ Run from the repo root (Turborepo fans each task out across the workspace):
 | Command | Description |
 | --- | --- |
 | `bun run dev` | Start the app in development (Turbopack) |
-| `bun run build` | Production build of every package |
-| `bun run check` | Full gate: type-check → lint → test → build (`scripts/check.sh`) |
+| `bun run build` | Production build (only `apps/web` has a build step) |
+| `bun run check` | Full gate: type-check → lint → boundaries → test → build (`scripts/check.sh`) |
 | `bun run check-types` | Type-check every package |
+| `bun run check-boundaries` | Verify the package layers (`file:line  rule  message`, exit 1 on a violation) |
+| `bun run new-package` | Scaffold a package: `<name> --layer <n> [--dom] [--tests] [--css]` |
 | `bun run lint` | Lint every package |
 | `bun run lint:fix` | Lint and auto-fix |
 | `bun run test` | Run the `bun test` suites |

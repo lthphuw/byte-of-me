@@ -1,0 +1,11 @@
+{
+  "layers": [
+    ["logger", "storage"],
+    ["db"],
+    [],
+    [],
+    ["ui"]
+  ],
+  "dbTypesOnly": [],
+  "noReact": ["logger", "storage"]
+}

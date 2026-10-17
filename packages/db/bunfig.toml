@@ -1,2 +1,2 @@
 [test]
-preload = ["./test-setup.ts"]
+preload = ["../config/test/db-guard.ts"]

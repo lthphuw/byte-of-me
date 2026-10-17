@@ -5,7 +5,7 @@ import tailwindcssAnimate from 'tailwindcss-animate';
 
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ['./src/**/*.{ts,tsx}', '../../packages/ui/src/**/*.{ts,tsx}'],
+  content: ['./src/**/*.{ts,tsx}', '../../packages/*/src/**/*.{ts,tsx}'],
   darkMode: ['class'],
   // Wraps every `hover:` / `group-hover:` in `@media (hover: hover)`, so a tap on
   // a touch screen does not leave the hover state stuck on.

@@ -1,6 +1,25 @@
+import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import createNextIntlPlugin from 'next-intl/plugin';
+
+const repoRoot = path.join(import.meta.dirname, '../../');
+
+// Every package under packages/ ships TypeScript source, so Next compiles all
+// of them. Read from the workspace so a new package cannot be forgotten here.
+function workspacePackageNames() {
+  const { workspaces } = JSON.parse(
+    fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8')
+  );
+  return workspaces.packages
+    .filter((glob) => !glob.startsWith('apps/'))
+    .map((glob) => path.join(repoRoot, glob.replace(/\/\*$/, '')))
+    .flatMap((dir) =>
+      fs.readdirSync(dir).map((entry) => path.join(dir, entry, 'package.json'))
+    )
+    .filter((file) => fs.existsSync(file))
+    .map((file) => JSON.parse(fs.readFileSync(file, 'utf8')).name);
+}
 
 // Derived, never hardcoded: the storage host belongs to the deployment, and a
 // literal here both duplicates the env var every runtime path already uses and
@@ -144,12 +163,7 @@ const nextConfig = {
     resolveExtensions: ['.mdx', '.tsx', '.ts', '.jsx', '.js', '.mjs', '.json'],
   },
 
-  transpilePackages: [
-    '@byte-of-me/db',
-    '@byte-of-me/ui',
-    '@byte-of-me/logger',
-    '@byte-of-me/storage',
-  ],
+  transpilePackages: workspacePackageNames(),
 
   // The build runs `next build --turbopack`, which ignores a `webpack` hook
   // entirely — so the PrismaPlugin that used to live here never ran. It is not
@@ -159,7 +173,7 @@ const nextConfig = {
   // Bun workspace: without this, file tracing starts at apps/web and Next
   // cannot follow symlinks into the root node_modules, which on Vercel shows up
   // as a workspace-root warning and mis-traced server bundles.
-  outputFileTracingRoot: path.join(import.meta.dirname, '../../'),
+  outputFileTracingRoot: repoRoot,
   // sharp dlopens its 17 MB libvips-cpp.so by path, so file tracing (static
   // requires only) drops it and the first upload dies with ERR_DLOPEN_FAILED.
   // The `dashboard` key below ships it; sharpLibvipsBinary() resolves the path.

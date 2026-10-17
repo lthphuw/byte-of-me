@@ -1,6 +1,7 @@
 {
   "name": "@byte-of-me/db",
   "version": "1.0.0",
+  "private": true,
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
@@ -9,13 +10,9 @@
   "scripts": {
     "test": "bun test",
     "generate": "prisma generate",
-    "clean": "rm -rf dist",
-    "build": "bun run clean && prisma generate && bun build ./src/index.ts --outdir dist --target node --format esm && bun run types",
-    "types": "tsc --skipLibCheck --declaration --emitDeclarationOnly --esModuleInterop --declarationDir dist --rootDir src",
-    "prepublishOnly": "cd ../../ && turbo run build",
     "check-types": "tsc --noEmit",
-    "lint": "eslint src",
-    "lint:fix": "eslint src --fix",
+    "lint": "eslint src __tests__",
+    "lint:fix": "eslint src __tests__ --fix",
     "db:migrate:dev": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:migrate:apply": "bun run prisma/apply-migrations.ts",
@@ -24,12 +21,12 @@
   },
   "devDependencies": {
     "@prisma/client-runtime-utils": "^7.5.0",
-    "@types/node": "^25.5.0",
+    "@types/node": "catalog:",
     "dotenv": "^16.6.0",
-    "eslint": "^9.30.0",
+    "eslint": "catalog:",
     "prisma": "^7.7.0",
     "tsx": "^4.20.3",
-    "typescript": "5.8.3"
+    "typescript": "catalog:"
   },
   "dependencies": {
     "@byte-of-me/logger": "workspace:*",
