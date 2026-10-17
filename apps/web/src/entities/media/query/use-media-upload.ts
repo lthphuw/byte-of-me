@@ -1,9 +1,9 @@
 'use client';
 
 import { mediaKeys } from '@byte-of-me/contracts/media';
+import { useServerMutation } from '@byte-of-me/query';
 
 import { uploadMedia } from '@/entities/media/api/upload-media';
-import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 
 /**
  * Whole, pre-translated toast sentences. An entity cannot pick its `dashboard.*`

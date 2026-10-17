@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { contactMessageKeys } from '@byte-of-me/contracts/contact-message';
+import { useServerMutation } from '@byte-of-me/query';
 import {
   Button,
   Card,
@@ -21,7 +22,6 @@ import {
   deleteContactMessage,
 } from '@/entities/contact-message';
 import { useContactMessages } from '@/entities/contact-message/query';
-import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 import {
   ConfirmDeleteDialog,
   ManagerListState,

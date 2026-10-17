@@ -1,12 +1,12 @@
 import { unwrapApiResponse } from '@byte-of-me/api-core';
 import { tagKeys } from '@byte-of-me/contracts/tag';
+import { ADMIN_PAGE_SIZE } from '@byte-of-me/query';
 import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
 
 import { getAdminTagById } from '@/entities/tag/api/get-admin-tag-by-id';
 import { getAdminTagOptions } from '@/entities/tag/api/get-admin-tag-options';
 import { getPaginatedAdminTags } from '@/entities/tag/api/get-paginated-admin-tags';
 import { getPaginatedPublicTags } from '@/entities/tag/api/get-paginated-public-tags';
-import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 
 export const tagQueries = {
   /** Admin tags for a picker, resolved in `locale`. */

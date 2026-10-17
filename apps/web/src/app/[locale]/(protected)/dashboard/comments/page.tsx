@@ -1,9 +1,9 @@
+import { getQueryClient } from '@byte-of-me/query';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 
 import { commentQueries } from '@/entities/comment/query/comment-queries';
-import { getQueryClient } from '@/shared/lib/query/get-query-client';
 import { CommentManager } from '@/widgets/dashboard/comment-manager';
 
 export async function generateMetadata(): Promise<Metadata> {

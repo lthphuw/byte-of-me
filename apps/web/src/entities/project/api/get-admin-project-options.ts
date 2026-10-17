@@ -4,10 +4,10 @@ import type { ApiResponse } from '@byte-of-me/api-core';
 import { getTranslatedContent } from '@byte-of-me/api-core';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
+import { ADMIN_OPTIONS_LIMIT } from '@byte-of-me/query';
 import { getLocale } from 'next-intl/server';
 
 import { requireAdmin } from '@/shared/lib/auth';
-import { ADMIN_OPTIONS_LIMIT } from '@/shared/lib/query/admin-list';
 import { getErrorMessage } from '@/shared/lib/utils';
 
 /** What a project picker renders; `title` falls back to the slug. */

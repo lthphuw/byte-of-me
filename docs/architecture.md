@@ -109,10 +109,12 @@ flowchart TB
     MOTION["@byte-of-me/ui-motion<br/>MotionProvider · tokens · variants"]
     PRIMS["@byte-of-me/ui-primitives<br/>Radix wrappers · composites"]
     TOAST["@byte-of-me/ui-toast<br/>sonner Toaster"]
-    FORMS["@byte-of-me/ui-forms<br/>form · calendar · date-picker · command · multi-select"]
+    FORMS["@byte-of-me/ui-forms<br/>form · calendar · date-picker · command · multi-select · form hooks"]
     CAROUSEL["@byte-of-me/ui-carousel<br/>carousel · useEmblaState"]
     API["@byte-of-me/api-core<br/>ApiResponse · parseInput · pagination · cache tags"]
     CONTRACTS["@byte-of-me/contracts<br/>zod schemas · query keys · upload constraints"]
+    QUERY["@byte-of-me/query<br/>useServerMutation · list hooks · QueryState · query client"]
+    GITHUB["@byte-of-me/github<br/>GitHub pull request fetch · parse · ledger"]
     DB["@byte-of-me/db<br/>Prisma schema · client · seed"]
     ST["@byte-of-me/storage<br/>S3-compatible client"]
     LOG["@byte-of-me/logger<br/>structured logging"]
@@ -128,6 +130,8 @@ flowchart TB
     WEB --> PRIMS
     WEB --> API
     WEB --> CONTRACTS
+    WEB --> QUERY
+    WEB --> GITHUB
     WEB --> DB
     WEB --> ST
     WEB --> LOG
@@ -155,6 +159,9 @@ flowchart TB
     PRIMS --> MOTION
     CONTRACTS --> API
     CONTRACTS --> SCHEMA
+    QUERY --> API
+    QUERY --> HOOKS
+    QUERY --> PRIMS
     API --> LOG
     DB --> LOG
 
@@ -167,7 +174,7 @@ flowchart TB
     classDef pkg fill:#0f766e,stroke:#5eead4,color:#f0fdfa
 
     class WEB app
-    class UI,EDITOR,SCHEMA,RENDER,UTILS,HOOKS,MOTION,PRIMS,TOAST,FORMS,CAROUSEL,API,CONTRACTS,DB,ST,LOG,CFG pkg
+    class UI,EDITOR,SCHEMA,RENDER,UTILS,HOOKS,MOTION,PRIMS,TOAST,FORMS,CAROUSEL,API,CONTRACTS,QUERY,GITHUB,DB,ST,LOG,CFG pkg
 ```
 
 Solid arrows are runtime dependencies; dashed arrows are build-time only — `@byte-of-me/config` ships no application code: `tsconfig` presets that each workspace extends by relative path, `boundaries.json` (below), and the `bun test` preloads in `test/`.
@@ -196,10 +203,12 @@ flowchart TB
         CAROUSEL["ui-carousel"]
         RENDER["rich-text-render"]
         CONTRACTS["contracts"]
+        QUERY["query"]
     end
     subgraph L1["L1"]
         API["api-core"]
         DB["db"]
+        GITHUB["github"]
         SCHEMA["rich-text-schema"]
         PRIMS["ui-primitives"]
         TOAST["ui-toast"]
@@ -225,6 +234,8 @@ flowchart TB
     WEB --> SCHEMA
     WEB --> RENDER
     WEB --> CONTRACTS
+    WEB --> QUERY
+    WEB --> GITHUB
     UI --> HOOKS
     UI --> MOTION
     UI --> PRIMS
@@ -249,6 +260,9 @@ flowchart TB
     PRIMS --> MOTION
     CONTRACTS --> API
     CONTRACTS --> SCHEMA
+    QUERY --> API
+    QUERY --> HOOKS
+    QUERY --> PRIMS
     API --> LOG
     DB --> LOG
 ```
@@ -257,6 +271,10 @@ flowchart TB
 
 `contracts` (layer 2) holds the pure half of each entity: the zod schemas, the TanStack query-key factories, the upload constraints, the cache-tag maps and the image-compression config. It imports only `api-core`, the light `rich-text-schema` subpaths and zod, so every export is safe in a `'use client'` file, and it is on both the `noReact` and `dbTypesOnly` lists. The Prisma-derived types (`entities/*/model/types.ts`, the `admin-*-include.ts` files) stay in `apps/web`. A query key is a contract with the server prefetch: a key that drifts hydrates nothing and raises no error.
 
+`query` (layer 2) holds the client-state code that needs TanStack Query and nothing from the app: `useServerMutation` (the one write path), `useInfiniteListQuery`, `useEditingRecord`, `useUrlSyncedSearch`, `QueryState`, the query client (`makeQueryClient`, `getQueryClient`) and `ADMIN_PAGE_SIZE` / `ADMIN_OPTIONS_LIMIT`. `react`, `@tanstack/react-query` and `sonner` are peers, so the app and the package share one instance of each. `useCrudManager` and `useEditorLabels` stay in `apps/web/src/shared/hooks/` because they read next-intl.
+
+`github` (layer 1, on the `noReact` list, no dependency at all) is the pure GitHub pull request code: the merged-pull-request search, `groupByRepo` and the ledger helpers behind the open-source section and `/projects`, and the batched lookup and URL parser behind the featured works. Every fetch takes its token as an argument; the env read, the logger, the data cache and the database stay in the three files of `apps/web/src/entities/` that call it.
+
 `bun run check-boundaries` (step 3 of `bun run check`) reads every source file with the TypeScript compiler API and prints `file:line  rule  message` per violation, exiting 1 on any. It runs in under a second and enforces:
 
 | Rule | Id | Meaning |
@@ -264,7 +282,7 @@ flowchart TB
 | 1 | `layers` | A package imports only lower layers; same-layer and upward imports, and so cycles, are violations. A package that exports code must be listed in `boundaries.json`. |
 | 2 | `facade`, `no-app` | No package imports `@byte-of-me/ui` (the facade), `apps/`, or the `@/` alias. |
 | 3 | `exports`, `deps` | A cross-package import goes through the target's `exports` map, and the importer lists the target in `dependencies` or `peerDependencies`. |
-| 4 | `no-react` | Packages named in `noReact` never import `react` or `react-dom` and never carry `'use client'`. This list is explicit, not "all of L0", because the React hooks and motion packages are L0; `rich-text-schema` (L1) is on it, which is what keeps the server renderer's schema free of React. |
+| 4 | `no-react` | Packages named in `noReact` never import `react` or `react-dom` and never carry `'use client'`. This list is explicit, not "all of L0", because the React hooks and motion packages are L0; `rich-text-schema` (L1) is on it, which is what keeps the server renderer's schema free of React, and so is `github`. |
 | 5 | `db-types` | Packages named in `dbTypesOnly`, and any `'use client'` file, import `@byte-of-me/db/types`, never the db root. |
 | 6 | `fsd` | Inside `apps/web/src`, no `@/entities` root-barrel import and no import of a layer above the importing one (`shared` to `entities`, `entities` to `features`, and so on). |
 
@@ -500,7 +518,7 @@ Blog view counts deliberately sit outside all of this: `trackBlogView` writes a 
 | Add a translatable content field | `packages/db/prisma/schema.prisma` → the `*Translation` model → migration |
 | Add a shared component | a Radix wrapper or plain element: `packages/ui-primitives/src/` + a line in its `src/index.ts`; a control that needs react-hook-form, cmdk or react-day-picker: `packages/ui-forms/src/`; one that needs embla: `packages/ui-carousel/src/`; a TipTap node both the editor and the server renderer draw: `packages/rich-text-schema/src/` (the editor's behaviour for it stays in `packages/rich-text-editor/src/`); a server-rendered piece of an article, or a client leaf that finishes one (mermaid, math): `packages/rich-text-render/src/` and a subpath in its `exports`; one that needs the editor: `packages/rich-text-editor/src/`; an app-only piece: `apps/web/src/shared/ui/` |
 | Add a form schema, query key or upload constraint | `packages/contracts/src/<slice>/` (a `<slice>-schema.ts` or `query-keys.ts` plus a line in its `index.ts`); no `@/` alias, no `react`, no database import |
-| Add a client read or write | `entities/<slice>/query/` (a `<slice>-queries.ts` factory and a `use-*.ts` hook); writes through `useServerMutation` (`shared/hooks/use-server-mutation.ts`) |
+| Add a client read or write | `entities/<slice>/query/` (a `<slice>-queries.ts` factory and a `use-*.ts` hook); writes through `useServerMutation` (`packages/query/src/use-server-mutation.ts`) |
 | Change cache behaviour | `next.config.js` `headers()` for edge, `CACHE_TAGS` for data |
 | Change who can do something | `src/shared/lib/auth/session.ts` |
 

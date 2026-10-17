@@ -2,6 +2,7 @@
 
 import type { ReactNode } from 'react';
 import type { FilterNavigationOptions } from '@byte-of-me/api-core';
+import { HYDRATED_LIST_BEHAVIOR, useUrlSyncedSearch } from '@byte-of-me/query';
 import { Button, Skeleton } from '@byte-of-me/ui';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -14,8 +15,6 @@ import {
   PROJECT_FILTER_FACET_LIMIT,
   type ProjectFilterState,
 } from '@/features/public/project-filters/lib';
-import { HYDRATED_LIST_BEHAVIOR } from '@/shared/hooks/use-infinite-list-query';
-import { useUrlSyncedSearch } from '@/shared/hooks/use-url-synced-search';
 import { FilterSearchInput } from '@/shared/ui';
 
 export interface ProjectFiltersProps {

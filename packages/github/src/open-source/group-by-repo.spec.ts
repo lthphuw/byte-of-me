@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 
 import { groupByRepo } from './group-by-repo';
-
-import type { GithubPullRequestNode } from '@/entities/open-source/model/types';
+import type { GithubPullRequestNode } from './types';
 
 function pr(
   repo: string,

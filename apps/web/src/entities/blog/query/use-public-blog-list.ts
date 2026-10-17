@@ -1,10 +1,9 @@
 'use client';
 
+import { HYDRATED_LIST_BEHAVIOR } from '@byte-of-me/query';
 import { useQuery } from '@tanstack/react-query';
 
 import { type BlogListFilters, blogQueries } from './blog-queries';
-
-import { HYDRATED_LIST_BEHAVIOR } from '@/shared/hooks/use-infinite-list-query';
 
 /**
  * One page of the public blog list. The server prefetches page 1 of the

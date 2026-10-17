@@ -1,6 +1,7 @@
 import type { INTERACTION } from '@byte-of-me/api-core';
 import { unwrapApiResponse } from '@byte-of-me/api-core';
 import { blogKeys } from '@byte-of-me/contracts/blog';
+import { ADMIN_PAGE_SIZE } from '@byte-of-me/query';
 import { queryOptions } from '@tanstack/react-query';
 
 import { getAdminBlogById } from '@/entities/blog/api/get-admin-blog-by-id';
@@ -8,7 +9,6 @@ import { getBlogInteractionsForUser } from '@/entities/blog/api/get-blog-interac
 import { getPaginatedAdminBlogs } from '@/entities/blog/api/get-paginated-admin-blogs';
 import { getPaginatedPublicBlogs } from '@/entities/blog/api/get-paginated-public-blogs';
 import { getPublicBlogStats } from '@/entities/blog/api/get-public-blog-stats';
-import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 
 export type BlogListFilters = { tagSlugs: string[]; search: string };
 

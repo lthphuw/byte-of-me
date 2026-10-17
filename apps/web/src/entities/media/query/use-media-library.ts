@@ -1,6 +1,7 @@
 'use client';
 
 import { mediaKeys } from '@byte-of-me/contracts/media';
+import { useServerMutation } from '@byte-of-me/query';
 import { useQuery } from '@tanstack/react-query';
 
 import { deleteMedia } from '@/entities/media/api/delete-media';
@@ -10,7 +11,6 @@ import {
   useMediaUpload,
 } from '@/entities/media/query/use-media-upload';
 import { useVideoUpload } from '@/entities/media/query/use-video-upload';
-import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 
 interface MediaLibraryMessages extends MediaUploadMessages {
   deleteSuccess: string;

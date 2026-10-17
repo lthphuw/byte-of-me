@@ -6,6 +6,7 @@ import {
   type FeaturedWorkFormValues,
   featuredWorkKeys,
 } from '@byte-of-me/contracts/featured-work';
+import { ADMIN_PAGE_SIZE } from '@byte-of-me/query';
 import { Button } from '@byte-of-me/ui';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
@@ -22,7 +23,6 @@ import {
   useAdminFeaturedWorkById,
 } from '@/entities/featured-work/query';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
-import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 import {
   AddButton,
   ConfirmDeleteDialog,

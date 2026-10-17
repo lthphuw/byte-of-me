@@ -5,10 +5,10 @@ import {
   type WorkspaceSettings,
   workspaceSettingsKeys,
 } from '@byte-of-me/contracts/workspace-settings';
+import { useServerMutation } from '@byte-of-me/query';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { updateWorkspaceSettings } from '@/entities/workspace-settings/api/update-workspace-settings';
-import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 
 interface ImageCompressionMessages {
   errorMessage: string;

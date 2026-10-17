@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { getQueryClient } from '@byte-of-me/query';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
@@ -12,7 +13,6 @@ import {
   ProjectsOpenSource,
 } from '@/features/public';
 import { routing } from '@/shared/i18n/routing';
-import { getQueryClient } from '@/shared/lib/query/get-query-client';
 import type { LocaleType } from '@/shared/types';
 import { SectionLoadError } from '@/shared/ui';
 import { ProjectsContent } from '@/widgets/public';

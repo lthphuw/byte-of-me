@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { QueryState } from '@byte-of-me/query';
 import {
   Button,
   Pagination,
@@ -19,7 +20,7 @@ import { useTranslations } from 'next-intl';
 import { BlogCardSkeleton, BlogEmpty } from '@/entities/blog';
 import { usePublicBlogList } from '@/entities/blog/query';
 import { BlogFilters, useBlogFilters } from '@/features/public/blog-filters';
-import { ListPageHeader, QueryState } from '@/shared/ui';
+import { ListPageHeader } from '@/shared/ui';
 import { BlogsGrid } from '@/widgets/public/blogs-content/ui/blogs-grid';
 import { BlogsShell } from '@/widgets/public/blogs-content/ui/blogs-shell';
 

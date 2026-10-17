@@ -15,6 +15,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  useFormAutosave,
 } from '@byte-of-me/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
@@ -24,7 +25,6 @@ import { BlogMetaFields } from './blog-meta-fields';
 import type { AdminBlog } from '@/entities/blog';
 import { useScopedImageUploader } from '@/entities/media/query';
 import { useBlogReferenceOptions } from '@/features/dashboard/blog-editor/lib/use-blog-reference-options';
-import { useFormAutosave } from '@/shared/hooks/use-form-autosave';
 import { FieldMessage, TextField, TranslationTabs } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 

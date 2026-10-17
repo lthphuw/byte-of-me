@@ -2,12 +2,12 @@
 
 import type { PaginatedData } from '@byte-of-me/api-core';
 import { commentKeys } from '@byte-of-me/contracts/comment';
+import { useServerMutation } from '@byte-of-me/query';
 import { type InfiniteData, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 
 import { postComment } from '@/entities/comment/api/post-comment';
 import type { PublicComment } from '@/entities/comment/model/types';
-import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 
 type CommentsCache = InfiniteData<PaginatedData<PublicComment>>;
 

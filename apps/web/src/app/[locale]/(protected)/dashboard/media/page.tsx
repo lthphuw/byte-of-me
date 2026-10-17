@@ -1,9 +1,9 @@
+import { getQueryClient } from '@byte-of-me/query';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 
 import { mediaQueries } from '@/entities/media/query/media-queries';
-import { getQueryClient } from '@/shared/lib/query/get-query-client';
 import { MediaManager } from '@/widgets/dashboard/media-manager';
 
 export async function generateMetadata(): Promise<Metadata> {

@@ -1,4 +1,4 @@
-import type { GithubPullRequestRef } from '@/entities/featured-work/model/types';
+import type { GithubPullRequestRef } from './types';
 
 const PR_PATH = /^\/([^/]+)\/([^/]+)\/pull\/(\d+)(?:\/.*)?$/;
 const GRAPHQL_INT_MAX = 2147483647;

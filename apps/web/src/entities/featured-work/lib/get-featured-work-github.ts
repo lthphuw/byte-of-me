@@ -1,12 +1,12 @@
 import { CACHE_TAGS } from '@byte-of-me/api-core';
+import {
+  type FeaturedWorkGithub,
+  fetchFeaturedWorkGithub,
+  type GithubPullRequestRef,
+  parseGithubPullRequestUrl,
+} from '@byte-of-me/github';
 import { logger } from '@byte-of-me/logger';
 
-import { fetchFeaturedWorkGithub } from '@/entities/featured-work/lib/fetch-featured-work-github';
-import { parseGithubPullRequestUrl } from '@/entities/featured-work/lib/parse-github-pull-request-url';
-import type {
-  FeaturedWorkGithub,
-  GithubPullRequestRef,
-} from '@/entities/featured-work/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import { env } from '@/shared/config/env';
 

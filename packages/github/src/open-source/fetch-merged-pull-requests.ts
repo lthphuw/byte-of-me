@@ -1,4 +1,4 @@
-import type { GithubPullRequestNode } from '@/entities/open-source/model/types';
+import type { GithubPullRequestNode } from './types';
 
 const GITHUB_GRAPHQL = 'https://api.github.com/graphql';
 const PAGE_SIZE = 100;

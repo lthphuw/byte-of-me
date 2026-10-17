@@ -1,10 +1,6 @@
 import type { ReactNode } from 'react';
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
-} from '@byte-of-me/ui';
+
+import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from './empty';
 
 interface StateBlockProps {
   title: string;

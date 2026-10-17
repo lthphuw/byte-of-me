@@ -6,12 +6,14 @@ import {
   type ProjectFromValues,
   projectSchema,
 } from '@byte-of-me/contracts/project';
+import { QueryState } from '@byte-of-me/query';
 import {
   fromEditorContent,
   toEditorContent,
 } from '@byte-of-me/rich-text-schema/rich-text-content';
 import {
   Checkbox,
+  ContentFade,
   Form,
   FormControl,
   FormField,
@@ -28,14 +30,12 @@ import { ProjectCoauthorFields } from './project-coauthor-fields';
 import { useScopedImageUploader } from '@/entities/media/query';
 import type { AdminProject } from '@/entities/project/model';
 import {
-  ContentFade,
   FieldMessage,
   LocalizedMultiSelect,
   TextField,
   TranslationTabs,
 } from '@/shared/ui';
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
-import { QueryState } from '@/shared/ui/query-state';
 
 function toFormValues(
   initialData?: AdminProject

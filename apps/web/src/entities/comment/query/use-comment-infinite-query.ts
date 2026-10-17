@@ -1,10 +1,11 @@
 'use client';
 
-import { commentQueries } from '@/entities/comment/query/comment-queries';
 import {
   type InfiniteListQueryBehavior,
   useInfiniteListQuery,
-} from '@/shared/hooks/use-infinite-list-query';
+} from '@byte-of-me/query';
+
+import { commentQueries } from '@/entities/comment/query/comment-queries';
 
 export function useCommentInfiniteQuery(
   blogId: string,

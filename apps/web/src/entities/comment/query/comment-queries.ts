@@ -1,10 +1,10 @@
 import { unwrapApiResponse } from '@byte-of-me/api-core';
 import { commentKeys } from '@byte-of-me/contracts/comment';
+import { ADMIN_PAGE_SIZE } from '@byte-of-me/query';
 import { queryOptions } from '@tanstack/react-query';
 
 import { getPaginatedAdminComments } from '@/entities/comment/api/get-paginated-admin-comments';
 import { getPaginatedPublicCommentsForBlog } from '@/entities/comment/api/get-paginated-public-comments-for-blog';
-import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 
 /**
  * Query options for every comment read. The thread is paged, so it returns the

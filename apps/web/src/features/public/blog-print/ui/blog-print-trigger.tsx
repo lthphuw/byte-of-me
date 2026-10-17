@@ -2,11 +2,10 @@
 
 // The leaf package, not the `@byte-of-me/ui` facade: the print route must load
 // no editor JavaScript, and this import has no path to it.
+import { usePrintOnFontsReady } from '@byte-of-me/ui-hooks';
 import { Button } from '@byte-of-me/ui-primitives';
 import { Printer } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-
-import { usePrintOnFontsReady } from '@/shared/hooks/use-print-on-fonts-ready';
 
 export interface BlogPrintTriggerProps {
   /**

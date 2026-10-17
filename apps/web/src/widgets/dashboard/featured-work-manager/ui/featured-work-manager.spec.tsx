@@ -13,6 +13,7 @@ import {
 } from '@byte-of-me/contracts/workspace-settings';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
+import { makeQueryClient } from '@byte-of-me/query';
 import { QueryClientProvider } from '@tanstack/react-query';
 import {
   act,
@@ -46,7 +47,6 @@ import { FeaturedWorkManager } from './featured-work-manager';
 import type { AdminFeaturedWork } from '@/entities/featured-work/model/types';
 import * as singleUpload from '@/entities/media/api/upload-single-media';
 import * as videoDirect from '@/entities/media/api/upload-video-direct';
-import { makeQueryClient } from '@/shared/lib/query/get-query-client';
 import type { Media } from '@/shared/types/models';
 import {
   __getEditorProps,

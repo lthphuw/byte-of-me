@@ -1,11 +1,11 @@
 {
   "layers": [
     ["logger", "storage", "ui-hooks", "ui-motion", "ui-utils"],
-    ["api-core", "db", "rich-text-schema", "ui-primitives", "ui-toast"],
-    ["contracts", "rich-text-render", "ui-carousel", "ui-forms"],
+    ["api-core", "db", "github", "rich-text-schema", "ui-primitives", "ui-toast"],
+    ["contracts", "query", "rich-text-render", "ui-carousel", "ui-forms"],
     ["rich-text-editor"],
     ["ui"]
   ],
   "dbTypesOnly": ["contracts"],
-  "noReact": ["api-core", "contracts", "logger", "rich-text-schema", "storage", "ui-utils"]
+  "noReact": ["api-core", "contracts", "github", "logger", "rich-text-schema", "storage", "ui-utils"]
 }

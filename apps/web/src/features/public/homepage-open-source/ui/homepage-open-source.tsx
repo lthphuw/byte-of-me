@@ -1,11 +1,11 @@
-import { Button } from '@byte-of-me/ui';
+import { Button, ContentFade } from '@byte-of-me/ui';
 import { getTranslations } from 'next-intl/server';
 
 import { getOpenSourceContributions } from '@/entities/open-source/api/get-open-source-contributions';
 import { RepoLinkRow } from '@/entities/open-source/ui/repo-link-row';
 import { Routes } from '@/shared/config/global';
 import { Link } from '@/shared/i18n/navigation';
-import { ContentFade, SectionLoadError } from '@/shared/ui';
+import { SectionLoadError } from '@/shared/ui';
 
 const TOP_REPOS = 3;
 

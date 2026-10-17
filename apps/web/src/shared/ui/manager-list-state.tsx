@@ -1,9 +1,9 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import { QueryState } from '@byte-of-me/query';
 import { useTranslations } from 'next-intl';
 
-import { QueryState } from '@/shared/ui/query-state';
 import { RecordListSkeleton } from '@/shared/ui/record-list';
 
 export interface ManagerListStateProps {

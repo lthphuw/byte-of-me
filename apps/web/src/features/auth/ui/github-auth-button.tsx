@@ -1,5 +1,6 @@
 'use client';
 
+import { useServerMutation } from '@byte-of-me/query';
 import { Button, Icons } from '@byte-of-me/ui';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -7,7 +8,6 @@ import { useTranslations } from 'next-intl';
 import { logInToDashboardWithOAuth } from '@/features/auth/lib/log-in-to-dashboard-with-oauth';
 import { logInWithGithub } from '@/features/auth/lib/log-in-with-github';
 import type { AuthButtonProps } from '@/features/auth/ui/auth-button-props';
-import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 
 export function GithubAuthButton({
   className,

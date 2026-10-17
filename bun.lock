@@ -42,7 +42,9 @@
         "@byte-of-me/api-core": "workspace:*",
         "@byte-of-me/contracts": "workspace:*",
         "@byte-of-me/db": "workspace:*",
+        "@byte-of-me/github": "workspace:*",
         "@byte-of-me/logger": "workspace:*",
+        "@byte-of-me/query": "workspace:*",
         "@byte-of-me/rich-text-editor": "workspace:*",
         "@byte-of-me/rich-text-render": "workspace:*",
         "@byte-of-me/rich-text-schema": "workspace:*",
@@ -55,7 +57,7 @@
         "@hookform/resolvers": "^5.2.2",
         "@next/third-parties": "^16.3.8",
         "@t3-oss/env-nextjs": "^0.2.2",
-        "@tanstack/react-query": "^5.94.5",
+        "@tanstack/react-query": "catalog:",
         "@vercel/analytics": "^2.0.1",
         "@vercel/speed-insights": "^1.2.0",
         "date-fns": "catalog:",
@@ -147,6 +149,14 @@
         "typescript": "catalog:",
       },
     },
+    "packages/github": {
+      "name": "@byte-of-me/github",
+      "version": "1.0.0",
+      "devDependencies": {
+        "eslint": "catalog:",
+        "typescript": "catalog:",
+      },
+    },
     "packages/logger": {
       "name": "@byte-of-me/logger",
       "version": "0.0.0",
@@ -157,6 +167,29 @@
         "@types/node": "catalog:",
         "eslint": "catalog:",
         "typescript": "catalog:",
+      },
+    },
+    "packages/query": {
+      "name": "@byte-of-me/query",
+      "version": "1.0.0",
+      "dependencies": {
+        "@byte-of-me/api-core": "workspace:*",
+        "@byte-of-me/ui-hooks": "workspace:*",
+        "@byte-of-me/ui-primitives": "workspace:*",
+      },
+      "devDependencies": {
+        "@tanstack/react-query": "catalog:",
+        "@types/react": "catalog:",
+        "@types/react-dom": "catalog:",
+        "eslint": "catalog:",
+        "sonner": "catalog:",
+        "typescript": "catalog:",
+      },
+      "peerDependencies": {
+        "@tanstack/react-query": "catalog:",
+        "react": "^19.2.5",
+        "react-dom": "^19.2.0",
+        "sonner": "catalog:",
       },
     },
     "packages/rich-text-editor": {
@@ -442,6 +475,7 @@
     "@radix-ui/react-switch": "^1.2.6",
     "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-tooltip": "^1.2.7",
+    "@tanstack/react-query": "^5.94.5",
     "@tiptap/core": "^3.30.4",
     "@tiptap/extension-code-block-lowlight": "^3.30.4",
     "@tiptap/extension-color": "^3.30.4",
@@ -580,7 +614,11 @@
 
     "@byte-of-me/db": ["@byte-of-me/db@workspace:packages/db"],
 
+    "@byte-of-me/github": ["@byte-of-me/github@workspace:packages/github"],
+
     "@byte-of-me/logger": ["@byte-of-me/logger@workspace:packages/logger"],
+
+    "@byte-of-me/query": ["@byte-of-me/query@workspace:packages/query"],
 
     "@byte-of-me/rich-text-editor": ["@byte-of-me/rich-text-editor@workspace:packages/rich-text-editor"],
 

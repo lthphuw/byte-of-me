@@ -1,9 +1,7 @@
 'use client';
 
-import { Button } from '@byte-of-me/ui';
+import { Button, StateBlock } from '@byte-of-me/ui';
 import { useRouter } from 'next/navigation';
-
-import { StateBlock } from './state-block';
 
 export type SectionLoadErrorProps = {
   title: string;

@@ -11,7 +11,9 @@ The shadcn-style components that wrap only Radix, `class-variance-authority` or
   `dropdown-menu`, `label`, `popover` (with `PopoverClose`), `scroll-area`, `select`, `separator`, `sheet`,
   `switch`, `tabs`, `tooltip`.
 - Plain elements: `badge`, `button`, `card`, `empty`, `input`, `loading`, `skeleton`,
-  `textarea`.
+  `textarea`, `content-fade` (`ContentFade`: CSS fade-in for a Suspense-resolved block)
+  and `state-block` (`StateBlock`: the centred title, description and action of an
+  error or empty state).
 - Composites: `auto-growing-textarea`, `confirm-dialog`, `copy-button`,
   `delete-button`, `editor-skeleton`, `icons`, `pagination`.
 - `lib/surface-classes`: the shared class strings of the modal, popup and menu

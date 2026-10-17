@@ -2,6 +2,7 @@
 
 import type { INTERACTION } from '@byte-of-me/api-core';
 import { blogKeys } from '@byte-of-me/contracts/blog';
+import { useServerMutation } from '@byte-of-me/query';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
@@ -9,7 +10,6 @@ import { useTranslations } from 'next-intl';
 import type { BlogInteractionState } from '@/entities/blog/api/get-blog-interactions-for-user';
 import { toggleBlogInteraction } from '@/entities/blog/api/toggle-blog-interaction';
 import { useBlogInteractionState } from '@/entities/blog/query';
-import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 
 export type UseBlogInteractionOptions = {
   blogId: string;

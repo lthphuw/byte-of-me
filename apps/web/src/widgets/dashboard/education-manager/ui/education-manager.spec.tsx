@@ -11,6 +11,7 @@ import {
 } from '@byte-of-me/contracts/workspace-settings';
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
+import { makeQueryClient } from '@byte-of-me/query';
 import { QueryClientProvider } from '@tanstack/react-query';
 import {
   cleanup,
@@ -37,8 +38,6 @@ import { toast } from 'sonner';
 import en from '../../../../../messages/en.json';
 
 import { EducationManager } from './education-manager';
-
-import { makeQueryClient } from '@/shared/lib/query/get-query-client';
 
 const NOW = new Date('2026-01-01T00:00:00.000Z');
 

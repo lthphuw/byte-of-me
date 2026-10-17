@@ -1,3 +1,4 @@
+import { getQueryClient } from '@byte-of-me/query';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
@@ -10,7 +11,6 @@ import {
   pickMessages,
 } from '@/shared/i18n/messages';
 import { buildIconSet } from '@/shared/lib/metadata';
-import { getQueryClient } from '@/shared/lib/query/get-query-client';
 import { SkipToContentLink } from '@/shared/ui/skip-to-content-link';
 import {
   isSidebarExpanded,

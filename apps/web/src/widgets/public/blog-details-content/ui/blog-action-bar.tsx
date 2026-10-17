@@ -1,11 +1,11 @@
 import { Suspense } from 'react';
 import { INTERACTION } from '@byte-of-me/api-core';
+import { ContentFade } from '@byte-of-me/ui';
 
 import {
   BlogInteractionWrapper,
   InteractionButtonLoading,
 } from '@/features/public';
-import { ContentFade } from '@/shared/ui';
 import { BlogCommentShareActions } from '@/widgets/public/blog-details-content/ui/blog-comment-share-actions';
 
 export function BlogActionBar({

@@ -15,13 +15,12 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  useRevealOnInvalidSubmit,
 } from '@byte-of-me/ui';
 import { Languages, Trash } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { TextField } from './text-field';
-
-import { useRevealOnInvalidSubmit } from '@/shared/hooks/use-reveal-on-invalid-submit';
 
 /**
  * One element of the field array at `TName`. rhf 7.83's `<FieldArray>` component shadows

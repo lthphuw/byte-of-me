@@ -1,10 +1,10 @@
 import { Suspense } from 'react';
+import { ContentFade } from '@byte-of-me/ui';
 
 import {
   PublicSiteFooter,
   PublicSiteFooterLoading,
 } from '@/features/public/public-site-footer/ui';
-import { ContentFade } from '@/shared/ui/content-fade';
 
 /**
  * Suspense boundary around the data-fetching footer feature, so a slow

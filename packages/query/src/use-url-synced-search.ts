@@ -4,7 +4,7 @@ import type { Dispatch, SetStateAction } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { FilterHistoryMode } from '@byte-of-me/api-core';
 import { searchHistoryMode } from '@byte-of-me/api-core';
-import { useDebounce } from '@byte-of-me/ui';
+import { useDebounce } from '@byte-of-me/ui-hooks';
 
 /** One typing pause. Long enough to swallow a word, short enough to feel live. */
 export const SEARCH_DEBOUNCE_MS = 400;
@@ -31,26 +31,9 @@ export interface UrlSyncedSearch {
 }
 
 /**
- * A search box whose term lives in the URL: local state for responsiveness, a
- * debounced write out, and a re-sync back in for back/forward navigation.
- *
- * The whole difficulty is that the write and the re-sync are the same value
- * travelling in opposite directions, and the URL write is asynchronous — the
- * App Router transition commits tens to hundreds of milliseconds after
- * `onCommit`. A naive `useEffect(() => setSearch(urlSearch), [urlSearch])`
- * therefore eats keystrokes: type `rea`, pause past the debounce, type `c`,
- * and the echo of the `rea` write lands on `reac` and reverts the box to
- * `rea` — silently, caret jumping to the end.
- *
- * `lastWritten` is what distinguishes the two cases. It holds the term this
- * hook last handed to the URL, so an incoming `urlSearch` equal to it is
- * merely the echo of our own write and is ignored; anything else came from
- * outside this component — a back/forward navigation, an in-app `?q=` link, a
- * filter reset — and wins over the local state.
- *
- * The same ref guards the write: it is the answer to "have I already written
- * this term?", which is `false` on mount (it is seeded from the URL), so the
- * first render cannot rewrite `/blogs?tags=react&page=3` to page 1.
+ * A search box whose term lives in the URL: local state, a debounced write out, a re-sync in
+ * for back/forward. `lastWritten` tells the echo of our own write (ignored, or it eats
+ * keystrokes) from an outside change (wins), and keeps mount from resetting `?page=3`.
  */
 export function useUrlSyncedSearch({
   urlSearch,

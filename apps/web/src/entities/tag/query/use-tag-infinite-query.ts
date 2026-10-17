@@ -1,9 +1,9 @@
 'use client';
 
+import type { InfiniteListQueryBehavior } from '@byte-of-me/query';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
 import { tagQueries } from '@/entities/tag/query/tag-queries';
-import type { InfiniteListQueryBehavior } from '@/shared/hooks/use-infinite-list-query';
 
 export function useTagInfiniteQuery(
   limit: number = 12,

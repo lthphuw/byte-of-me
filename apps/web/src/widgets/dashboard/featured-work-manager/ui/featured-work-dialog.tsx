@@ -2,17 +2,14 @@
 
 import { useState } from 'react';
 import type { FeaturedWorkFormValues } from '@byte-of-me/contracts/featured-work';
+import { ContentFade } from '@byte-of-me/ui';
 import { useTranslations } from 'next-intl';
 
 import { FeaturedWorkForm } from './featured-work-form';
 import { FeaturedWorkFormLoading } from './featured-work-form-loading';
 
 import type { AdminFeaturedWorkDetail } from '@/entities/featured-work/model';
-import {
-  ContentFade,
-  EditRecordDialog,
-  type EditRecordDialogControls,
-} from '@/shared/ui';
+import { EditRecordDialog, type EditRecordDialogControls } from '@/shared/ui';
 
 const FORM_ID = 'featured-work-form';
 

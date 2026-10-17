@@ -6,6 +6,7 @@
 import { hydrateRoot, type Root } from 'react-dom/client';
 import { renderToString } from 'react-dom/server';
 import { prisma } from '@byte-of-me/db';
+import { makeQueryClient } from '@byte-of-me/query';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
 import {
@@ -24,8 +25,6 @@ import { NextIntlClientProvider } from 'next-intl';
 import en from '../../../../../messages/en.json';
 
 import { ContactMessageGallery } from './contact-message-gallery';
-
-import { makeQueryClient } from '@/shared/lib/query/get-query-client';
 
 const findMany = mock<(args: unknown) => Promise<unknown[]>>();
 const count = mock<(args: unknown) => Promise<number>>();

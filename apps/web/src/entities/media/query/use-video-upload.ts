@@ -1,9 +1,9 @@
 'use client';
 
 import { mediaKeys, type MediaScope } from '@byte-of-me/contracts/media';
+import { useServerMutation } from '@byte-of-me/query';
 
 import { uploadVideoDirect } from '@/entities/media/api/upload-video-direct';
-import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 import type { Media } from '@/shared/types/models';
 
 interface VideoUploadMessages {

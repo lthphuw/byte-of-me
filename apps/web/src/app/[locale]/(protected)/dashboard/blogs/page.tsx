@@ -1,9 +1,9 @@
+import { getQueryClient } from '@byte-of-me/query';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 
 import { blogQueries } from '@/entities/blog/query';
-import { getQueryClient } from '@/shared/lib/query/get-query-client';
 import { BlogManager } from '@/widgets/dashboard/blog-manager';
 
 export async function generateMetadata(): Promise<Metadata> {

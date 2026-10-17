@@ -1,3 +1,4 @@
+import { getQueryClient } from '@byte-of-me/query';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { setRequestLocale } from 'next-intl/server';
 
@@ -5,7 +6,6 @@ import { blogQueries } from '@/entities/blog/query';
 import { tagQueries } from '@/entities/tag/query';
 import { BLOG_FILTER_TAG_LIMIT, DEFAULT_BLOG_FILTERS } from '@/features/public';
 import { routing } from '@/shared/i18n/routing';
-import { getQueryClient } from '@/shared/lib/query/get-query-client';
 import type { LocaleType } from '@/shared/types';
 import { BlogsContent } from '@/widgets/public';
 

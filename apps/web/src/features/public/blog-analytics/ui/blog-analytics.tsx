@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useServerMutation } from '@byte-of-me/query';
 import { useTranslations } from 'next-intl';
 
 import {
   trackBlogView,
   updateBlogReadingTime,
 } from '@/features/public/blog-analytics/lib';
-import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 
 export function BlogAnalytics({ blogId }: { blogId: string }) {
   const t = useTranslations('blogDetails');

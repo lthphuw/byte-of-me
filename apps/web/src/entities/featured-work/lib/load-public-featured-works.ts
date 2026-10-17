@@ -10,6 +10,7 @@ import {
 } from '@byte-of-me/contracts/featured-work';
 import { ACCEPTED_VIDEO_MIME_TYPES } from '@byte-of-me/contracts/media';
 import { prisma } from '@byte-of-me/db';
+import { parseGithubPullRequestUrl } from '@byte-of-me/github';
 import { renderRichTextDocumentHtml } from '@byte-of-me/rich-text-render/rich-text-render';
 import {
   isRichTextBlank,
@@ -21,7 +22,6 @@ import {
   type FeaturedWorkGithubDeps,
   getFeaturedWorkGithub,
 } from '@/entities/featured-work/lib/get-featured-work-github';
-import { parseGithubPullRequestUrl } from '@/entities/featured-work/lib/parse-github-pull-request-url';
 import { safeLink } from '@/entities/featured-work/lib/safe-link';
 import type {
   PublicFeaturedWork,

@@ -1,9 +1,9 @@
 'use client';
 
 import { featuredWorkKeys } from '@byte-of-me/contracts/featured-work';
+import { useServerMutation } from '@byte-of-me/query';
 
 import { reorderFeaturedWork } from '@/entities/featured-work/api/reorder-featured-work';
-import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 
 /**
  * Swaps an entry with its neighbour, then invalidates the entity's root key, so

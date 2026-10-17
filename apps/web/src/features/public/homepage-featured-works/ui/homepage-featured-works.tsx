@@ -1,8 +1,9 @@
+import { ContentFade } from '@byte-of-me/ui';
 import { getTranslations } from 'next-intl/server';
 
 import { getPublicFeaturedWorks } from '@/entities/featured-work/api/get-public-featured-works';
 import { FeaturedWorkRow } from '@/entities/featured-work/ui/featured-work-row';
-import { ContentFade, SectionLoadError } from '@/shared/ui';
+import { SectionLoadError } from '@/shared/ui';
 
 export async function HomepageFeaturedWorks() {
   const t = await getTranslations('homepage');

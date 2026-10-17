@@ -2,7 +2,7 @@ import type {
   FeaturedWorkGithub,
   FeaturedWorkPullRequestState,
   GithubPullRequestRef,
-} from '@/entities/featured-work/model/types';
+} from './types';
 
 export type RepositoryNode = {
   nameWithOwner: string;

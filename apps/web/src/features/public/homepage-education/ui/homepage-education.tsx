@@ -1,8 +1,9 @@
+import { ContentFade } from '@byte-of-me/ui';
 import { getTranslations } from 'next-intl/server';
 
 import { getAllPublicEducations } from '@/entities/education';
 import { EducationItem } from '@/entities/education/ui/education-item';
-import { ContentFade, SectionLoadError } from '@/shared/ui';
+import { SectionLoadError } from '@/shared/ui';
 
 // Enough to show what the work was without turning the homepage into a CV; the
 // rest are one click away.

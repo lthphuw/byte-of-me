@@ -8,6 +8,7 @@ import {
   WORKSPACE_SETTINGS_DEFAULTS,
   workspaceSettingsKeys,
 } from '@byte-of-me/contracts/workspace-settings';
+import { makeQueryClient } from '@byte-of-me/query';
 import { QueryClientProvider } from '@tanstack/react-query';
 import {
   act,
@@ -28,7 +29,6 @@ import { BlogEditorDialog } from './blog-editor-dialog';
 import type { AdminBlog } from '@/entities/blog';
 import { projectQueries } from '@/entities/project/query/project-queries';
 import { tagQueries } from '@/entities/tag/query/tag-queries';
-import { makeQueryClient } from '@/shared/lib/query/get-query-client';
 import { __getEditorProps } from '@/shared/ui/lazy-rich-text-editor.test-stub';
 
 const BLOG_ID = 'cl9ebqhxk00003b600tymydho';

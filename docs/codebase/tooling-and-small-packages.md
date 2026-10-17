@@ -1,6 +1,6 @@
 # Tooling and small packages
 
-> Root toolchain (scripts, Turbo, git hooks, lint and format, Node pin, docker-compose) and the `config`, `api-core`, `contracts`, `storage` and `logger` packages. Source: `package.json`, `turbo.json`, `eslint.config.mjs`, `scripts/`, `.husky/`, `.commitlintrc.json`, `.prettierrc.json`, `.editorconfig`, `.nvmrc`, `.vercelignore`, `docker-compose.yml`, `packages/config`, `packages/api-core`, `packages/contracts`, `packages/storage`, `packages/logger`.
+> Root toolchain (scripts, Turbo, git hooks, lint and format, Node pin, docker-compose) and the `config`, `api-core`, `contracts`, `query`, `github`, `storage` and `logger` packages. Source: `package.json`, `turbo.json`, `eslint.config.mjs`, `scripts/`, `.husky/`, `.commitlintrc.json`, `.prettierrc.json`, `.editorconfig`, `.nvmrc`, `.vercelignore`, `docker-compose.yml`, `packages/config`, `packages/api-core`, `packages/contracts`, `packages/query`, `packages/github`, `packages/storage`, `packages/logger`.
 
 ## Layout
 
@@ -29,6 +29,7 @@
     ├── ui-hooks/         layer 0: React hooks (packages-ui.md)
     ├── ui-motion/        layer 0: MotionProvider, tokens, variants (packages-ui.md)
     ├── api-core/         layer 1: ApiResponse, parseInput, pagination, cache tags and the pure helpers around them (below)
+    ├── github/           layer 1: GitHub pull request fetch, parse, grouping and the ledger helpers, no dependency (below)
     ├── rich-text-schema/ layer 1: the TipTap render schema, sanitize, rich-text-content (packages-ui.md)
     ├── ui-primitives/    layer 1: Radix wrappers, composites, surface classes (packages-ui.md)
     ├── ui-toast/         layer 1: the sonner Toaster (packages-ui.md)
@@ -36,6 +37,7 @@
     ├── ui-carousel/      layer 2: Embla carousel and useEmblaState (packages-ui.md)
     ├── rich-text-render/ layer 2: the server-side renderer of rich text, mermaid and math leaves (packages-ui.md)
     ├── contracts/        layer 2: the entities' zod schemas, query-key factories, upload constraints, cache-tag maps (below)
+    ├── query/            layer 2: useServerMutation, the list and edit hooks, QueryState, the query client (below)
     ├── rich-text-editor/ layer 3: the TipTap editor and the drawer it uses (packages-ui.md)
     ├── ui/               layer 4: the facade that re-exports the TipTap-free UI packages (packages-ui.md)
     ├── storage/src       index.ts -> storage.ts, storage.interface.ts, s3.factory.ts
@@ -53,7 +55,7 @@
 | `new-package` | `bun run scripts/new-package.ts <name> --layer <n> [--dom] [--tests] [--css]` | extracting code into a new package (Recipes) |
 | `check-types` | `turbo run check-types` | type errors only |
 | `lint` / `lint:fix` | `turbo run lint` / `turbo run lint:fix` | lint, or autofix |
-| `test` | `turbo run test` (`bun test` in the fifteen workspaces that have specs: web, api-core, contracts, db, logger, storage, rich-text-editor, rich-text-schema, rich-text-render, ui-utils, ui-hooks, ui-motion, ui-primitives, ui-forms, ui-carousel) | running all suites |
+| `test` | `turbo run test` (`bun test` in the seventeen workspaces that have specs: web, api-core, contracts, query, github, db, logger, storage, rich-text-editor, rich-text-schema, rich-text-render, ui-utils, ui-hooks, ui-motion, ui-primitives, ui-forms, ui-carousel) | running all suites |
 | `generate` | `bun run --filter '@byte-of-me/db' generate` (`prisma generate`) | after a Prisma schema change |
 | `postinstall` / `prepare` | `bun run generate` / `husky install` | install time; `prepare` points `core.hooksPath` at `.husky` |
 | `gen:icons` | `bun run scripts/gen-icons.ts` | after editing `brand-mark.ts` |
@@ -83,9 +85,9 @@
 - `typescript/base.json`: `strict`, `esModuleInterop`, `skipLibCheck`, `resolveJsonModule`. Extended by the presets below; `packages/db` extends it directly.
 - `typescript/nextjs.json` (extends base): ESNext modules, `moduleResolution: node`, ES2023, `jsx: preserve`, `noEmit`, `isolatedModules`, Next plugin. Used by `apps/web`, `packages/ui`.
 - `typescript/node-library.json` (extends base): `module: commonjs`, ES2019. Used by `packages/storage`, `packages/logger`.
-- `typescript/library.json` (extends base): ESNext modules, `moduleResolution: bundler`, ES2023, DOM libs, `jsx: react-jsx`, `noEmit`, `isolatedModules`; no `incremental`, no Next plugin. The preset `new-package` gives every new package; used by `packages/api-core`, `packages/contracts`, `packages/ui-utils`, `packages/ui-hooks`, `packages/ui-motion`, `packages/rich-text-schema`, `packages/ui-primitives`, `packages/ui-toast`, `packages/ui-forms`, `packages/ui-carousel`, `packages/rich-text-render`, `packages/rich-text-editor`.
+- `typescript/library.json` (extends base): ESNext modules, `moduleResolution: bundler`, ES2023, DOM libs, `jsx: react-jsx`, `noEmit`, `isolatedModules`; no `incremental`, no Next plugin. The preset `new-package` gives every new package; used by `packages/api-core`, `packages/contracts`, `packages/query`, `packages/github`, `packages/ui-utils`, `packages/ui-hooks`, `packages/ui-motion`, `packages/rich-text-schema`, `packages/ui-primitives`, `packages/ui-toast`, `packages/ui-forms`, `packages/ui-carousel`, `packages/rich-text-render`, `packages/rich-text-editor`.
 - `boundaries.json`: `layers` (package names per layer, index = layer), `dbTypesOnly`, `noReact`. Read by `check-boundaries.ts` and rewritten by `new-package.ts`. Rules: [../architecture.md](../architecture.md) ("Package layers").
-- `test/happydom.ts`: registers happy-dom on `globalThis` and sets `IS_REACT_ACT_ENVIRONMENT`. Preloaded by `apps/web`, `packages/rich-text-editor`, `packages/ui-hooks`, `packages/ui-primitives`, `packages/ui-forms` and `packages/ui-carousel`.
+- `test/happydom.ts`: registers happy-dom on `globalThis` and sets `IS_REACT_ACT_ENVIRONMENT`. Preloaded by `apps/web`, `packages/rich-text-editor`, `packages/query`, `packages/ui-hooks`, `packages/ui-primitives`, `packages/ui-forms` and `packages/ui-carousel`.
 - `test/db-guard.ts`: forces `DATABASE_URL` and `DIRECT_URL` to `postgres://test:test@127.0.0.1:1/test`, then throws if either is non-local. Preloaded by `apps/web` and `packages/db`; details in [packages-db.md](packages-db.md).
 - The package has its own `check-types` (the preloads and `scripts/tsconfig.json`) and `lint` (the preloads and the two scripts), so they run in `turbo run check-types lint` and the pre-commit hook. Its `turbo.json` adds `scripts/**` to both tasks' inputs, and the root `turbo.json` adds `test/**` to every package's `test` inputs, so an edit to either re-runs the tasks that read it.
 
@@ -136,9 +138,40 @@ One subpath per entity that has something to export, each `src/<slice>/index.ts`
 | `./user-profile` | `user-profile-schema.ts`, `query-keys.ts` | `userProfileSchema`, `createUserProfileSchema(t)`, `UserProfileErrorKey`, `UserProfileFormValues`, `userProfileKeys` |
 | `./workspace-settings` | `settings-schema.ts`, `query-keys.ts` | `workspaceSettingsSchema`, `workspaceSettingsPatchSchema`, `parseWorkspaceSettings`, `WORKSPACE_SETTINGS_DEFAULTS`, `WorkspaceSettings`, `WorkspaceSettingsPatch`, `workspaceSettingsKeys` |
 
-`social-link` and `open-source` have no subpath: their `model/` holds types (and `ledger.ts`) only.
+`social-link` has no subpath: its `model/` holds types only. `open-source` has none either; its types and ledger helpers are in `@byte-of-me/github`.
 
 Measured after the move (`next start`): the built client chunks under `.next/static` hold no `chalk` and no `node:net`, as before; `/en/blogs` and `/en/projects` show content, not skeletons, after hydration, and `/en/projects` makes no client action call because the server-prefetched query keys match.
+
+### packages/query public API
+
+The client-state code that needs TanStack Query and nothing from the app, moved out of `apps/web/src/shared/{hooks,lib/query,ui}`: 7 source files and 3 specs (21 tests; run them from `packages/query`, where `bunfig.toml` preloads happy-dom). Layer 2, `sideEffects: false`. `react`, `react-dom`, `@tanstack/react-query` and `sonner` are peers (catalog entries, also dev dependencies), so the app and the package resolve one install of each; the dependencies are `api-core`, `ui-hooks` and `ui-primitives`. Each hook file carries its own `'use client'`, so the root can be imported from a server component for `getQueryClient` and the two constants.
+
+| export | shape | notes |
+| --- | --- | --- |
+| `useServerMutation` | `({ mutationFn, errorMessage?, errorMessages?, successMessage?, invalidate?, onSuccess? })` -> the `useMutation` result | the one client write path: unwraps the envelope, invalidates the `invalidate` keys and runs `onSuccess` only on success; a failure logs with `console.error` and toasts `errorMessages[errorCode]`, else `errorMessage`; a `NEXT_REDIRECT;` rejection is silent. `use-server-mutation.ts` |
+| `useInfiniteListQuery`, `HYDRATED_LIST_BEHAVIOR`, `InfiniteListQueryBehavior` | `({ queryKey, fetchPage, ...behavior })`; `staleTime: Infinity` and no focus refetch | paginated lists; the behaviour constant is for a list the server prefetched. `use-infinite-list-query.ts` |
+| `useEditingRecord` | `({ id, queryKey, fetchRecord })` -> `{ record, isNotReady, hasError, retry }` | the full record behind an admin list row; mount the form only once `record` is set. `use-editing-record.ts` |
+| `useUrlSyncedSearch` | `({ urlSearch, onCommit, delay? })` -> `{ search, setSearch, resetSearch }` | a search box whose term lives in the URL: debounced write out, re-sync in, `lastWritten` ignores the echo of its own write. No `next/*`; the caller owns the navigation. `use-url-synced-search.ts` |
+| `QueryState` | skeleton while loading, error with Retry, empty, then children; a corner spinner while refetching | every string comes from the caller; draws `StateBlock` and `ContentFade` from `ui-primitives`. `query-state.tsx` |
+| `makeQueryClient`, `getQueryClient` | `staleTime` 60 s, `retry` 0 on the server and 1 in the browser; the second is `cache(makeQueryClient)` | server prefetch and the client provider share the defaults. `get-query-client.ts` |
+| `ADMIN_PAGE_SIZE` (12), `ADMIN_OPTIONS_LIMIT` (500) | numbers | the page size is not in the admin query key, so a prefetch and `useCrudManager` that disagree hydrate the wrong rows. `admin-list.ts` |
+
+Stayed in `apps/web/src/shared/hooks/`: `useCrudManager` (next-intl, toasts from `dashboard.shared.crud`) and `useEditorLabels` (next-intl). `StateBlock` and `ContentFade` went to `ui-primitives`, not here: they are cn-only leaves that `SectionLoadError` and `EditRecordGate` draw too.
+
+### packages/github public API
+
+The pure GitHub pull request code, moved out of `apps/web/src/entities/open-source/{lib,model}` and `entities/featured-work/lib`: 8 source files (two of them `types.ts`, one per slice) and 5 specs (32 tests, no DOM; run them from `packages/github`). Layer 1 with no dependency, on the `noReact` list, `sideEffects: false`. No `@/` alias and no env read: every fetch takes its token as an argument.
+
+| export | shape | notes |
+| --- | --- | --- |
+| `fetchMergedPullRequests` | `(login, token)` -> `GithubPullRequestNode[]` | GraphQL search, 100 a page, 5 pages at most, 8 s timeout; throws on any transport or GraphQL error. `open-source/fetch-merged-pull-requests.ts` |
+| `groupByRepo` | `(nodes)` -> `OpenSourceRepo[]` | most merged PRs first, ties by lines changed, newest PR first within a repo. `open-source/group-by-repo.ts` |
+| `toLedger`, `filterLedger`, `pageLedger`, `groupLedgerByMonth`, `LEDGER_PAGE_SIZE` | the flat `/projects` list: newest first, text and repo filter, page of 5 (phone) or 8, runs by UTC month | `open-source/ledger.ts` |
+| `parseGithubPullRequestUrl` | `(url)` -> `GithubPullRequestRef` or `null` | `github.com` or `www.github.com`, `http(s)`, a number past GraphQL's `Int` is refused. `featured-work/parse-github-pull-request-url.ts` |
+| `fetchFeaturedWorkGithub` | `(refs, token, fetchImpl?)` -> `Array<FeaturedWorkGithub \| null>` | one batched query with variables, never string interpolation; an empty batch sends nothing; partial `data` is used. `featured-work/fetch-featured-work-github.ts` |
+| `OpenSourceRepo`, `GithubPullRequestRef`, `FeaturedWorkGithub`, `FeaturedWorkPullRequestState` (types) | | `open-source/types.ts`, `featured-work/types.ts`; the entity's `PublicFeaturedWorkLink.github` is a `FeaturedWorkGithub` |
+
+Stayed in `apps/web`: `get-open-source-contributions.ts`, `get-featured-work-github.ts` and `load-public-featured-works.ts`, which read `env`, log and go through `@/shared/api` (the data cache) or Prisma.
 
 ### packages/storage public API
 
@@ -184,6 +217,8 @@ Ports bind to loopback only, so a laptop on public Wi-Fi does not expose the dat
 - Icons: `apps/web/src/shared/lib/brand-mark.ts` -> `scripts/gen-icons.ts` -> `apps/web/public/` (PNG, ICO), `apps/web/public/icons/` (SVG, 16/32 PNG), `scripts/icons.lock.json`. `apps/web/src/shared/lib/icon-set.spec.ts` reads the lock.
 - API core: a server action imports `parseInput` from `@byte-of-me/api-core/server` and `ApiResponse`, `CACHE_TAGS` from `@byte-of-me/api-core`; a client query imports `unwrapApiResponse` from the root. 156 files in `apps/web` import it (50 use `./server`).
 - Contracts: a server action imports its schema from `@byte-of-me/contracts/<slice>` and parses it with `parseInput`; the client form's resolver and the `<slice>Queries` `queryOptions` factory import the same subpath, so the schema and the query key have one definition.
+- Query: a client write calls `useServerMutation` from `@byte-of-me/query`; a client read is a `queryOptions` factory in `entities/<slice>/query/` whose hook calls `useInfiniteListQuery` or `useEditingRecord` from the same package; a server page prefetches with `getQueryClient`. The query key of each comes from `@byte-of-me/contracts/<slice>`.
+- GitHub: `getOpenSourceContributions` calls `fetchMergedPullRequests` and `groupByRepo`; `getFeaturedWorkGithub` calls `fetchFeaturedWorkGithub`; `load-public-featured-works.ts` calls `parseGithubPullRequestUrl`. `projects-open-source.tsx` (client) takes the ledger helpers from the same root.
 - Storage: `apps/web/src/shared/api/s3-storage-api.ts` (`supabaseStorage = new Storage(...)`) -> `packages/storage/src/storage.ts` -> S3 client. Callers: `apps/web/src/entities/media/api/`.
 - Logger: `packages/logger/src/index.ts` -> level gate -> `console.*`. Imported by `apps/web` and `packages/db/src/index.ts`.
 

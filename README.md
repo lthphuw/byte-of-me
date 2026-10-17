@@ -113,15 +113,17 @@ byte-of-me/
 │   ├── ui/                       # The facade over the TipTap-free UI packages (@byte-of-me/ui)
 │   ├── api-core/                 # ApiResponse, parseInput, pagination, cache tags and pure helpers (@byte-of-me/api-core)
 │   ├── contracts/                # Zod schemas, query-key factories, upload constraints of the entities (@byte-of-me/contracts)
+│   ├── query/                    # useServerMutation, list and edit hooks, QueryState, the query client (@byte-of-me/query)
+│   ├── github/                   # GitHub pull request fetch, parse, grouping and ledger helpers (@byte-of-me/github)
 │   ├── rich-text-schema/         # TipTap render schema shared by editor and renderer, sanitize, content codec (@byte-of-me/rich-text-schema)
 │   ├── rich-text-render/         # Server-side renderer of stored rich text, mermaid and math leaves (@byte-of-me/rich-text-render)
 │   ├── rich-text-editor/         # The TipTap editor and the drawer it uses (@byte-of-me/rich-text-editor)
 │   ├── ui-utils/                 # cn, link and scroll helpers (@byte-of-me/ui-utils)
-│   ├── ui-hooks/                 # React hooks (@byte-of-me/ui-hooks)
+│   ├── ui-hooks/                 # UI-generic React hooks (@byte-of-me/ui-hooks)
 │   ├── ui-motion/                # MotionProvider, motion tokens and variants (@byte-of-me/ui-motion)
 │   ├── ui-primitives/            # Radix wrappers and composites (@byte-of-me/ui-primitives)
 │   ├── ui-toast/                 # The sonner Toaster (@byte-of-me/ui-toast)
-│   ├── ui-forms/                 # Form, calendar, date picker, command, multi-select (@byte-of-me/ui-forms)
+│   ├── ui-forms/                 # Form, calendar, date picker, command, multi-select, form hooks (@byte-of-me/ui-forms)
 │   ├── ui-carousel/              # Embla carousel and useEmblaState (@byte-of-me/ui-carousel)
 │   ├── db/                       # Prisma schema, migrations, seed, client (@byte-of-me/db)
 │   ├── storage/                  # S3-compatible storage client (@byte-of-me/storage)
@@ -241,6 +243,10 @@ The generated client is committed to `packages/db/src/generated/prisma` and re-e
   (no DOM)
 - `packages/contracts` — the entity form and params schemas, the upload constraints and
   byte-signature sniffers, the cache-tag maps and the image-compression rules (no DOM)
+- `packages/query` — `useServerMutation`, `useInfiniteListQuery` and the URL-synced search
+  hook, rendered via `happy-dom` + `@testing-library/react`
+- `packages/github` — the merged-pull-request grouping, the ledger helpers, the pull request
+  URL parser and the batched lookup (no DOM)
 - `packages/rich-text-schema` — `sanitize`, `rich-text-content`, `image-ratios` and the
   numeric-column rule (no DOM)
 - `packages/rich-text-render` — the render entry points, the render pipeline (schema, sanitizer and
@@ -249,7 +255,8 @@ The generated client is committed to `packages/db/src/generated/prisma` and re-e
   checks and the form-control contract, rendered via `happy-dom` + `@testing-library/react`
 - `packages/ui-utils` · `packages/ui-hooks` · `packages/ui-motion` · `packages/ui-primitives` ·
   `packages/ui-forms` · `packages/ui-carousel` — `cn` and link helpers, the hooks (`happy-dom`),
-  motion variants, the primitives, the form controls and the carousel (`happy-dom`)
+  motion variants, the primitives, the form controls with their autosave hook, and the carousel
+  (`happy-dom`)
 - `packages/db` · `packages/storage` · `packages/logger` — client wiring
 
 ```bash
@@ -280,7 +287,7 @@ Start with [docs/README.md](docs/README.md) for the docs index. [docs/architectu
 
 The short version: respect the FSD boundaries, never mix the two translation systems, no `any` and no `@ts-ignore`, prefer Server Components, search before adding a utility, and don't add dependencies that aren't needed. Commits follow Conventional Commits, enforced by commitlint.
 
-Per-package notes: [`packages/db`](packages/db/README.md) · [`packages/ui`](packages/ui/README.md) · [`api-core`](packages/api-core/README.md) · [`contracts`](packages/contracts/README.md) · [`ui-utils`](packages/ui-utils/README.md) · [`ui-hooks`](packages/ui-hooks/README.md) · [`ui-motion`](packages/ui-motion/README.md) · [`ui-primitives`](packages/ui-primitives/README.md) · [`ui-toast`](packages/ui-toast/README.md) · [`ui-forms`](packages/ui-forms/README.md) · [`ui-carousel`](packages/ui-carousel/README.md) · [`rich-text-schema`](packages/rich-text-schema/README.md) · [`rich-text-render`](packages/rich-text-render/README.md) · [`rich-text-editor`](packages/rich-text-editor/README.md) · [`packages/storage`](packages/storage/README.md) · [`packages/logger`](packages/logger/README.md) · [`packages/config`](packages/config/README.md)
+Per-package notes: [`packages/db`](packages/db/README.md) · [`packages/ui`](packages/ui/README.md) · [`api-core`](packages/api-core/README.md) · [`contracts`](packages/contracts/README.md) · [`query`](packages/query/README.md) · [`github`](packages/github/README.md) · [`ui-utils`](packages/ui-utils/README.md) · [`ui-hooks`](packages/ui-hooks/README.md) · [`ui-motion`](packages/ui-motion/README.md) · [`ui-primitives`](packages/ui-primitives/README.md) · [`ui-toast`](packages/ui-toast/README.md) · [`ui-forms`](packages/ui-forms/README.md) · [`ui-carousel`](packages/ui-carousel/README.md) · [`rich-text-schema`](packages/rich-text-schema/README.md) · [`rich-text-render`](packages/rich-text-render/README.md) · [`rich-text-editor`](packages/rich-text-editor/README.md) · [`packages/storage`](packages/storage/README.md) · [`packages/logger`](packages/logger/README.md) · [`packages/config`](packages/config/README.md)
 
 ---
 

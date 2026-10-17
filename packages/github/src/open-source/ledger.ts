@@ -1,7 +1,4 @@
-import type {
-  OpenSourceLedgerItem,
-  OpenSourceRepo,
-} from '@/entities/open-source/model/types';
+import type { OpenSourceLedgerItem, OpenSourceRepo } from './types';
 
 /**
  * Rows per page, by the `md` breakpoint the page reads with `useMediaQuery`.

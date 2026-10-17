@@ -1,8 +1,9 @@
+import { ContentFade } from '@byte-of-me/ui';
 import { getTranslations } from 'next-intl/server';
 
 import { getAllPublicTechStacks } from '@/entities/tech-stack';
 import { TechStackBadge } from '@/entities/tech-stack/ui/tech-stack-badge';
-import { ContentFade, SectionLoadError } from '@/shared/ui';
+import { SectionLoadError } from '@/shared/ui';
 
 export async function HomepageTechStack() {
   const t = await getTranslations('homepage');

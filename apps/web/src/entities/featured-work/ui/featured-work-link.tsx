@@ -1,11 +1,9 @@
+import type { FeaturedWorkPullRequestState } from '@byte-of-me/github';
 import { useTranslations } from 'next-intl';
 
 import { WORK_LINK } from './featured-work-row-classes';
 
-import type {
-  FeaturedWorkPullRequestState,
-  PublicFeaturedWorkLink,
-} from '@/entities/featured-work/model/types';
+import type { PublicFeaturedWorkLink } from '@/entities/featured-work/model/types';
 
 /** The state's catalogue key. Said to screen readers only: the link itself is just `#123`. */
 const STATE_KEY = {

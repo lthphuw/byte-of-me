@@ -8,6 +8,7 @@ import {
   createContactMessageSchema,
   MESSAGE_MAX_LENGTH,
 } from '@byte-of-me/contracts/contact-message';
+import { useServerMutation } from '@byte-of-me/query';
 import {
   Button,
   Form,
@@ -26,7 +27,6 @@ import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import { sendContactMessage } from '@/entities/contact-message';
-import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 
 const EMPTY_VALUES: ContactMessageFormValues = {
   name: '',

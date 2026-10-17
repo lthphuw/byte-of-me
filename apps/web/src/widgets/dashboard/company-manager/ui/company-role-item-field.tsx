@@ -12,13 +12,13 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  useRevealOnInvalidSubmit,
 } from '@byte-of-me/ui';
 import { ChevronDown, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { CompanyTaskItemField } from './company-task-item-field';
 
-import { useRevealOnInvalidSubmit } from '@/shared/hooks/use-reveal-on-invalid-submit';
 import { cn } from '@/shared/lib/utils';
 import {
   AddButton,

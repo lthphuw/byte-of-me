@@ -17,6 +17,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  useRevealOnInvalidSubmit,
 } from '@byte-of-me/ui';
 import {
   ArrowDown,
@@ -29,7 +30,6 @@ import { useTranslations } from 'next-intl';
 
 import { useScopedImageUploader } from '@/entities/media/query';
 import { MediaMultiSelect } from '@/features/dashboard/media-library/ui/media-multi-select';
-import { useRevealOnInvalidSubmit } from '@/shared/hooks/use-reveal-on-invalid-submit';
 import { cn } from '@/shared/lib/utils';
 import {
   ConfirmDeleteDialog,

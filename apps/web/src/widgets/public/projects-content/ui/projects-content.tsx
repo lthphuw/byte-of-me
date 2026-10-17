@@ -6,6 +6,7 @@ import {
   useState,
   useSyncExternalStore,
 } from 'react';
+import { QueryState } from '@byte-of-me/query';
 import {
   Pagination,
   Tabs,
@@ -28,7 +29,6 @@ import {
 import { usePathname, useRouter } from '@/shared/i18n/navigation';
 import { cn } from '@/shared/lib/utils';
 import { ListPageHeader } from '@/shared/ui';
-import { QueryState } from '@/shared/ui/query-state';
 import { ProjectsShell } from '@/widgets/public/projects-content/ui/projects-shell';
 import { ProjectsTimeline } from '@/widgets/public/projects-content/ui/projects-timeline';
 

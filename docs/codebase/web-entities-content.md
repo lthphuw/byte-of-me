@@ -27,9 +27,9 @@ apps/web/src/entities/                 (* = 'use client')
 └── featured-work/
     ├── api/                           create|update|delete|reorder-featured-work (admin) + 3 get-*
     ├── lib/                           featured-work-media, featured-work-links, load-public-featured-works,
-    │                                  get-featured-work-github, fetch-featured-work-github,
-    │                                  parse-github-pull-request-url, github-pull-request-query, safe-link
-    ├── model/                         types.ts  (schema and featuredWorkKeys: @byte-of-me/contracts/featured-work)
+    │                                  get-featured-work-github, safe-link
+    │                                  (fetch and URL parser: `@byte-of-me/github`)
+    ├── model/                         types.ts  (schema and featuredWorkKeys: @byte-of-me/contracts/featured-work; `FeaturedWorkGithub`: @byte-of-me/github)
     ├── query/                         featured-work-queries.ts (featuredWorkQueries: adminPage, adminById) + use-admin-featured-work-by-id
     ├── ui/                            featured-work-row, featured-work-item*, featured-work-link (`#number` text link), featured-work-demo*, use-demo-zoom, featured-work-row-classes
     └── index.ts                       api + model + ui
@@ -82,11 +82,11 @@ Action names are files in `apps/web/src/entities/<slice>/api/`. "admin" = `requi
 - Public post: `apps/web/src/app/[locale]/(public)/blogs/[slug]/page.tsx:32` → `get-public-blog-by-slug.ts` (tags `blog` + slug); prev/next and related are separate cached reads.
 - Editors load the full row by id on open (`get-admin-*-by-id`), never the list row: `apps/web/src/widgets/dashboard/company-manager/ui/company-manager.tsx:70`; blog at `blog-manager.tsx:68`.
 - Dashboard lists are prefetched with `*Keys.adminPage` into `HydrationBoundary`: `apps/web/src/app/[locale]/(protected)/dashboard/{blogs,companies,educations,featured-works}/page.tsx`.
-- Save: `apps/web/src/shared/hooks/use-crud-manager.ts` invalidates `keys.all` (`:133`) and removes the detail key (`:139-141`) in `onSuccess`.
-- Homepage featured works: `apps/web/src/features/public/homepage-featured-works/ui/homepage-featured-works.tsx:8` → `get-public-featured-works.ts` → `lib/load-public-featured-works.ts` (DB rows with their links, position order, six at most) → `lib/get-featured-work-github.ts` (GitHub facts per pull-request link: repo, stars, title, state; 1 h; failure returns `{}`). The homepage link reads only `state` (said to screen readers, not drawn) and the number from the url; stars and title are fetched but not shown.
+- Save: `apps/web/src/shared/hooks/use-crud-manager.ts` invalidates `keys.all` (`:137`) and removes the detail key (`:144`) in `onSuccess`.
+- Homepage featured works: `apps/web/src/features/public/homepage-featured-works/ui/homepage-featured-works.tsx:11` → `get-public-featured-works.ts` → `lib/load-public-featured-works.ts` (DB rows with their links, position order, six at most) → `lib/get-featured-work-github.ts` (GitHub facts per pull-request link: repo, stars, title, state; 1 h; failure returns `{}`). The homepage link reads only `state` (said to screen readers, not drawn) and the number from the url; stars and title are fetched but not shown.
 - Blog body images: `getPublicBlogBySlug` reads each body image's stored size from its media row (`apps/web/src/entities/blog/lib/read-image-sizes.ts`), cached with the post under the `image-sizes` key.
 - Homepage media: every clip's box is 16:9 whatever the file's own ratio, so a pair is two equal boxes (the stored `media.width`/`height` are still selected by `load-public-featured-works.ts` but no longer read for the box). The demo is the shared `MediaCarousel` (`shared/ui/media-carousel.tsx`, the one the education gallery uses): each clip is a slide, 85% wide on a phone and 58% from `md` so the next one is only partly in view, with arrows from `md` and dots; a lone clip fills the row. A clip's label is a chip on the frame, so the dots at the bottom of the slide have nothing under them. The details below the demo go through `ExpandableRichText`, clamped to three lines. Each clip's file is requested only once it is within 200 px of the screen (`apps/web/src/entities/featured-work/ui/featured-work-demo.tsx`, `NEAR`), then kept. A clip and an image sit under a pulsing cover until their file draws, and the cover fades out in place (`MediaCover`, `shared/ui/media-cover.tsx`). Full screen (`featured-work-demo.tsx`) takes the clip's stage with sound on, through the browser's element API where it exists. Its button sits top right and shows only while the clip is hovered or focused, and only where a mouse can hover (`can-hover:`); on a touch screen it is always there, and a double tap on the clip does the same. Where the browser refuses element full screen or has none (iPhone Safari), the same stage is pinned to the viewport instead, and the stage's `data-media-pinned` makes the carousel drop its transform, which would otherwise be the containing block of that `fixed` stage. The site header (`z-50`) still draws over that pinned stage. A toolbar zooms 1×–4× (steps, pinch, one-finger pan; `use-demo-zoom.ts`), and the zoom resets on leaving.
-- Education: `apps/web/src/features/public/homepage-education/ui/homepage-education.tsx:12` (`getAllPublicEducations`).
+- Education: `apps/web/src/features/public/homepage-education/ui/homepage-education.tsx:15` (`getAllPublicEducations`).
 
 ## Recipes
 

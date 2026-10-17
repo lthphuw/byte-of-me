@@ -1,14 +1,8 @@
-import type {
-  GithubPullRequestNode,
-  OpenSourceRepo,
-} from '@/entities/open-source/model/types';
+import type { GithubPullRequestNode, OpenSourceRepo } from './types';
 
 /**
- * Folds a flat list of merged pull requests into one entry per repository.
- *
- * Repos with the most merged PRs come first, ties broken by lines changed, so
- * the home page's "top three" is the three the author contributed most to.
- * Within a repo the newest PR leads.
+ * One entry per repository: most merged PRs first, ties by lines changed
+ * (the home page's top three), the newest PR leading within a repo.
  */
 export function groupByRepo(nodes: GithubPullRequestNode[]): OpenSourceRepo[] {
   const repos = new Map<string, OpenSourceRepo>();

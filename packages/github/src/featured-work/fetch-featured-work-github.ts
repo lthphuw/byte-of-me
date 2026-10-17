@@ -2,11 +2,8 @@ import {
   buildPullRequestQuery,
   mapPullRequestResponse,
   type RepositoryNode,
-} from '@/entities/featured-work/lib/github-pull-request-query';
-import type {
-  FeaturedWorkGithub,
-  GithubPullRequestRef,
-} from '@/entities/featured-work/model/types';
+} from './github-pull-request-query';
+import type { FeaturedWorkGithub, GithubPullRequestRef } from './types';
 
 const GITHUB_GRAPHQL = 'https://api.github.com/graphql';
 const TIMEOUT_MS = 8000;

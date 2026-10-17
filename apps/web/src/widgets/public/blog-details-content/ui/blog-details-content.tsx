@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { Separator } from '@byte-of-me/ui';
+import { ContentFade, Separator } from '@byte-of-me/ui';
 import { getTranslations } from 'next-intl/server';
 
 import { BlogContent } from './blog-content';
@@ -17,7 +17,7 @@ import {
   BlogRelatedProjectCard,
   RelatedProjectCardSkeleton,
 } from '@/features/public';
-import { ContentFade, RevealSection } from '@/shared/ui';
+import { RevealSection } from '@/shared/ui';
 import { ArticleHeadingsProvider } from '@/widgets/public/blog-details-content/lib/article-headings-context';
 import { BlogActionBar } from '@/widgets/public/blog-details-content/ui/blog-action-bar';
 import { BlogBreadcrumb } from '@/widgets/public/blog-details-content/ui/blog-breadcrumb';

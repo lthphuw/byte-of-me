@@ -1,10 +1,8 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { Button } from '@byte-of-me/ui';
+import { Button, StateBlock } from '@byte-of-me/ui';
 import { useTranslations } from 'next-intl';
-
-import { StateBlock } from './state-block';
 
 interface EditRecordGateProps {
   /** The full record has not arrived: loading, or never requested. */

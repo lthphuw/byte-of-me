@@ -9,6 +9,7 @@
  */
 import { prisma } from '@byte-of-me/db';
 import { logger } from '@byte-of-me/logger';
+import { ADMIN_OPTIONS_LIMIT } from '@byte-of-me/query';
 import {
   afterAll,
   afterEach,
@@ -27,7 +28,6 @@ import {
   resetTestUser,
   setTestUser,
 } from '@/shared/lib/auth/set-test-user.test-helper';
-import { ADMIN_OPTIONS_LIMIT } from '@/shared/lib/query/admin-list';
 
 type FindManyArgs = {
   take: number;

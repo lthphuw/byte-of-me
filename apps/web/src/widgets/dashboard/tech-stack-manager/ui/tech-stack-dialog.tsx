@@ -12,6 +12,7 @@ import {
   FormItem,
   FormLabel,
   Input,
+  useResetOnOpen,
 } from '@byte-of-me/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
@@ -20,7 +21,6 @@ import { TechStackFormLoading } from './tech-stack-form-loading';
 
 import type { AdminTechStack } from '@/entities/tech-stack/model';
 import { MediaSelect } from '@/features/dashboard/media-library/ui/media-select';
-import { useResetOnOpen } from '@/shared/hooks/use-reset-on-open';
 import { EditRecordDialog, type EditRecordDialogControls } from '@/shared/ui';
 import { FieldMessage } from '@/shared/ui/form/field-message';
 

@@ -6,11 +6,7 @@ import {
   pageLedger,
   toLedger,
 } from './ledger';
-
-import type {
-  OpenSourcePullRequest,
-  OpenSourceRepo,
-} from '@/entities/open-source/model/types';
+import type { OpenSourcePullRequest, OpenSourceRepo } from './types';
 
 function pr(
   number: number,

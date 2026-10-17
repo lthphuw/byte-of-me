@@ -2,11 +2,13 @@
 
 import type { ApiResponse } from '@byte-of-me/api-core';
 import { CACHE_TAGS } from '@byte-of-me/api-core';
+import {
+  fetchMergedPullRequests,
+  groupByRepo,
+  type OpenSourceRepo,
+} from '@byte-of-me/github';
 import { logger } from '@byte-of-me/logger';
 
-import { fetchMergedPullRequests } from '@/entities/open-source/lib/fetch-merged-pull-requests';
-import { groupByRepo } from '@/entities/open-source/lib/group-by-repo';
-import type { OpenSourceRepo } from '@/entities/open-source/model/types';
 import { handlePublicAction, withPublicActionHandler } from '@/shared/api';
 import { env } from '@/shared/config/env';
 

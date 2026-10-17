@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { ProjectFromValues } from '@byte-of-me/contracts/project';
+import { ContentFade } from '@byte-of-me/ui';
 import { useTranslations } from 'next-intl';
 
 import { ProjectForm } from './project-form';
@@ -10,11 +11,7 @@ import { ProjectFormLoading } from './project-form-loading';
 import type { AdminProject } from '@/entities/project/model';
 import { useTagOptions } from '@/entities/tag/query';
 import { useTechStackOptions } from '@/entities/tech-stack/query';
-import {
-  ContentFade,
-  EditRecordDialog,
-  type EditRecordDialogControls,
-} from '@/shared/ui';
+import { EditRecordDialog, type EditRecordDialogControls } from '@/shared/ui';
 
 const FORM_ID = 'project-form';
 

@@ -1,11 +1,11 @@
 'use client';
 
+import { useServerMutation } from '@byte-of-me/query';
 import { useQueryClient } from '@tanstack/react-query';
 import { signOut, useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 
 import { logOut } from '@/features/auth/lib/log-out';
-import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 import { shortenName } from '@/widgets/public/public-site-header/lib/shorten-name';
 
 export interface Account {

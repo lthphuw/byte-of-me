@@ -1,9 +1,9 @@
 'use client';
 
+import type { InfiniteListQueryBehavior } from '@byte-of-me/query';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
 import { techStackQueries } from '@/entities/tech-stack/query/tech-stack-queries';
-import type { InfiniteListQueryBehavior } from '@/shared/hooks/use-infinite-list-query';
 
 export function useTechStackInfiniteQuery(
   limit: number = 12,

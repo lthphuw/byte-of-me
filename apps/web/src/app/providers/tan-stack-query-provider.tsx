@@ -1,9 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { makeQueryClient } from '@byte-of-me/query';
 import { QueryClientProvider } from '@tanstack/react-query';
-
-import { makeQueryClient } from '@/shared/lib/query/get-query-client';
 
 export function TanStackQueryProvider({
   children,

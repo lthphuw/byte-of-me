@@ -4,6 +4,10 @@
  * Prisma's delegate is replaced and the GitHub fetcher injected: no database, no network.
  */
 import { prisma } from '@byte-of-me/db';
+import type {
+  FeaturedWorkGithub,
+  GithubPullRequestRef,
+} from '@byte-of-me/github';
 import { logger } from '@byte-of-me/logger';
 import { beforeEach, describe, expect, it, mock, spyOn } from 'bun:test';
 
@@ -14,10 +18,6 @@ import {
   loadPublicFeaturedWorks,
   toRows,
 } from '@/entities/featured-work/lib/load-public-featured-works';
-import type {
-  FeaturedWorkGithub,
-  GithubPullRequestRef,
-} from '@/entities/featured-work/model/types';
 
 const findMany = mock();
 Object.defineProperty(prisma, 'featuredWork', {

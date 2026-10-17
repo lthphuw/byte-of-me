@@ -4,6 +4,7 @@ import {
   type ProjectFromValues,
   projectKeys,
 } from '@byte-of-me/contracts/project';
+import { ADMIN_PAGE_SIZE } from '@byte-of-me/query';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { ProjectDialog } from './project-dialog';
@@ -16,7 +17,6 @@ import { type AdminProject, adminProjectTitle } from '@/entities/project/model';
 import { projectQueries, useAdminProjectById } from '@/entities/project/query';
 import { ProjectEditorCard } from '@/entities/project/ui/project-editor-card';
 import { useCrudManager } from '@/shared/hooks/use-crud-manager';
-import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 import {
   AddButton,
   ConfirmDeleteDialog,

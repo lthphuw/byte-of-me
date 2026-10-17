@@ -13,6 +13,7 @@ import { companyKeys } from '@byte-of-me/contracts/company';
 import { educationKeys } from '@byte-of-me/contracts/education';
 import { projectKeys } from '@byte-of-me/contracts/project';
 import { tagKeys } from '@byte-of-me/contracts/tag';
+import { ADMIN_PAGE_SIZE, makeQueryClient } from '@byte-of-me/query';
 import type { QueryClient } from '@tanstack/react-query';
 import {
   dehydrate,
@@ -28,8 +29,6 @@ import { NextIntlClientProvider } from 'next-intl';
 import messages from '../../messages/en.json';
 
 import { type CrudKeys, useCrudManager } from '@/shared/hooks/use-crud-manager';
-import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
-import { makeQueryClient } from '@/shared/lib/query/get-query-client';
 
 type AdminKeys = CrudKeys & {
   adminList: () => readonly unknown[];

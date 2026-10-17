@@ -1,10 +1,12 @@
 'use client';
 
 import { type ReactNode, useState } from 'react';
-import { Button, Loading } from '@byte-of-me/ui';
-
-import { ContentFade } from './content-fade';
-import { StateBlock } from './state-block';
+import {
+  Button,
+  ContentFade,
+  Loading,
+  StateBlock,
+} from '@byte-of-me/ui-primitives';
 
 export type QueryStateProps = {
   isLoading: boolean;

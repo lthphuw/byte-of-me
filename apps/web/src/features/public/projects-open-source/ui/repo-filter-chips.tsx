@@ -1,9 +1,8 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import type { OpenSourceRepo } from '@byte-of-me/github';
 import { Badge } from '@byte-of-me/ui';
-
-import type { OpenSourceRepo } from '@/entities/open-source/model/types';
 
 interface RepoFilterChipsProps {
   repos: Pick<OpenSourceRepo, 'nameWithOwner' | 'prCount'>[];

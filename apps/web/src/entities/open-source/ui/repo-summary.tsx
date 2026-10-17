@@ -1,9 +1,8 @@
+import type { OpenSourceRepo } from '@byte-of-me/github';
 import { Star } from 'lucide-react';
 import Image from 'next/image';
 
 import { Diffstat } from './diffstat';
-
-import type { OpenSourceRepo } from '@/entities/open-source/model/types';
 
 const starFormat = new Intl.NumberFormat('en-US', {
   notation: 'compact',

@@ -1,4 +1,5 @@
 import React, { Suspense } from 'react';
+import { ContentFade } from '@byte-of-me/ui';
 import { getTranslations } from 'next-intl/server';
 
 import { ContactShell } from './contact-shell';
@@ -8,7 +9,7 @@ import {
   ContactInfosLoading,
   ContactMe,
 } from '@/features/public';
-import { ContentFade, ListPageHeader, RevealSection } from '@/shared/ui';
+import { ListPageHeader, RevealSection } from '@/shared/ui';
 
 export async function ContactContent() {
   const t = await getTranslations('contact');

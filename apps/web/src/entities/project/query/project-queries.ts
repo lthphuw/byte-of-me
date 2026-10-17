@@ -3,13 +3,13 @@ import {
   projectKeys,
   type PublicProjectFilters,
 } from '@byte-of-me/contracts/project';
+import { ADMIN_PAGE_SIZE } from '@byte-of-me/query';
 import { queryOptions } from '@tanstack/react-query';
 
 import { getAdminProjectById } from '@/entities/project/api/get-admin-project-by-id';
 import { getAdminProjectOptions } from '@/entities/project/api/get-admin-project-options';
 import { getPaginatedAdminProjects } from '@/entities/project/api/get-paginated-admin-projects';
 import { getPaginatedPublicProjects } from '@/entities/project/api/get-paginated-public-projects';
-import { ADMIN_PAGE_SIZE } from '@/shared/lib/query/admin-list';
 
 /**
  * Not in the key, so it lives here: the server prefetch and the client hook

@@ -43,14 +43,9 @@ function readDraft<T>(storageKey: string): StoredDraft<T> | null {
 }
 
 /**
- * Debounced localStorage autosave for a react-hook-form instance.
- *
- * Losing a half-written post to a closed dialog is the worst failure a CMS
- * can have, so every change is snapshotted per storage key, and a change still
- * waiting on the debounce is written as the form unmounts. If a snapshot
- * exists on mount, `restorable` exposes its timestamp and the caller renders
- * a restore banner — restoring is always the author's decision, never
- * automatic, because the snapshot may be older than what the server has.
+ * Debounced localStorage autosave for a react-hook-form instance; a change still waiting is
+ * written on unmount. A snapshot found on mount is exposed as `restorable`, and restoring is
+ * the author's call, never automatic: the server copy may be newer.
  */
 export function useFormAutosave<T extends FieldValues>(
   form: UseFormReturn<T>,

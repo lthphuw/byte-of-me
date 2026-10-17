@@ -2,14 +2,13 @@
 
 import { useForm } from 'react-hook-form';
 import { type TagFormValues, tagSchema } from '@byte-of-me/contracts/tag';
-import { Form } from '@byte-of-me/ui';
+import { Form, useResetOnOpen } from '@byte-of-me/ui';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 
 import { TagFormLoading } from './tag-form-loading';
 
 import type { AdminTag } from '@/entities/tag';
-import { useResetOnOpen } from '@/shared/hooks/use-reset-on-open';
 import {
   EditRecordDialog,
   type EditRecordDialogControls,

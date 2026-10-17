@@ -1,20 +1,20 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import {
+  filterLedger,
+  groupLedgerByMonth,
+  LEDGER_PAGE_SIZE,
+  type OpenSourceRepo,
+  pageLedger,
+  toLedger,
+} from '@byte-of-me/github';
 import { badgeVariants, Pagination, useMediaQuery } from '@byte-of-me/ui';
 import { ArrowUpRight, GitPullRequest } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { RepoFilterChips } from './repo-filter-chips';
 
-import {
-  filterLedger,
-  groupLedgerByMonth,
-  LEDGER_PAGE_SIZE,
-  pageLedger,
-  toLedger,
-} from '@/entities/open-source/model/ledger';
-import type { OpenSourceRepo } from '@/entities/open-source/model/types';
 import { cn } from '@/shared/lib/utils';
 import { FilterSearchInput } from '@/shared/ui';
 

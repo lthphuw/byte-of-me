@@ -1,8 +1,9 @@
 'use client';
 
+import { useEditingRecord } from '@byte-of-me/query';
+
 import { getAdminBlogById } from '@/entities/blog/api/get-admin-blog-by-id';
 import { blogQueries } from '@/entities/blog/query/blog-queries';
-import { useEditingRecord } from '@/shared/hooks/use-editing-record';
 
 /**
  * The full post for the editor dialog. Mount the form only once `record` is

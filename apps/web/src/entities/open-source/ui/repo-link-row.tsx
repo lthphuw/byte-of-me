@@ -1,6 +1,6 @@
-import { RepoSummary, type RepoSummaryLabels } from './repo-summary';
+import type { OpenSourceRepo } from '@byte-of-me/github';
 
-import type { OpenSourceRepo } from '@/entities/open-source/model/types';
+import { RepoSummary, type RepoSummaryLabels } from './repo-summary';
 
 /** A home-page row: the whole repo line is one link out to GitHub. */
 export function RepoLinkRow({

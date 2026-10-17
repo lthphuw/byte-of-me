@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
-
-import { cn } from '@/shared/lib/utils';
+import { cn } from '@byte-of-me/ui-utils';
 
 interface ContentFadeProps {
   children: ReactNode;

@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
+import { useServerMutation } from '@byte-of-me/query';
 import {
   Button,
   Form,
@@ -23,7 +24,6 @@ import {
   type UserAuthLoginFormValues,
   userAuthLoginSchema,
 } from '@/features/auth/model/user-auth-login-schema';
-import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 import { cn } from '@/shared/lib/utils';
 
 type AdminAuthFormProps = React.HTMLAttributes<HTMLDivElement>;

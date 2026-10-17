@@ -1,10 +1,7 @@
 /**
- * What this defends is the server-prefetch seam of the public filter chips. A
- * hydrated entry carries the time the server built it, so under the client's
- * 60s default every mount refetched it; `HYDRATED_LIST_BEHAVIOR` is what stops
- * that, and it must not cost the chips their load when nothing was hydrated.
- * Hydration is reproduced with `dehydrate`/`hydrate` and an aged
- * `dataUpdatedAt`, never by reading the hook's source.
+ * Defends the server-prefetch seam of the public filter chips: a hydrated entry
+ * must not refetch on mount (`HYDRATED_LIST_BEHAVIOR`), an absent one must still load.
+ * Hydration is reproduced with `dehydrate`/`hydrate` and an aged `dataUpdatedAt`.
  */
 import type { ReactNode } from 'react';
 import type { PaginatedData } from '@byte-of-me/api-core';
@@ -17,13 +14,12 @@ import {
 import { act, cleanup, renderHook, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, mock } from 'bun:test';
 
+import { makeQueryClient } from './get-query-client';
 import {
   HYDRATED_LIST_BEHAVIOR,
   type InfiniteListQueryBehavior,
   useInfiniteListQuery,
 } from './use-infinite-list-query';
-
-import { makeQueryClient } from '@/shared/lib/query/get-query-client';
 
 type Item = { id: string };
 

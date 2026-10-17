@@ -1,13 +1,13 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import { QueryState } from '@byte-of-me/query';
 import { Button } from '@byte-of-me/ui';
 import { Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { useMediaInfiniteQuery } from '@/entities/media/query';
 import { MediaPickerSkeleton } from '@/features/dashboard/media-library/ui/media-picker-skeleton';
-import { QueryState } from '@/shared/ui/query-state';
 
 type LibraryQuery = Pick<
   ReturnType<typeof useMediaInfiniteQuery>,

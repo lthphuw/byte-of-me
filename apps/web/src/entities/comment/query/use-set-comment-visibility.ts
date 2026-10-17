@@ -1,11 +1,11 @@
 'use client';
 
 import { commentKeys } from '@byte-of-me/contracts/comment';
+import { useServerMutation } from '@byte-of-me/query';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import { setCommentVisibility } from '@/entities/comment/api/set-comment-visibility';
-import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 
 /**
  * Admin hide and restore, immediate and reversible, so there is no confirmation.

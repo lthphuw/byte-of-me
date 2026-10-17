@@ -1,13 +1,12 @@
 'use client';
 
-import { Button } from '@byte-of-me/ui';
+import { Button, ContentFade } from '@byte-of-me/ui';
 import { Eye, Hourglass } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { BlogLiveStatsSkeleton } from './blog-live-stats-loading';
 
 import { usePublicBlogStats } from '@/entities/blog/query';
-import { ContentFade } from '@/shared/ui/content-fade';
 
 // The public segment is statically generated, so a server render of these
 // stats would be frozen at build time. Fetching client-side keeps them

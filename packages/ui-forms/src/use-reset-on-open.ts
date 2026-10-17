@@ -8,10 +8,9 @@ import type {
 } from 'react-hook-form';
 
 /**
- * Reset strategy for the small edit dialogs that keep their form mounted
- * across opens (tags, tech stacks): on open, or when the record changes, reset
- * to the mapped record, or to `defaultValues` when there is none. Dialogs with
- * editors seed `useForm` at mount instead — a reset regenerates field-array ids.
+ * For edit dialogs that keep their form mounted across opens (tags, tech stacks): resets on
+ * open or record change to the mapped record, else `defaultValues`. Dialogs with editors
+ * seed `useForm` at mount instead: a reset regenerates field-array ids.
  */
 export function useResetOnOpen<TValues extends FieldValues, TData>(
   form: UseFormReturn<TValues>,

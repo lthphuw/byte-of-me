@@ -1,9 +1,9 @@
 'use client';
 
 import { useCallback, useRef } from 'react';
+import { useServerMutation } from '@byte-of-me/query';
 import { useTranslations } from 'next-intl';
 
-import { useServerMutation } from '@/shared/hooks/use-server-mutation';
 import { purgeEntireCache } from '@/widgets/dashboard/dashboard-sidebar/lib/purge-entire-cache';
 
 /**

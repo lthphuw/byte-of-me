@@ -8,6 +8,7 @@
  */
 import type { ReactNode } from 'react';
 import type { PaginatedData } from '@byte-of-me/api-core';
+import { makeQueryClient } from '@byte-of-me/query';
 import type { QueryClient } from '@tanstack/react-query';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { act, cleanup, renderHook, waitFor } from '@testing-library/react';
@@ -32,8 +33,6 @@ import {
   type CrudSaveOptions,
   useCrudManager,
 } from './use-crud-manager';
-
-import { makeQueryClient } from '@/shared/lib/query/get-query-client';
 
 type Item = { id: string };
 

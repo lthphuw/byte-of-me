@@ -14,6 +14,10 @@ All of them come from the root (`src/index.ts`):
 - `command`: `Command`, `CommandInput`, `CommandList`, `CommandEmpty`, `CommandGroup`,
   `CommandItem` (cmdk).
 - `multi-select`: `MultiSelect`, `MultiSelectOption`, built on `command`.
+- Form hooks (react-hook-form): `useFormAutosave` (debounced localStorage draft, restored
+  only on the author's say-so), `useResetOnOpen` (resets a dialog's form on open or record
+  change) and `useRevealOnInvalidSubmit` (calls back with the errors under a field when a
+  submit attempt fails).
 
 No i18n context here: every visible or announced string is a prop. `react` and
 `react-dom` are peer dependencies. Specs run from this directory: `bunfig.toml`
