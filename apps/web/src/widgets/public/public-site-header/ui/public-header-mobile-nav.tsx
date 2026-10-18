@@ -88,13 +88,13 @@ export const PublicHeaderMobileNav = ({
   return createPortal(
     <AnimatePresence mode="wait" initial={false}>
       {isOpen && (
-        // top: 3.5rem = the island's bottom (48px on mobile in BOTH states: AT_REST_MOBILE 0+48,
-        // DOCKED_MOBILE 6+42, equal on purpose) + 8px gap; change either geometry and this changes.
+        // top: 3.75rem = the island's bottom (52px on mobile in BOTH states: AT_REST_MOBILE 0+52,
+        // DOCKED_MOBILE 8+44, equal on purpose) + 8px gap; change either geometry and this changes.
         // Plus `env(safe-area-inset-top)`: the header sits that much lower on a notched iPhone.
         <m.div
           className="pointer-events-none fixed inset-x-0 z-[9999] md:hidden"
           style={{
-            top: 'calc(3.5rem + env(safe-area-inset-top))',
+            top: 'calc(3.75rem + env(safe-area-inset-top))',
             paddingLeft: 'env(safe-area-inset-left)',
             paddingRight:
               'calc(var(--scrollbar-lock, 0px) + env(safe-area-inset-right))',
@@ -122,8 +122,8 @@ export const PublicHeaderMobileNav = ({
                         href={item.disabled ? '#' : item.href}
                         onClick={() => onOpenChange(false)}
                         className={cn(
-                          // 36px: stacked rows with no gap cannot grow a hit area, so the row is the target.
-                          'flex h-9 w-full items-center rounded-lg px-3 text-sm font-medium transition-colors hover:bg-accent',
+                          // 40px: stacked rows with no gap cannot grow a hit area, so the row is the target.
+                          'flex h-10 w-full items-center rounded-lg px-3 text-sm font-medium transition-colors hover:bg-accent',
                           item.href.startsWith(`/${segment}`) ||
                             (!segment && item.href === Routes.Homepage)
                             ? 'text-foreground font-semibold'

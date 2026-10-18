@@ -48,16 +48,16 @@ export function ColorSchemeModeToggle({
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
-        {/* `[&_svg]:size-5` so the mark matches the 20px flag beside it: an
+        {/* `[&_svg]:size-5` so the mark matches the 24px flag beside it: an
             `size={28}` attribute loses to the Button's own `[&_svg]:size-4`. */}
         <Button
           variant="ghost"
           size="icon"
-          className="relative p-0 [&_svg]:size-5"
+          className="relative h-9 w-9 p-0 [&_svg]:size-6"
         >
           {/* Clips the sun/moon slide here, not on the Button: `overflow-hidden` there would cut
               off its `touch-target` strip. */}
-          <div className="relative size-5 overflow-hidden">
+          <div className="relative size-6 overflow-hidden">
             {!mounted ? (
               <div className="absolute inset-0 flex items-center justify-center opacity-0">
                 <Icons.sun />

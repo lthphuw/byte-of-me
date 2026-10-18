@@ -54,7 +54,7 @@ export function PublicHeaderMainNav({
               asChild
               variant="ghost"
               className={cn(
-                'font-medium',
+                'h-9 px-4 font-medium',
                 item.href.startsWith(`/${segment}`)
                   ? 'text-foreground font-semibold'
                   : 'text-foreground/60'
@@ -74,7 +74,7 @@ export function PublicHeaderMainNav({
         <m.button
           ref={triggerRef}
           onClick={() => setOpen((prev) => !prev)}
-          className="relative flex h-8 items-center gap-2 touch-target"
+          className="relative flex h-9 items-center gap-2 touch-target"
         >
           <PublicHeaderLogo minimized={minimized} />
         </m.button>

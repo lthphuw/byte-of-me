@@ -31,7 +31,7 @@ export function UserActionToggle() {
         <button
           type="button"
           aria-label={t('openAccount')}
-          className="group flex size-8 items-center justify-center rounded-full focus-visible:outline-none"
+          className="group flex size-9 items-center justify-center rounded-full focus-visible:outline-none"
         >
           <UserAvatar account={account} />
         </button>
