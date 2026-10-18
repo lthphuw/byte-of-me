@@ -54,7 +54,6 @@ export function EducationItem({
   const folded = edu.achievements.slice(visibleAchievements);
   const hasTree = edu.achievements.length > 0;
   const hasBody = Boolean(edu.description) || hasTree;
-  const delay = (row: number) => index * 50 + 80 + row * 40;
 
   const renderAchievement = (a: PublicEducation['achievements'][number]) => (
     <>
@@ -156,7 +155,6 @@ export function EducationItem({
                   <TreeItem
                     key={a.id}
                     tone="primary"
-                    delay={delay(row)}
                     through={row < shown.length - 1 || folded.length > 0}
                     className={cn('py-3', COLUMN)}
                   >
@@ -170,7 +168,6 @@ export function EducationItem({
                     tone="primary"
                     fold
                     through
-                    delay={delay(shown.length + i)}
                     className={cn('py-3', COLUMN)}
                   >
                     {renderAchievement(a)}
@@ -181,7 +178,6 @@ export function EducationItem({
                   <TreeItem
                     tone="primary"
                     dashed
-                    delay={delay(edu.achievements.length)}
                     className={cn(
                       'flex min-h-9 items-center [--cy:18px]',
                       COLUMN

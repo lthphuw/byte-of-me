@@ -21,10 +21,6 @@ const TRUNK_BELOW =
 export const TREE_NODE =
   'absolute left-[var(--nx)] top-[calc(var(--cy)-0.5rem)] size-4';
 
-// A row fades in on its own `--tree-delay`, so the tree grows down as the list opens.
-const GROW =
-  'opacity-0 transition-opacity duration-200 ease-exit group-data-[view=details]/view:opacity-100 group-data-[view=details]/view:duration-250 group-data-[view=details]/view:ease-enter group-data-[view=details]/view:[transition-delay:var(--tree-delay)]';
-
 // A row that folds: its height goes 0fr -> 1fr with `group/fold`'s `data-fold` (see the
 // achievement fold). `inherit` when open, so a closed Details region still hides it.
 const FOLD =
@@ -62,7 +58,6 @@ const delayVar = (ms: number) =>
  */
 export function TreeItem({
   tone,
-  delay,
   through = false,
   dashed = false,
   fold = false,
@@ -70,8 +65,6 @@ export function TreeItem({
   children,
 }: {
   tone: TreeTone;
-  /** ms before the row fades in, once the view is Details. */
-  delay: number;
   through?: boolean;
   dashed?: boolean;
   fold?: boolean;
@@ -80,7 +73,6 @@ export function TreeItem({
 }) {
   return (
     <li
-      style={delayVar(delay)}
       className={cn(
         'group/pr relative',
         BRANCH,
@@ -88,7 +80,6 @@ export function TreeItem({
         dashed && 'after:border-dashed',
         LIT[tone].self,
         LIT[tone].above,
-        GROW,
         fold ? 'overflow-clip' : className
       )}
     >

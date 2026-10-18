@@ -10,6 +10,7 @@ import {
   Icons,
   iconSwitchVariants,
   menuTransition,
+  useHydrated,
 } from '@byte-of-me/ui';
 import { AnimatePresence, m } from 'framer-motion';
 import { useTranslations } from 'next-intl';
@@ -36,8 +37,7 @@ export function ColorSchemeModeToggle({
   // `resolvedTheme` is undefined on the server but resolved from localStorage
   // on the client's first render — branching on it before mount causes a
   // hydration mismatch on every public page.
-  const [mounted, setMounted] = React.useState(false);
-  React.useEffect(() => setMounted(true), []);
+  const mounted = useHydrated();
 
   const items = [
     { value: 'light', icon: Icons.sun, label: t('light') },

@@ -8,9 +8,14 @@ import { cn } from '@/shared/lib/utils';
 const TRANSITION =
   'motion-reduce:[transition-property:opacity,visibility] transition-[grid-template-rows,grid-template-columns,opacity,visibility]';
 
+// A closed Details region holds `MediaCover`s whose lazy images never load, so their pulse would
+// run forever on a hidden box: 15 style recalcs per 4 s on an idle home page, 0 once paused.
+const PULSE_PAUSED = '[&_[class*=animate-pulse]]:[animation-play-state:paused]';
+const PULSE_RUNNING =
+  'group-data-[view=details]/view:[&_[class*=animate-pulse]]:[animation-play-state:running]';
+
 const ROWS = {
-  details:
-    'grid grid-rows-[0fr] opacity-0 invisible duration-200 ease-exit group-data-[view=details]/view:grid-rows-[1fr] group-data-[view=details]/view:opacity-100 group-data-[view=details]/view:visible group-data-[view=details]/view:duration-250 group-data-[view=details]/view:ease-enter',
+  details: `grid grid-rows-[0fr] opacity-0 invisible ${PULSE_PAUSED} ${PULSE_RUNNING} duration-200 ease-exit group-data-[view=details]/view:grid-rows-[1fr] group-data-[view=details]/view:opacity-100 group-data-[view=details]/view:visible group-data-[view=details]/view:duration-250 group-data-[view=details]/view:ease-enter`,
   compact:
     'grid grid-rows-[1fr] opacity-100 duration-250 ease-enter group-data-[view=details]/view:grid-rows-[0fr] group-data-[view=details]/view:opacity-0 group-data-[view=details]/view:invisible group-data-[view=details]/view:duration-200 group-data-[view=details]/view:ease-exit',
 };

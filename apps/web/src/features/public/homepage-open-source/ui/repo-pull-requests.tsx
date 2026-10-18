@@ -41,7 +41,6 @@ export function RepoPullRequests({
 }) {
   const shown = repo.pullRequests.slice(0, PRS_PER_REPO);
   const hidden = repo.prCount - shown.length;
-  const delay = (row: number) => index * 50 + 80 + row * 40;
 
   return (
     <ViewRegion show="details" index={index}>
@@ -50,7 +49,6 @@ export function RepoPullRequests({
           <TreeItem
             key={pr.url}
             tone="merged"
-            delay={delay(row)}
             through={row < shown.length - 1 || hidden > 0}
             className={ROW}
           >
@@ -93,7 +91,6 @@ export function RepoPullRequests({
           <TreeItem
             tone="merged"
             dashed
-            delay={delay(shown.length)}
             className="flex min-h-9 items-center pl-[68px] pr-4 md:pl-[74px] md:pr-5"
           >
             <Ellipsis
