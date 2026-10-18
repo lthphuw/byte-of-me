@@ -112,7 +112,7 @@ export function BlogReaderNav({
         onClick={() => setOpen(true)}
         // Bottom right, clear of the reading column and inside thumb reach.
         // `safe-area-inset` so it does not sit under the iOS home indicator.
-        className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 z-40 h-11 w-11 rounded-full border shadow-lg xl:hidden"
+        className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 z-40 h-9 w-9 rounded-full border shadow-lg xl:hidden"
       >
         <List className="h-5 w-5" />
       </Button>

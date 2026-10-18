@@ -23,7 +23,7 @@ export async function HomepageOpenSource() {
   if (!resp.success) {
     return (
       <ContentFade>
-        <section id="open-source" className="space-y-6 md:space-y-8">
+        <section id="open-source" className="space-y-5 md:space-y-8">
           <h2 className="text-xl font-semibold md:text-3xl">
             {t('openSourceTitle')}
           </h2>
@@ -59,7 +59,7 @@ export async function HomepageOpenSource() {
 
   return (
     <ContentFade>
-      <ViewSwitchRoot id="open-source" className="space-y-6 md:space-y-8">
+      <ViewSwitchRoot id="open-source" className="space-y-5 md:space-y-8">
         {/* The right column is as tall as the title and summary beside it: link on top, switch
             below. On a phone it is one row under them. */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-stretch sm:justify-between md:gap-8">
@@ -74,11 +74,11 @@ export async function HomepageOpenSource() {
 
           <div className="flex items-center justify-between sm:flex-col sm:items-end">
             {/* `asChild`, not <Link><Button>: the nested form renders <a><button>, which is
-                invalid and costs two tab stops. Slim like the switch under it: `min-h-0` drops the
-                44px touch floor, `before:` keeps it as a hit area. */}
+                invalid and costs two tab stops. Slim like the switch under it: `h-auto` drops the
+                box, the Button's `touch-target` keeps the 44px hit area. */}
             <Button
               variant="link"
-              className="relative h-auto min-h-0 p-0 text-sm before:absolute before:-inset-y-3 before:inset-x-0 can-hover:min-h-0 md:mt-1.5 md:text-base"
+              className="h-auto p-0 text-sm md:mt-1.5 md:text-base"
               asChild
             >
               <Link href={openSourceHref()}>{t('viewAllContributions')}</Link>

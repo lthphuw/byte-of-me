@@ -46,11 +46,7 @@ export function CompressionSettingsPopover({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className="min-h-11 gap-2 can-hover:min-h-9"
-        >
+        <Button variant="outline" size="sm" className="gap-2">
           <Settings2 className="h-4 w-4" />
           {t('trigger')}
         </Button>
@@ -78,7 +74,7 @@ export function CompressionSettingsPopover({
           {/* The label row is the touch target; the switch alone is 24px. */}
           <Label
             htmlFor="compression-enabled"
-            className="flex min-h-11 flex-1 items-center text-sm can-hover:min-h-9"
+            className="flex flex-1 items-center text-sm"
           >
             {t('enabled.label')}
           </Label>
@@ -220,7 +216,6 @@ function NumberField({
       <Input
         id={id}
         type="number"
-        className="min-h-11 can-hover:min-h-9"
         min={min}
         max={max}
         disabled={disabled}

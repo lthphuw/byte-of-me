@@ -20,7 +20,7 @@ export default function ProjectsLoading() {
           <Skeleton className="h-9 w-56 md:h-12 md:w-72" />
           <Skeleton className="h-5 w-24 md:h-6 md:w-28" />
         </div>
-        <Skeleton className="h-11 w-full sm:max-w-xs md:h-9" />
+        <Skeleton className="h-8 w-full sm:max-w-xs" />
       </div>
 
       <ol className="border-l border-border/60">

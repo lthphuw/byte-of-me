@@ -88,7 +88,7 @@ export function CompanyRoleItemField({
             type="button"
             variant="ghost"
             size="sm"
-            className="min-h-11 min-w-0 gap-2 can-hover:min-h-9"
+            className="min-w-0 gap-2"
           >
             <ChevronDown
               className={cn(

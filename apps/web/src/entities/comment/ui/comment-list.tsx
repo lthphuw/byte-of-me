@@ -23,7 +23,7 @@ export function CommentList({
   const [activeReplyId, setActiveReplyId] = useState<string | null>(null);
 
   return (
-    <div className="space-y-4 md:space-y-6">
+    <div className="space-y-3 md:space-y-6">
       {comments.map((root) => {
         const replies = root.children || [];
 

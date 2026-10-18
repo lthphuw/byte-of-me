@@ -7,7 +7,7 @@ import { Skeleton } from '@byte-of-me/ui';
  */
 export function CommentListSkeleton() {
   return (
-    <div className="space-y-4 md:space-y-6">
+    <div className="space-y-3 md:space-y-6">
       {Array.from({ length: 3 }).map((_, i) => (
         <div key={i} className="space-y-2">
           <div className="grid grid-cols-[auto_1fr] gap-x-3">

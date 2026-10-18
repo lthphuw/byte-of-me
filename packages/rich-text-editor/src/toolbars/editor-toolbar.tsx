@@ -139,7 +139,7 @@ export const EditorToolbar = ({
       type="button"
       variant="ghost"
       size="sm"
-      className="h-8 shrink-0 gap-2 px-2 text-xs min-w-11 can-hover:min-w-8 max-sm:order-first"
+      className="h-8 shrink-0 gap-2 px-2 text-xs max-sm:order-first"
       onClick={onTogglePreview}
     >
       <Eye className="h-3.5 w-3.5" />

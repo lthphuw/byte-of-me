@@ -291,7 +291,7 @@ export function FeaturedWorkDemo({
                   maxLength={FEATURED_WORK_MEDIA_LABEL_MAX_LENGTH}
                   aria-label={t('labelLabel', { slot })}
                   data-demo-focus={`label-${index}`}
-                  className="min-h-11 min-w-0 can-hover:min-h-9"
+                  className="min-w-0"
                   onChange={(event) => setLabel(index, event.target.value)}
                   onBlur={field.onBlur}
                 />
@@ -299,7 +299,7 @@ export function FeaturedWorkDemo({
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="min-h-11 shrink-0 gap-1 can-hover:min-h-9"
+                  className="shrink-0 gap-1"
                   aria-label={t('removeLabel', { slot })}
                   onClick={() => remove(index)}
                 >

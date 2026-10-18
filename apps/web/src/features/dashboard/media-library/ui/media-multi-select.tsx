@@ -123,7 +123,7 @@ export function MediaMultiSelect({
               <Button
                 size="sm"
                 variant="ghost"
-                className="min-h-11 px-2 text-xs hover:text-destructive-text can-hover:min-h-9"
+                className="px-2 text-xs hover:text-destructive-text"
                 onClick={() => onChange([])}
               >
                 {t('picker.clearAll')}
@@ -151,7 +151,7 @@ export function MediaMultiSelect({
                   type="button"
                   aria-label={t('upload.removeFile', { name: media.fileName })}
                   onClick={() => toggleSelect(media.id)}
-                  className="relative size-11 shrink-0 overflow-hidden rounded border"
+                  className="relative size-9 shrink-0 overflow-hidden rounded border"
                 >
                   <Image
                     src={media.url}

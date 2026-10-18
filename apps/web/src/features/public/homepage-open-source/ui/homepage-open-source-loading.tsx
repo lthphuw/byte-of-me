@@ -4,7 +4,7 @@ import { Skeleton } from '@byte-of-me/ui';
 // switch, then a card of repo rows whose classes follow `RepoRow` and `RepoSummary`.
 export function HomepageOpenSourceLoading() {
   return (
-    <div className="space-y-6 md:space-y-8">
+    <div className="space-y-5 md:space-y-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-stretch sm:justify-between md:gap-8">
         <div className="space-y-2">
           <Skeleton className="h-7 w-40 md:h-9 md:w-56" />

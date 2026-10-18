@@ -102,10 +102,13 @@ export function CommentManager() {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="min-h-11 gap-2 can-hover:min-h-9"
+                      className="gap-2"
                       disabled={pendingVisibilityId === comment.id}
                       onClick={() =>
-                        visibility.mutate({ commentId: comment.id, hidden: false })
+                        visibility.mutate({
+                          commentId: comment.id,
+                          hidden: false,
+                        })
                       }
                     >
                       <Eye className="h-4 w-4" />
@@ -115,10 +118,13 @@ export function CommentManager() {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="min-h-11 gap-2 can-hover:min-h-9"
+                      className="gap-2"
                       disabled={pendingVisibilityId === comment.id}
                       onClick={() =>
-                        visibility.mutate({ commentId: comment.id, hidden: true })
+                        visibility.mutate({
+                          commentId: comment.id,
+                          hidden: true,
+                        })
                       }
                     >
                       <EyeOff className="h-4 w-4" />

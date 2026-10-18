@@ -8,10 +8,11 @@ export function ShellBase({ children, className, ...props }: ShellProps) {
   return (
     <section
       // One rhythm for every public page; pages only choose a max-width. No inline padding: the
-      // layout's `container` owns the 32px gutter. `gap-6 md:gap-8` is AGENTS.md §14's "between
-      // block groups"; `pt`/`pb` are the frame, off that scale (top clears the 80/112px header).
+      // layout's `container` owns the gutter (16px phone, 32px md+). `gap-5 md:gap-8` is AGENTS.md
+      // §14's "between block groups"; `pt`/`pb` are the frame, off that scale (top clears the
+      // 48px phone header, and the 64px docked desktop one).
       className={cn(
-        'z-20 mx-auto flex w-full flex-col gap-6 pb-12 pt-20 md:gap-8 md:pb-16 md:pt-28',
+        'z-20 mx-auto flex w-full flex-col gap-5 pb-8 pt-16 md:gap-8 md:pb-16 md:pt-24',
         className
       )}
       {...props}

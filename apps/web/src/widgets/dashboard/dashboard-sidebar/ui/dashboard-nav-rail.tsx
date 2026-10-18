@@ -30,10 +30,10 @@ import { useDashboardNavGroups } from '@/widgets/dashboard/dashboard-sidebar/mod
 
 /**
  * The one place a rail button's size, radius and colours are decided.
- * 44px on touch, 36px only under `can-hover:` (AGENTS §14).
+ * 32px, with the 44px floor as a `touch-target` strip.
  */
 const RAIL_BUTTON =
-  'flex min-h-11 min-w-11 items-center justify-center rounded-md text-muted-foreground transition-colors can-hover:min-h-9 can-hover:min-w-9 hover:bg-muted hover:text-foreground';
+  'touch-target relative flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground';
 
 /**
  * Desktop sidebar from `lg`: a labelled column, or a 56px icon rail.
@@ -122,7 +122,7 @@ export function DashboardNavRail({
                 name and destination a row apart are noise to anyone tabbing or listening. */}
             <div
               aria-hidden="true"
-              className="flex size-9 items-center justify-center rounded-md"
+              className="flex size-8 items-center justify-center rounded-md"
             >
               <BrandMark layer="cms" />
             </div>

@@ -20,7 +20,7 @@ export async function PublicSiteFooter({ className }: SiteFooterProps) {
   ]);
   if (!resp.success) {
     return (
-      <footer className={cn('py-8 relative z-20', className)}>
+      <footer className={cn('py-6 relative z-20', className)}>
         <SectionLoadError
           title={tError('title')}
           description={tError('description')}
@@ -35,10 +35,14 @@ export async function PublicSiteFooter({ className }: SiteFooterProps) {
   const linkedInLink = socialLinks.find((it) => it.platform === 'linkedIn');
 
   return (
-    <footer className={cn('py-8 relative z-20', className)}>
-      <div className="container mx-auto flex max-w-[100%] flex-col items-center justify-between gap-6 px-8 md:flex-row md:gap-10 md:px-12">
+    <footer className={cn('py-6 relative z-20', className)}>
+      <div className="container mx-auto flex max-w-[100%] flex-col items-center justify-between gap-4 px-0 md:flex-row md:gap-10 md:px-12">
         <div className="flex flex-col items-center gap-2 md:items-start">
-          <Link href={Routes.Homepage} aria-label={t('home')}>
+          <Link
+            href={Routes.Homepage}
+            aria-label={t('home')}
+            className="relative touch-target"
+          >
             <BrandMark />
           </Link>
 
@@ -46,7 +50,7 @@ export async function PublicSiteFooter({ className }: SiteFooterProps) {
             <span className="hidden md:inline-block">{t('builtBy')}</span>
             <a
               href={`mailto:${email}`}
-              className="font-medium underline underline-offset-4 transition-colors hover:text-primary"
+              className="relative font-medium underline underline-offset-4 transition-colors touch-target hover:text-primary"
             >
               {displayName || email}
             </a>
@@ -56,14 +60,14 @@ export async function PublicSiteFooter({ className }: SiteFooterProps) {
         <PublicSiteFooterNav />
 
         <div className="flex flex-col items-center gap-2 md:items-end">
-          <div className="flex gap-4">
+          <div className="flex gap-2">
             {githubLink && (
               <a
                 href={ensureValidUrl(githubLink.url)}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
-                className="transition-colors hover:text-primary"
+                className="relative flex size-6 items-center justify-center transition-colors touch-target hover:text-primary"
               >
                 <Icons.github size={20} />
               </a>
@@ -75,7 +79,7 @@ export async function PublicSiteFooter({ className }: SiteFooterProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
-                className="transition-colors hover:text-primary"
+                className="relative flex size-6 items-center justify-center transition-colors touch-target hover:text-primary"
               >
                 <Icons.linkedin size={20} />
               </a>
@@ -84,7 +88,7 @@ export async function PublicSiteFooter({ className }: SiteFooterProps) {
             <a
               href={`mailto:${email}`}
               aria-label={t('email')}
-              className="transition-colors hover:text-primary"
+              className="relative flex size-6 items-center justify-center transition-colors touch-target hover:text-primary"
             >
               <Icons.email size={20} />
             </a>

@@ -60,7 +60,7 @@ export function UserProfileManager({
               variant="outline"
               size="sm"
               onClick={requestReset}
-              className="min-h-11 gap-2 can-hover:min-h-9"
+              className="gap-2"
             >
               <RotateCcw className="h-4 w-4" /> {t('resetButton')}
             </Button>
@@ -84,11 +84,7 @@ export function UserProfileManager({
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="mb-4 bg-muted/50 p-1">
               {fields.map((field, index) => (
-                <TabsTrigger
-                  key={field.id}
-                  value={field.id}
-                  className="can-hover:min-h-9"
-                >
+                <TabsTrigger key={field.id} value={field.id}>
                   <TranslationTabLabel control={form.control} index={index} />
                 </TabsTrigger>
               ))}
@@ -111,18 +107,10 @@ export function UserProfileManager({
 
         {/* Action Bar: a solid fill, so the blur never has to re-sample the scroll. */}
         <div className="sticky bottom-6 ml-auto flex w-fit justify-end gap-3 rounded-2xl border bg-background p-4 shadow-2xl">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={requestReset}
-          >
+          <Button type="button" variant="ghost" onClick={requestReset}>
             {t('cancelButton')}
           </Button>
-          <Button
-            type="submit"
-            disabled={isSaving}
-            className="min-w-[140px]"
-          >
+          <Button type="submit" disabled={isSaving} className="min-w-[140px]">
             {isSaving && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             )}

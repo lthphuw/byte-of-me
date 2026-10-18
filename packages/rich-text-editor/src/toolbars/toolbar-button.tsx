@@ -54,11 +54,7 @@ export const ToolbarButton = React.forwardRef<
         size="icon"
         aria-label={label}
         aria-pressed={active}
-        className={cn(
-          'h-8 w-8 p-0 can-hover:min-h-8 can-hover:min-w-8 sm:h-9 sm:w-9',
-          active && 'bg-accent',
-          className
-        )}
+        className={cn('h-8 w-8 p-0', active && 'bg-accent', className)}
         {...props}
       >
         <Icon />

@@ -53,7 +53,7 @@ export function MediaPickerGrid({
         <Button
           variant="ghost"
           size="sm"
-          className="mt-4 min-h-11 w-full can-hover:min-h-9"
+          className="mt-4 w-full"
           onClick={() => query.fetchNextPage()}
           disabled={query.isFetchingNextPage}
         >

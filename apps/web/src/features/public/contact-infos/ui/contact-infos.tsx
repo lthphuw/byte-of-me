@@ -118,7 +118,7 @@ export async function ContactInfos() {
 
   return (
     <ChannelsSection title={t('title')}>
-      <div className="grid grid-cols-1 gap-4 md:gap-6">
+      <div className="grid grid-cols-1 gap-3 md:gap-6">
         {contacts.map((item) => {
           const Icon = item.icon;
           // `mailto:` hands off to a mail client; `target="_blank"` there only
@@ -173,7 +173,7 @@ function ChannelsSection({
   return (
     <section
       aria-labelledby="contact-channels-title"
-      className="space-y-4 md:space-y-6"
+      className="space-y-3 md:space-y-6"
     >
       <h2
         id="contact-channels-title"

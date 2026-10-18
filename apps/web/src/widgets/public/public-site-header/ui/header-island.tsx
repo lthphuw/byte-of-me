@@ -36,34 +36,39 @@ const AT_REST: IslandGeometry = {
   inset: 0,
   paddingX: 32,
   paddingXIcons: 32,
-  height: 64,
+  height: 56,
   radius: 0,
 };
 
-/** 64px of chrome is a tenth of a phone screen; the number was inherited. */
-const AT_REST_MOBILE: IslandGeometry = { ...AT_REST, height: 56 };
+/** The phone gutter is 16px, so text and card edge both sit 16px in; 48px of chrome, not 56. */
+const AT_REST_MOBILE: IslandGeometry = {
+  ...AT_REST,
+  paddingX: 16,
+  paddingXIcons: 16,
+  height: 48,
+};
 
 /**
- * `top + height` is 56 here and in `AT_REST_MOBILE` on purpose: the nav popover
+ * `top + height` is 48 here and in `AT_REST_MOBILE` on purpose: the nav popover
  * hangs off that one sum instead of branching on `docked`. Change either and
  * `public-header-mobile-nav` needs the new total.
  */
 const DOCKED_MOBILE: IslandGeometry = {
-  top: 8,
-  inset: 32,
-  paddingX: 14,
-  paddingXIcons: 6,
-  height: 48,
-  radius: 14,
+  top: 6,
+  inset: 16,
+  paddingX: 12,
+  paddingXIcons: 4,
+  height: 42,
+  radius: 12,
 };
 
 const DOCKED_DESKTOP: IslandGeometry = {
-  top: 24,
+  top: 16,
   inset: 32,
   paddingX: 16,
-  paddingXIcons: 12,
-  height: 56,
-  radius: 16,
+  paddingXIcons: 8,
+  height: 48,
+  radius: 14,
 };
 
 /**
@@ -78,12 +83,12 @@ const DOCK_TRANSITION: Transition = {
 };
 
 /**
- * `top-0 h-16 px-8 rounded-none` restates AT_REST: under `<LazyMotion>` no inline style exists
+ * `top-0 h-12 px-4 md:h-14 md:px-8 rounded-none` restates AT_REST: under `<LazyMotion>` no inline style exists
  * until the features chunk lands, so the header would paint collapsed, then snap into place.
  * `absolute`, not `fixed`: insets are measured from PublicSiteHeader's wrapper, not the viewport.
  */
 const ISLAND_BASE =
-  'pointer-events-auto flex h-16 min-w-0 items-center gap-1 rounded-none border px-8 md:gap-2 transition-[background-color,border-color,box-shadow] duration-300 ease-out';
+  'pointer-events-auto flex h-12 min-w-0 items-center gap-1 rounded-none border px-4 md:h-14 md:gap-2 md:px-8 transition-[background-color,border-color,box-shadow] duration-300 ease-out';
 
 /**
  * No `backdrop-filter` in either state: a blurred island re-samples the page

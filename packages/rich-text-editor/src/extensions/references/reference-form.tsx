@@ -108,7 +108,7 @@ export function ReferenceForm({
           </Label>
           <Input
             id={`${draft.id}-${field.key}`}
-            className="h-8 text-sm can-hover:min-h-8"
+            className="h-8 text-sm"
             value={draft[field.key] ?? ''}
             placeholder={field.placeholder}
             onChange={(event) =>

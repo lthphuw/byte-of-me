@@ -44,7 +44,7 @@ function Line({
 
 export function HomepageFeaturedWorksLoading() {
   return (
-    <div className="space-y-6 md:space-y-8">
+    <div className="space-y-5 md:space-y-8">
       <Skeleton className="h-7 w-40 md:h-9 md:w-56" />
 
       <ul className="divide-y overflow-hidden rounded-xl border bg-card px-4 md:px-5">

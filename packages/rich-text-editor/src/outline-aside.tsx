@@ -54,7 +54,7 @@ export function OutlineAside({
                   })
                 }
                 className={cn(
-                  '-ml-px min-h-11 border-l-2 border-transparent px-4 py-1 text-left text-xs transition-colors hover:border-primary hover:text-primary can-hover:min-h-8',
+                  '-ml-px min-h-8 border-l-2 border-transparent px-4 py-1 text-left text-xs transition-colors hover:border-primary hover:text-primary',
                   entry.id === activeId && 'border-primary text-primary',
                   entry.level === 1 && 'text-sm font-bold',
                   entry.level === 2 && 'ml-2 font-semibold',

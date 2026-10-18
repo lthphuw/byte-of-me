@@ -8,9 +8,8 @@ import { useTranslations } from 'next-intl';
 import { cn } from '@/shared/lib/utils';
 
 /** One row or card. The skeleton reuses it, so a loaded row keeps its height. */
-const ITEM_CLASS = 'flex items-center gap-4 rounded-xl border bg-card p-4';
-/** 44px on touch; 36px only with a fine pointer, under `can-hover:`. */
-const ACTION_CLASS = 'min-h-11 min-w-11 can-hover:min-h-9 can-hover:min-w-9';
+const ITEM_CLASS =
+  'flex items-center gap-3 rounded-xl border bg-card p-3 md:p-4';
 
 interface RecordListItemProps {
   leading?: ReactNode;
@@ -60,7 +59,6 @@ export function RecordRowActions({
           type="button"
           variant="ghost"
           size="icon"
-          className={ACTION_CLASS}
           disabled={disabled}
           onClick={onEdit}
           aria-label={t('editItem', { name })}
@@ -73,7 +71,7 @@ export function RecordRowActions({
           type="button"
           variant="ghost"
           size="icon"
-          className={cn(ACTION_CLASS, 'hover:text-destructive-text')}
+          className="hover:text-destructive-text"
           disabled={disabled}
           onClick={onDelete}
           aria-label={t('deleteItem', { name })}
@@ -102,7 +100,7 @@ export function RecordListSkeleton({
       className={
         variant === 'grid'
           ? 'grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3'
-          : 'space-y-3'
+          : 'space-y-2'
       }
     >
       {Array.from({ length: rows }, (_, index) => (
@@ -112,8 +110,8 @@ export function RecordListSkeleton({
             <Skeleton className="h-3 w-1/3" />
           </div>
           <div className="flex shrink-0 items-center gap-2">
-            <Skeleton className="size-11" />
-            <Skeleton className="size-11" />
+            <Skeleton className="size-8" />
+            <Skeleton className="size-8" />
           </div>
         </div>
       ))}

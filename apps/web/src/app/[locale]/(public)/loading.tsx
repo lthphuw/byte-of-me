@@ -10,7 +10,7 @@ import { HomepageShell } from '@/widgets/public/homepage-content/ui/homepage-she
 export default function HomeLoading() {
   return (
     <HomepageShell aria-busy="true">
-      <div className="space-y-12 md:space-y-16">
+      <div className="space-y-8 md:space-y-16">
         <HomepageProfileLoading />
         <HomepageFeaturedWorksLoading />
         <HomepageOpenSourceLoading />

@@ -20,7 +20,7 @@ export function UserAvatar({
   return (
     <Avatar
       className={cn(
-        'size-9 border border-border/60 bg-muted text-muted-foreground',
+        'size-8 border border-border/60 bg-muted text-muted-foreground',
         // The ring is the affordance: this sits alone with no label and no
         // chevron, so something has to say it can be pressed.
         'ring-0 ring-foreground/15 ring-offset-2 ring-offset-background transition-[box-shadow,transform] duration-200',

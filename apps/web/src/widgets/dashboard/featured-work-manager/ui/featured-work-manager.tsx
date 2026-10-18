@@ -146,12 +146,7 @@ export function FeaturedWorkManager() {
           emptyTitle={t('emptyTitle')}
           emptyDescription={t('emptyDescription')}
           emptyAction={
-            <Button
-              variant="outline"
-              size="sm"
-              className="min-h-11 can-hover:min-h-9"
-              onClick={openCreateDialog}
-            >
+            <Button variant="outline" size="sm" onClick={openCreateDialog}>
               {t('emptyAction')}
             </Button>
           }

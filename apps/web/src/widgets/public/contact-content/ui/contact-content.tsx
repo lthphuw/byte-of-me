@@ -29,7 +29,7 @@ export async function ContactContent() {
       {/* Channels first in source order, so they lead when columns stack below md. Both columns
           are `immediate`: the page is the first desktop screen, and hidden in server HTML they
           would hold back the LCP candidate. */}
-      <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2 md:gap-10">
+      <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-2 md:gap-8">
         <RevealSection id="contact-info" immediate>
           <Suspense fallback={<ContactInfosLoading />}>
             <ContentFade>

@@ -17,16 +17,16 @@ export default function ContactLoading() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2 md:gap-10">
+      <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-2 md:gap-8">
         <ContactInfosLoading />
 
-        <div className="space-y-4 rounded-lg border border-border p-4 md:space-y-6 md:p-6">
+        <div className="space-y-3 rounded-lg border border-border p-4 md:space-y-6 md:p-6">
           <Skeleton className="h-7 w-48" />
 
           {[1, 2, 3].map((i) => (
             <div key={i} className="space-y-2">
               <Skeleton className="h-4 w-24" />
-              <Skeleton className="h-11 w-full md:h-9" />
+              <Skeleton className="h-8 w-full" />
             </div>
           ))}
 
@@ -35,7 +35,7 @@ export default function ContactLoading() {
             <Skeleton className="h-36 w-full" />
           </div>
 
-          <Skeleton className="h-11 w-full md:h-9" />
+          <Skeleton className="h-8 w-full" />
         </div>
       </div>
     </ContactShell>

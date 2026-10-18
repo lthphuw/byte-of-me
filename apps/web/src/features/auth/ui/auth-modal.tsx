@@ -62,7 +62,7 @@ export function AuthModal({ isOpen, onClose, children }: AuthModalProps) {
                   visible: { opacity: 1, y: 0 },
                 }}
               >
-                <GithubAuthButton className="h-11 w-full text-sm font-medium" />
+                <GithubAuthButton className="h-9 w-full text-sm font-medium" />
               </m.div>
 
               <m.div
@@ -71,7 +71,7 @@ export function AuthModal({ isOpen, onClose, children }: AuthModalProps) {
                   visible: { opacity: 1, y: 0 },
                 }}
               >
-                <GoogleAuthButton className="h-11 w-full text-sm font-medium" />
+                <GoogleAuthButton className="h-9 w-full text-sm font-medium" />
               </m.div>
 
               {children && (

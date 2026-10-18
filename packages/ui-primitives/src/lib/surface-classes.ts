@@ -22,10 +22,10 @@ export const POPUP_MOTION =
   'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:ease-enter data-[state=closed]:ease-exit data-[state=closed]:duration-100 data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 motion-safe:data-[state=closed]:zoom-out-95 motion-safe:data-[state=open]:zoom-in-95 motion-safe:data-[side=bottom]:slide-in-from-top-2 motion-safe:data-[side=left]:slide-in-from-right-2 motion-safe:data-[side=right]:slide-in-from-left-2 motion-safe:data-[side=top]:slide-in-from-bottom-2';
 
 /**
- * A menu row: 44px on touch, 32px with a pointer. The highlight and disabled
+ * A menu row: 36px on touch, 32px with a pointer. The highlight and disabled
  * selectors stay with each primitive, because Radix and cmdk spell them apart.
  */
 export const MENU_ITEM =
-  'relative flex min-h-11 cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none can-hover:min-h-8 [&>svg]:size-4 [&>svg]:shrink-0';
+  'relative flex min-h-9 cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none can-hover:min-h-8 [&>svg]:size-4 [&>svg]:shrink-0';
 export const MENU_LABEL = 'px-2 py-1.5 text-sm font-semibold';
 export const MENU_SEPARATOR = '-mx-1 my-1 h-px bg-border';

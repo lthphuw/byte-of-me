@@ -20,10 +20,8 @@ export interface RepoRowLabels
   opensInNewTab: string;
 }
 
-// Slim: 26px, not `Button` sm's 32px. The 44px touch floor is the invisible `before:` area, and
-// `can-hover:min-h-0` clears the pointer-only floor `sm` also sets.
-const SLIM_BUTTON =
-  'relative h-[26px] min-h-0 gap-1.5 px-2.5 can-hover:min-h-0 before:absolute before:-inset-y-[9px] before:inset-x-0 [&_svg]:size-3.5';
+// Slim: 24px, under `Button` sm's 28px. The 44px touch floor is the Button's own `touch-target`.
+const SLIM_BUTTON = 'h-6 gap-1.5 px-2 [&_svg]:size-3.5';
 
 // The tree's geometry (phone / from md), read by `TreeItem` and `TreeStub`: the trunk on the
 // avatar's axis, a node 14 / 16px on, a one-line row's middle at 18px / 50%, the trunk leaving the
@@ -64,12 +62,7 @@ export function RepoRow({
               <ArrowRight aria-hidden />
             </Link>
           </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            className={SLIM_BUTTON}
-            asChild
-          >
+          <Button size="sm" variant="outline" className={SLIM_BUTTON} asChild>
             <a href={repo.url} target="_blank" rel="noopener noreferrer">
               {labels.repository}
               <ArrowUpRight aria-hidden />

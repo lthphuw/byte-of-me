@@ -67,7 +67,7 @@ export function BlogFilters({ value, onChange }: BlogFiltersProps) {
   const hasFilters = value.tagSlugs.length > 0 || search.length > 0;
 
   return (
-    <div className="flex flex-col gap-4 md:gap-6">
+    <div className="flex flex-col gap-3 md:gap-6">
       <div className="flex items-center gap-2">
         <FilterSearchInput
           value={search}
@@ -82,7 +82,7 @@ export function BlogFilters({ value, onChange }: BlogFiltersProps) {
             variant="ghost"
             size="sm"
             onClick={handleReset}
-            className="h-11 shrink-0 px-3 text-xs text-muted-foreground md:h-9"
+            className="shrink-0 px-3 text-xs text-muted-foreground"
           >
             {t('reset')}
           </Button>

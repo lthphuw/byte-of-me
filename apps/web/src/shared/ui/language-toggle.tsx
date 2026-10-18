@@ -73,10 +73,10 @@ export function I18nToggle({
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
-        {/* The Button owns the 44px touch size and its focus ring; the 24px
+        {/* The Button owns the touch strip and its focus ring; the 20px
             mark matches the theme toggle beside it. */}
         <Button variant="ghost" size="icon" className="relative">
-          <div className="relative flex size-6 items-center justify-center overflow-hidden rounded-sm">
+          <div className="relative flex size-5 items-center justify-center overflow-hidden rounded-sm">
             <AnimatePresence mode="wait" initial={false}>
               <m.div
                 key={locale}
@@ -87,7 +87,7 @@ export function I18nToggle({
                 transition={menuTransition}
                 className="absolute inset-0 flex items-center justify-center"
               >
-                <CurrentFlag className="h-[18px] rounded-[2px]" />
+                <CurrentFlag className="h-[15px] rounded-[2px]" />
               </m.div>
             </AnimatePresence>
           </div>

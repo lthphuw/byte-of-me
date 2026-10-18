@@ -8,10 +8,10 @@ export default function BlogDetailsLoading() {
       <div className="flex w-full min-w-0 flex-col items-center overflow-hidden py-8 md:px-8 md:py-12">
         {/* Matches the article's reading measure so nothing shifts on load. */}
         <div className="w-full min-w-0 max-w-[720px]">
-          {/* Mirrors `BlogContentHeader`: groups at the `space-y-4 md:space-y-6` rhythm, title and
+          {/* Mirrors `BlogContentHeader`: groups at the `space-y-3 md:space-y-6` rhythm, title and
               description at `space-y-2`. The `space-y-2` inside a group is line simulation (bars for
               wrapped lines), so it stays off the rhythm scale. */}
-          <div className="space-y-4 md:space-y-6">
+          <div className="space-y-3 md:space-y-6">
             {/* TITLE SKELETON */}
             <div className="space-y-2">
               <Skeleton className="h-10 w-full md:h-12" />

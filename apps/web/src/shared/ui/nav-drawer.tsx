@@ -38,11 +38,11 @@ export interface NavDrawerGroup {
 }
 
 /**
- * The one drawer row, `min-h-11` = 44px (rows measured 36px). `NavDrawerAction` and
+ * The one drawer row, `min-h-9` = 36px: stacked rows have no gap to grow a hit area into. `NavDrawerAction` and
  * `NavDrawerLink` are exported so sign-out and settings share it, not a lookalike.
  */
 const ROW_CLASS =
-  'flex w-full min-h-11 items-center gap-3 rounded-md px-3 text-sm transition-colors';
+  'flex w-full min-h-9 items-center gap-3 rounded-md px-3 text-sm transition-colors';
 
 export function NavDrawerAction({
   className,
@@ -124,10 +124,10 @@ export function NavDrawerGroups({
       {groups.map((group) => (
         <div
           key={group.label}
-          className="space-y-1 border-t border-border/40 pt-3 first:border-t-0 first:pt-0"
+          className="space-y-0.5 border-t border-border/40 pt-2 first:border-t-0 first:pt-0"
         >
           <h2 className="sr-only">{group.label}</h2>
-          <ul className="space-y-1">
+          <ul className="space-y-0.5">
             {group.items.map((item) => {
               const Icon = item.icon;
               const isActive = isNavItemActive(item, pathname);
@@ -191,9 +191,7 @@ export function NavDrawer({
           variant="ghost"
           size="icon"
           aria-label={triggerLabel}
-          // `min-h-*`, not `size-11`: tailwind-merge@1.14 has no rule for `size-*`,
-          // so it cannot cancel the variant's `h-9 w-9`, which wins by source order.
-          className="min-h-11 min-w-11 shrink-0"
+          className="shrink-0"
         >
           <Menu className="size-5" />
         </Button>
@@ -213,7 +211,7 @@ export function NavDrawer({
         <div className="flex h-full flex-col">
           {/* `span`, not `h1`: every page has its own `h1`, so a drawer heading would be a second
               top-level one and heading-jumping readers would land on the product name first. */}
-          <div className="flex items-center gap-3 px-4 py-5">
+          <div className="flex items-center gap-3 px-4 py-3">
             <div className="flex size-7 items-center justify-center rounded-md">
               {brand}
             </div>
@@ -223,12 +221,12 @@ export function NavDrawer({
           <NavDrawerGroups
             groups={groups}
             onNavigate={() => setOpen(false)}
-            className="flex-1 space-y-3 overflow-y-auto px-3 py-2"
+            className="flex-1 space-y-2 overflow-y-auto px-2 py-2"
           />
 
           {/* `env(safe-area-inset-bottom)`: on a gesture-bar phone the last entry ("Sign out") sat under
               the home indicator. `max()` keeps the ordinary padding elsewhere. */}
-          <div className="mt-auto space-y-1 border-t border-border/40 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+          <div className="mt-auto space-y-0.5 border-t border-border/40 p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
             {/* `side="top"`: a menu opening right of the 288px drawer has no room to land. */}
             <div className="flex items-center gap-1 pb-1">
               <ColorSchemeModeToggle side="top" align="start" />

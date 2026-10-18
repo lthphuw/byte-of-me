@@ -32,7 +32,7 @@ export function Pagination({
   return (
     <nav
       aria-label={pageLabel}
-      className="flex items-center justify-between border-t pt-4"
+      className="flex items-center justify-between border-t pt-3"
     >
       <p className="text-xs font-medium text-muted-foreground">{pageLabel}</p>
       <div className="flex items-center gap-2">

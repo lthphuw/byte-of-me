@@ -80,7 +80,7 @@ export function ReferencePanel({
             {labels.sectionHeading}
           </Label>
           <Input
-            className="h-8 text-sm can-hover:min-h-8"
+            className="h-8 text-sm"
             defaultValue={title}
             key={title}
             onBlur={(event) =>

@@ -40,9 +40,6 @@ import {
 import { LazyRichTextEditor as RichTextEditor } from '@/shared/ui/lazy-rich-text-editor';
 import { achievementHasContent } from '@/widgets/dashboard/education-manager/lib/achievement-has-content';
 
-/** 44px on touch; 36px only with a fine pointer, under `can-hover:`. */
-const TOUCH_TARGET = 'min-h-11 min-w-11 can-hover:min-h-9 can-hover:min-w-9';
-
 interface EducationAchievementItemFieldProps {
   index: number;
   total: number;
@@ -112,7 +109,7 @@ export function EducationAchievementItemField({
           <CollapsibleTrigger asChild>
             <button
               type="button"
-              className="flex min-h-11 min-w-0 flex-1 items-center gap-2 rounded px-1 py-1.5 text-left transition-colors hover:bg-muted/50 can-hover:min-h-8"
+              className="flex min-h-8 min-w-0 flex-1 items-center gap-2 rounded px-1 py-1 text-left transition-colors hover:bg-muted/50"
             >
               {/* `min-w-0` is what lets `truncate` actually clip: without it
                   a nowrap flex item refuses to shrink below its text width and
@@ -151,7 +148,7 @@ export function EducationAchievementItemField({
             variant="ghost"
             aria-label={t('achievements.moveUpLabel', { name })}
             disabled={index === 0}
-            className={cn('shrink-0 text-muted-foreground', TOUCH_TARGET)}
+            className="shrink-0 text-muted-foreground"
             onClick={() => move(index, index - 1)}
           >
             <ArrowUp className="h-4 w-4" />
@@ -163,7 +160,7 @@ export function EducationAchievementItemField({
             variant="ghost"
             aria-label={t('achievements.moveDownLabel', { name })}
             disabled={index === total - 1}
-            className={cn('shrink-0 text-muted-foreground', TOUCH_TARGET)}
+            className="shrink-0 text-muted-foreground"
             onClick={() => move(index, index + 1)}
           >
             <ArrowDown className="h-4 w-4" />
@@ -174,10 +171,7 @@ export function EducationAchievementItemField({
             size="icon"
             variant="ghost"
             aria-label={t('achievements.removeAriaLabel')}
-            className={cn(
-              'shrink-0 text-muted-foreground hover:text-destructive-text',
-              TOUCH_TARGET
-            )}
+            className="shrink-0 text-muted-foreground hover:text-destructive-text"
             onClick={handleRemove}
           >
             <Trash className="h-4 w-4" />

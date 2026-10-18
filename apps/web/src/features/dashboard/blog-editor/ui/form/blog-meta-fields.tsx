@@ -108,7 +108,7 @@ export function BlogMetaFields({
               </FormControl>
               <div className="space-y-1 leading-none">
                 {/* The label is the tap target; the 16px checkbox alone is not one. */}
-                <FormLabel className="flex min-h-11 items-center can-hover:inline">
+                <FormLabel className="flex min-h-8 items-center can-hover:inline">
                   {t('meta.publishedLabel')}
                 </FormLabel>
               </div>

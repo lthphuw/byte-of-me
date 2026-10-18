@@ -15,19 +15,19 @@ describe('AddButton', () => {
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 
-  it('takes the dashboard control height with a pointer, and lets a caller override it', () => {
+  it('takes the default size, and lets a caller pick another', () => {
     render(
       <>
         <AddButton label="One" onClick={mock()} />
-        <AddButton label="Two" onClick={mock()} className="can-hover:min-h-8" />
+        <AddButton label="Two" onClick={mock()} size="sm" />
       </>
     );
 
-    const one = screen.getByRole('button', { name: 'One' }).className;
-    const two = screen.getByRole('button', { name: 'Two' }).className;
-
-    expect(one).toContain('can-hover:min-h-9');
-    expect(two).toContain('can-hover:min-h-8');
-    expect(two).not.toContain('can-hover:min-h-9');
+    expect(screen.getByRole('button', { name: 'One' }).className).toContain(
+      'h-8'
+    );
+    expect(screen.getByRole('button', { name: 'Two' }).className).toContain(
+      'h-7'
+    );
   });
 });

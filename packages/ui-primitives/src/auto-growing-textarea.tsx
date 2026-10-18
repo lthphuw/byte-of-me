@@ -27,7 +27,7 @@ export function AutoGrowingTextarea({
       // Scrolls once the text passes `max-h`; `overflow-hidden` here left it
       // unreachable by wheel or scrollbar.
       className={cn(
-        'min-h-12 max-h-[200px] resize-none overflow-y-auto rounded-xl bg-background p-3 md:min-h-11',
+        'min-h-10 max-h-[200px] resize-none overflow-y-auto rounded-lg bg-background px-3 py-2',
         className
       )}
       style={{ height: 'auto' }}

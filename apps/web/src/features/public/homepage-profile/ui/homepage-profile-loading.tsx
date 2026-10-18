@@ -1,13 +1,13 @@
 import { Skeleton } from '@byte-of-me/ui';
 
 /**
- * The root spacing must stay in step with `HomepageProfile` (`space-y-6 md:space-y-8`, 24/32px):
+ * The root spacing must stay in step with `HomepageProfile` (`space-y-5 md:space-y-8`, 24/32px):
  * the old `space-y-16 md:space-y-28` (64/112px) made the page jump upward when the profile
  * resolved.
  */
 export function HomepageProfileLoading() {
   return (
-    <div className="space-y-6 md:space-y-8">
+    <div className="space-y-5 md:space-y-8">
       {/* HERO SECTION SKELETON */}
       <div className="mx-auto max-w-3xl space-y-4 text-left md:space-y-6">
         {/* GreetingWriter Skeleton */}
@@ -21,7 +21,7 @@ export function HomepageProfileLoading() {
       {/* ABOUT / MY STORY SKELETON */}
       <div className="grid items-start gap-4 md:grid-cols-2 md:gap-8">
         {/* Left Column (Bio) */}
-        <div className="space-y-4 md:space-y-6">
+        <div className="space-y-3 md:space-y-6">
           <div className="space-y-2">
             <Skeleton className="h-4 w-28 uppercase tracking-widest" />{' '}
             {/* myStory Label */}

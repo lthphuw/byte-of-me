@@ -104,7 +104,7 @@ export function ContactMessageGallery() {
             type="button"
             aria-label={t('clearSearch')}
             onClick={() => setSearch('')}
-            className="absolute right-0 top-1/2 flex min-h-11 min-w-11 -translate-y-1/2 items-center justify-center text-muted-foreground hover:text-foreground can-hover:min-h-9 can-hover:min-w-9"
+            className="absolute right-1 top-1/2 flex size-6 -translate-y-1/2 items-center justify-center text-muted-foreground touch-target hover:text-foreground"
           >
             <X className="h-4 w-4" />
           </button>

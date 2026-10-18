@@ -60,13 +60,7 @@ export function EducationAchievementsField({
           <p className="text-sm text-muted-foreground">
             {t('achievements.emptyText')}
           </p>
-          <Button
-            type="button"
-            size="sm"
-            variant="ghost"
-            className="min-h-11 can-hover:min-h-9"
-            onClick={handleAdd}
-          >
+          <Button type="button" size="sm" variant="ghost" onClick={handleAdd}>
             {t('achievements.addFirstButton')}
           </Button>
         </div>

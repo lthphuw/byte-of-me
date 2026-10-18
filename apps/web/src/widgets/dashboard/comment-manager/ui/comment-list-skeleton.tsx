@@ -11,7 +11,7 @@ export function CommentListSkeleton() {
           key={index}
           className="items-start"
           leading={<Skeleton className="h-8 w-8 rounded-full" />}
-          actions={<Skeleton className="h-11 w-20 can-hover:h-9" />}
+          actions={<Skeleton className="h-8 w-20" />}
         >
           <div className="min-w-0 space-y-2">
             <div className="flex items-center gap-2">

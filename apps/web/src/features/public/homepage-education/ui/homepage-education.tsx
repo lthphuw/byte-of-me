@@ -26,7 +26,7 @@ export async function HomepageEducation() {
   if (!resp.success) {
     return (
       <ContentFade>
-        <section id="education" className="space-y-6 md:space-y-8">
+        <section id="education" className="space-y-5 md:space-y-8">
           {heading}
           <SectionLoadError
             title={tError('title')}
@@ -44,7 +44,7 @@ export async function HomepageEducation() {
 
   return (
     <ContentFade>
-      <ViewSwitchRoot id="education" className="space-y-6 md:space-y-8">
+      <ViewSwitchRoot id="education" className="space-y-5 md:space-y-8">
         <div className="flex items-center justify-between gap-4">
           {heading}
           {expandable && (
@@ -68,10 +68,8 @@ export async function HomepageEducation() {
                 labels={{
                   present: t('present'),
                   ongoing: t('ongoing'),
-                  achievementCount: (count) =>
-                    t('achievementCount', { count }),
-                  moreAchievements: (count) =>
-                    t('moreAchievements', { count }),
+                  achievementCount: (count) => t('achievementCount', { count }),
+                  moreAchievements: (count) => t('moreAchievements', { count }),
                   showLess: t('showLess'),
                 }}
               />

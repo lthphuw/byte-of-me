@@ -55,9 +55,9 @@ const STAGE_FULL = 'fixed inset-0 z-50 flex touch-none flex-col bg-background';
 const FOCUS =
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card';
 const CONTROL =
-  'flex size-11 items-center justify-center rounded-full bg-background/80 text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-40';
+  'flex size-9 items-center justify-center rounded-full bg-background/80 text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-40';
 const LEVEL =
-  'flex h-11 min-w-14 items-center justify-center rounded-full bg-background/80 px-3 font-mono text-xs tabular-nums text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';
+  'flex h-9 min-w-12 items-center justify-center rounded-full bg-background/80 px-3 font-mono text-xs tabular-nums text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';
 
 /**
  * The media's box. Every inline box is 16:9, whatever the file's own ratio, so the two
@@ -339,7 +339,7 @@ function DemoVideo({
             aria-label={fullscreenLabel}
             onClick={enterFullscreen}
             className={cn(
-              'absolute right-1 top-1 flex size-11 items-center justify-center rounded-md transition-opacity duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+              'absolute right-1 top-1 flex size-9 items-center justify-center rounded-md transition-opacity duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
               // Hidden until the clip is hovered or something in it has focus, for a mouse only:
               // a touch screen has no hover, so there it stays on show.
               'can-hover:opacity-0 can-hover:focus-visible:opacity-100 can-hover:group-focus-within/stage:opacity-100 can-hover:group-hover/stage:opacity-100'

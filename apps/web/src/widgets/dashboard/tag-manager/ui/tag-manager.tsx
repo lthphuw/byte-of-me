@@ -96,7 +96,7 @@ export function TagManager() {
             <Button
               variant="outline"
               size="sm"
-              className="mt-4 min-h-11 can-hover:min-h-9"
+              className="mt-4"
               onClick={openCreateDialog}
             >
               {t('emptyAction')}

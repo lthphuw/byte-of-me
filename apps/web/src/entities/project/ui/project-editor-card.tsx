@@ -21,9 +21,9 @@ interface ProjectEditorCardLabels {
   liveLink: string;
 }
 
-/** 44px on touch; under `can-hover:` the 16px icon keeps its desktop box. */
+/** A 16px icon; `touch-target` is the 44px floor. */
 const LINK_CLASS =
-  'flex min-h-11 min-w-11 items-center justify-center text-muted-foreground transition-colors hover:text-foreground can-hover:min-h-0 can-hover:min-w-0';
+  'touch-target relative flex size-6 items-center justify-center text-muted-foreground transition-colors hover:text-foreground';
 
 interface ProjectEditorCardProps {
   project: AdminProject;

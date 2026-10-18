@@ -9,17 +9,17 @@ describe('Button type', () => {
   it('is type="button" by default, so a click never submits a surrounding form', () => {
     render(<Button>Save</Button>);
 
-    expect(screen.getByRole('button', { name: 'Save' }).getAttribute('type')).toBe(
-      'button'
-    );
+    expect(
+      screen.getByRole('button', { name: 'Save' }).getAttribute('type')
+    ).toBe('button');
   });
 
   it('lets a caller opt into type="submit"', () => {
     render(<Button type="submit">Save</Button>);
 
-    expect(screen.getByRole('button', { name: 'Save' }).getAttribute('type')).toBe(
-      'submit'
-    );
+    expect(
+      screen.getByRole('button', { name: 'Save' }).getAttribute('type')
+    ).toBe('submit');
   });
 
   it('puts no type attribute on the anchor it renders under asChild', () => {
@@ -36,30 +36,43 @@ describe('Button type', () => {
 });
 
 describe('Button touch target', () => {
-  it('is 44px tall on touch at every size, with a pointer-size floor under can-hover', () => {
+  it('carries the 44px touch-target strip at every size', () => {
     for (const size of ['default', 'sm', 'lg', 'icon'] as const) {
       render(<Button size={size}>{size}</Button>);
 
       const classes = screen.getByRole('button', { name: size }).className;
-      expect(classes).toContain('min-h-11');
-      expect(classes).toMatch(/can-hover:min-h-\d+/);
+      expect(classes).toContain('touch-target');
+      expect(classes).toContain('relative');
       cleanup();
     }
   });
 
-  it('keeps the 44px width floor on the icon size', () => {
+  it('is one compact height for touch and pointer, with no min-h floor of its own', () => {
+    const heights = { default: 'h-8', sm: 'h-7', lg: 'h-9', icon: 'h-8' };
+    for (const size of Object.keys(heights) as (keyof typeof heights)[]) {
+      render(<Button size={size}>{size}</Button>);
+
+      const classes = screen.getByRole('button', { name: size }).className;
+      expect(classes).toContain(heights[size]);
+      expect(classes).not.toContain('min-h-11');
+      expect(classes).not.toContain('can-hover:min-h');
+      cleanup();
+    }
+  });
+
+  it('is a square on the icon size', () => {
     render(<Button size="icon" aria-label="Edit" />);
 
     expect(screen.getByRole('button', { name: 'Edit' }).className).toContain(
-      'min-w-11'
+      'w-8'
     );
   });
 
-  it("lets a caller's min-h replace the pointer floor", () => {
-    render(<Button className="can-hover:min-h-7">Small</Button>);
+  it("lets a caller's height replace the size's", () => {
+    render(<Button className="h-6">Small</Button>);
 
     const classes = screen.getByRole('button', { name: 'Small' }).className;
-    expect(classes).toContain('can-hover:min-h-7');
-    expect(classes).not.toContain('can-hover:min-h-9');
+    expect(classes).toContain('h-6');
+    expect(classes).not.toContain('h-8');
   });
 });

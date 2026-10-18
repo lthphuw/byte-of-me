@@ -133,7 +133,7 @@ export function MobileEditorTools({
           opened. */}
       {open && (
         <div
-          className="pointer-events-auto absolute bottom-20 right-4 grid w-56 grid-cols-4 gap-2 rounded-xl border bg-popover p-2 shadow-lg"
+          className="pointer-events-auto absolute bottom-16 right-4 grid w-48 grid-cols-4 gap-1 rounded-lg border bg-popover p-1.5 shadow-lg"
           role="toolbar"
           aria-label={labels.formatting}
         >
@@ -141,7 +141,7 @@ export function MobileEditorTools({
             <button
               type="button"
               aria-label={labels.insertImage}
-              className="flex aspect-square min-h-11 min-w-11 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="flex aspect-square min-h-9 min-w-9 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               onClick={() => fileInput.current?.click()}
             >
               <ImageIcon className="h-4 w-4" />
@@ -157,7 +157,7 @@ export function MobileEditorTools({
                 aria-label={labels[tool.labelKey]}
                 aria-pressed={pressed[index]}
                 className={cn(
-                  'flex aspect-square min-h-11 min-w-11 items-center justify-center rounded-md hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                  'flex aspect-square min-h-9 min-w-9 items-center justify-center rounded-md hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
                   pressed[index]
                     ? 'bg-muted text-foreground'
                     : 'text-muted-foreground hover:text-foreground'

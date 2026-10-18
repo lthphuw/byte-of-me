@@ -27,8 +27,8 @@ export function PublicHeaderSkipLink() {
       onClick={focusMainLandmark}
       // Decoration is all `focus:`-prefixed so rest is plain `sr-only`: `buttonVariants()`'s `h-9`
       // outranks its 1px box in Tailwind order, leaving a 34x36 clipped rectangle at top-left.
-      // `h-11`: 44px minimum (§14). `z-[10001]` clears the mobile nav trigger (`z-[10000]`).
-      className="sr-only focus:not-sr-only focus:fixed focus:left-8 focus:top-4 focus:z-[10001] focus:inline-flex focus:h-11 focus:items-center focus:rounded-md focus:border focus:border-input focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:shadow-md focus:outline-none focus:ring-1 focus:ring-ring"
+      // `h-9`: a keyboard-only control. `z-[10001]` clears the mobile nav trigger (`z-[10000]`).
+      className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[10001] focus:inline-flex focus:h-9 focus:items-center focus:rounded-md focus:border focus:border-input focus:bg-background focus:px-3 focus:text-sm focus:font-medium focus:shadow-md focus:outline-none focus:ring-1 focus:ring-ring"
     >
       {t('skipToContent')}
     </a>

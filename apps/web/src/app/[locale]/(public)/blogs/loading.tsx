@@ -20,10 +20,10 @@ export default function BlogsLoading() {
           <Skeleton className="h-9 w-56 md:h-12 md:w-72" />
           <Skeleton className="h-5 w-24 md:h-6 md:w-28" />
         </div>
-        <Skeleton className="h-11 w-full sm:max-w-xs md:h-9" />
+        <Skeleton className="h-8 w-full sm:max-w-xs" />
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-10">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-8">
         {Array.from({ length: 4 }).map((_, index) => (
           <BlogCardSkeleton key={index} />
         ))}

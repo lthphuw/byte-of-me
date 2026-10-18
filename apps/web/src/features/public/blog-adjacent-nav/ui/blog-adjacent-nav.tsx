@@ -35,7 +35,7 @@ export async function BlogAdjacentNav({
   if (!prev && !next) return null;
 
   return (
-    <nav className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:gap-10">
+    <nav className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
       {prev ? (
         <Link
           href={`/blogs/${prev.slug}`}

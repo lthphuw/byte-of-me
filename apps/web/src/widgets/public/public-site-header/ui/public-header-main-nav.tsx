@@ -34,7 +34,7 @@ export function PublicHeaderMainNav({
   const navItems = items.filter((it) => !it.onlyMobile);
 
   return (
-    <div className="flex items-center gap-6 md:gap-10">
+    <div className="flex items-center gap-3 md:gap-6">
       <Link
         href={Routes.Homepage}
         locale={locale}
@@ -44,7 +44,7 @@ export function PublicHeaderMainNav({
       </Link>
 
       {navItems.length > 0 && (
-        <nav className="hidden items-center gap-2 md:flex">
+        <nav className="hidden items-center gap-1 md:flex">
           {/* `asChild`, not <Link><Button>: that renders <a><button> (interactive in interactive),
               costing keyboard users two Tab stops per item. The Slot merges the button's classes
               onto the link: one element, same styling. */}
@@ -54,7 +54,7 @@ export function PublicHeaderMainNav({
               asChild
               variant="ghost"
               className={cn(
-                'text-md font-medium',
+                'font-medium',
                 item.href.startsWith(`/${segment}`)
                   ? 'text-foreground font-semibold'
                   : 'text-foreground/60'
@@ -69,13 +69,12 @@ export function PublicHeaderMainNav({
       )}
 
       <div className="relative z-[10000] shrink-0 md:hidden">
-        {/* `min-h-11`: the logo's own line box is 24px tall, so the only tap
-            target on a phone's header-left measured 116x24, well under the 44px
-            minimum (§14). Only the box grows; the mark is untouched. */}
+        {/* `touch-target`: the logo's own line box is 24px tall, so the only tap target on a
+            phone's header-left measured 116x24. The 44px strip grows the hit area, not the mark. */}
         <m.button
           ref={triggerRef}
           onClick={() => setOpen((prev) => !prev)}
-          className="flex min-h-11 items-center gap-2"
+          className="relative flex h-8 items-center gap-2 touch-target"
         >
           <PublicHeaderLogo minimized={minimized} />
         </m.button>

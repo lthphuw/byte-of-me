@@ -119,7 +119,7 @@ export function FeaturedWorkForm({
         {/* Spans the dialog body's padding, sticks to its top edge so the bar stays in view. */}
         <div
           ref={setToolbarTarget}
-          className="sticky -top-4 z-30 -mx-4 -mt-4 min-h-11 bg-background md:-mx-6"
+          className="sticky -top-4 z-30 -mx-4 -mt-4 min-h-10 bg-background md:-mx-6"
         />
         {translationsError && (
           <p

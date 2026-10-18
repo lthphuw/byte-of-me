@@ -126,8 +126,8 @@ export function BlogForm({
   );
 
   // The editor's bar is pinned here, above the fields: its card sits ~950px down
-  // a phone form, so the card's own bar never opens on screen. `min-h-11` reserves
-  // 44px until the editor mounts; the bar is 41px on desktop and 49px on touch.
+  // a phone form, so the card's own bar never opens on screen. `min-h-10` reserves
+  // 40px until the editor mounts, close to the bar's own height.
   const [toolbarTarget, setToolbarTarget] = useState<HTMLDivElement | null>(
     null
   );
@@ -144,7 +144,7 @@ export function BlogForm({
         {/* Spans the body's padding and sticks to its outer top edge, so no field shows above the bar. */}
         <div
           ref={setToolbarTarget}
-          className="sticky -top-4 z-30 -mx-4 -mt-4 min-h-11 bg-background md:-mx-6"
+          className="sticky -top-4 z-30 -mx-4 -mt-4 min-h-10 bg-background md:-mx-6"
         />
 
         {autosave.restorable && (
@@ -155,19 +155,13 @@ export function BlogForm({
               })}
             </span>
             <span className="flex gap-2">
-              <Button
-                type="button"
-                size="sm"
-                className="min-h-11 can-hover:min-h-9"
-                onClick={autosave.restore}
-              >
+              <Button type="button" size="sm" onClick={autosave.restore}>
                 {t('form.restore')}
               </Button>
               <Button
                 type="button"
                 size="sm"
                 variant="outline"
-                className="min-h-11 can-hover:min-h-9"
                 onClick={autosave.discard}
               >
                 {t('form.discard')}

@@ -46,7 +46,7 @@ export default async function PublicLayout({
           the viewport-fit=cover insets; the fixed header handles its own top inset. */}
       <div className="px-safe pb-safe relative flex min-h-screen flex-col overflow-x-clip">
         <PublicSiteHeader />
-        <div className="container grid min-w-0 flex-1 gap-12">
+        <div className="container grid min-w-0 flex-1 gap-8">
           {/* min-w-0: as a grid item, <main> must be allowed to shrink below its
               content's min-content, otherwise wide children (e.g. blog code
               blocks) force it past the viewport on mobile. */}

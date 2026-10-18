@@ -91,7 +91,7 @@ export function ContactForm() {
       <form
         noValidate
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-4 md:gap-6"
+        className="flex flex-col gap-3 md:gap-6"
       >
         {/* Mounted at all times so the success text is announced when it
             appears; a live region inserted together with its content is not. */}
@@ -127,10 +127,6 @@ export function ContactForm() {
           </div>
         ) : null}
 
-        {/* Every field carries `h-11 md:h-9`: the shared Input is h-9 (36px), under the 44px touch
-            minimum this public form must meet. The default stays 36px for the dense dashboard
-            forms, so the height is raised per surface, only below md; the submit button too. */}
-
         {/* Name */}
         <FormField
           control={form.control}
@@ -150,7 +146,6 @@ export function ContactForm() {
                   required
                   autoComplete="name"
                   placeholder={t('namePlaceholder')}
-                  className="h-11 md:h-9"
                   {...field}
                 />
               </FormControl>
@@ -177,7 +172,6 @@ export function ContactForm() {
                   type="email"
                   autoComplete="email"
                   placeholder={t('emailPlaceholder')}
-                  className="h-11 md:h-9"
                   {...field}
                 />
               </FormControl>
@@ -202,11 +196,7 @@ export function ContactForm() {
                   message subject, and `off` would suppress the browser's own
                   previously-entered suggestions, which are the useful ones here. */}
               <FormControl>
-                <Input
-                  placeholder={t('subjectPlaceholder')}
-                  className="h-11 md:h-9"
-                  {...field}
-                />
+                <Input placeholder={t('subjectPlaceholder')} {...field} />
               </FormControl>
               <FormMessage className="text-xs" />
             </FormItem>
@@ -250,7 +240,7 @@ export function ContactForm() {
         {/* Submit */}
         <Button
           type="submit"
-          className="h-11 w-full md:h-9"
+          className="w-full"
           disabled={sendMessage.isPending}
         >
           {sendMessage.isPending && (

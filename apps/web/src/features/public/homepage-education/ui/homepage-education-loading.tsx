@@ -4,7 +4,7 @@ import { Skeleton } from '@byte-of-me/ui';
 // with the logo box, padding and gap of `EducationItem`.
 export function HomepageEducationLoading() {
   return (
-    <div className="space-y-6 md:space-y-8">
+    <div className="space-y-5 md:space-y-8">
       <div className="flex items-center justify-between gap-4">
         <Skeleton className="h-7 w-32 md:h-9 md:w-44" />
         <Skeleton className="h-7 w-[76px] rounded-lg" />

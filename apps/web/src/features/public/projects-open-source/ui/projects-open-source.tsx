@@ -92,7 +92,7 @@ export function ProjectsOpenSource({ repos }: { repos: OpenSourceRepo[] }) {
   };
 
   return (
-    <div className="space-y-6 md:space-y-8">
+    <div className="space-y-5 md:space-y-8">
       <div className="flex flex-col gap-3">
         {SEARCH_ENABLED && (
           <FilterSearchInput
@@ -126,7 +126,10 @@ export function ProjectsOpenSource({ repos }: { repos: OpenSourceRepo[] }) {
               <ul className="divide-y">
                 {month.items.map((item) => {
                   return (
-                    <li key={item.url} className="flex items-start gap-3 py-4 md:gap-4">
+                    <li
+                      key={item.url}
+                      className="flex items-start gap-3 py-4 md:gap-4"
+                    >
                       <GitPullRequest
                         role="img"
                         aria-label={t('merged')}
@@ -144,7 +147,10 @@ export function ProjectsOpenSource({ repos }: { repos: OpenSourceRepo[] }) {
                             or date wraps inside its own cell and cannot push `View` down. */}
                         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground md:flex md:gap-2 md:text-[13px]">
                           <div className="col-span-2 flex flex-wrap items-center gap-x-3 gap-y-0.5 md:min-w-0 md:gap-x-2">
-                            <RepoLink name={item.repo} url={repoUrls.get(item.repo)} />
+                            <RepoLink
+                              name={item.repo}
+                              url={repoUrls.get(item.repo)}
+                            />
                             {/* The dots only exist from md: a wrapped line leaves one dangling. */}
                             <span aria-hidden className="hidden md:inline">
                               ·
@@ -197,7 +203,8 @@ export function ProjectsOpenSource({ repos }: { repos: OpenSourceRepo[] }) {
 
 /** The repo on a row, a link to GitHub. `before:` is a 44px hit area around the 16px line. */
 function RepoLink({ name, url }: { name: string; url: string | undefined }) {
-  if (!url) return <span className="min-w-0 [overflow-wrap:anywhere]">{name}</span>;
+  if (!url)
+    return <span className="min-w-0 [overflow-wrap:anywhere]">{name}</span>;
 
   return (
     <a

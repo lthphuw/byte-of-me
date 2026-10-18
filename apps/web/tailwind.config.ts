@@ -15,7 +15,7 @@ export default {
   theme: {
     container: {
       center: true,
-      padding: '2rem',
+      padding: '1rem',
       screens: {
         '2xl': '1400px',
       },
@@ -210,6 +210,15 @@ export default {
     plugin(({ addVariant }) => {
       addVariant('can-hover', '@media (hover: hover) and (pointer: fine)');
     }),
+    // The gutter is 16px on a phone and 32px from `md`. Not `container.padding.md`: with
+    // `container.screens` cut down to `2xl`, the plugin has no `md` to key a padding to.
+    plugin(({ addComponents }) => {
+      addComponents({
+        '@media (min-width: 768px)': {
+          '.container': { paddingInline: '2rem' },
+        },
+      });
+    }),
     plugin(({ addUtilities }) => {
       addUtilities({
         // A solid surface, not frosted glass: `backdrop-filter` re-samples what is
@@ -217,6 +226,17 @@ export default {
         // carry. The header islands and every popover share this one fill.
         '.container-bg': {
           '@apply bg-card appearance-none': {},
+        },
+        // The 44px touch floor as a hit area: a centred strip behind a compact control, full
+        // width and 44px tall, so the control stays small and still clears §14. The host must be
+        // positioned (`relative`) and must not clip (`overflow-hidden` cuts the strip off).
+        '.touch-target::before': {
+          content: '""',
+          position: 'absolute',
+          insetInline: '0',
+          top: '50%',
+          height: '2.75rem',
+          transform: 'translateY(-50%)',
         },
         '.article-text': {
           '@apply leading-relaxed text-justify tracking-normal break-safe': {},

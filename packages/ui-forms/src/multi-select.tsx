@@ -68,7 +68,7 @@ export function MultiSelect({
       <PopoverAnchor asChild>
         <div
           className={cn(
-            'flex min-h-11 w-full items-start rounded-md border border-input bg-background shadow-sm focus-within:ring-1 focus-within:ring-ring can-hover:min-h-10',
+            'flex min-h-8 w-full items-start rounded-md border border-input bg-background shadow-sm focus-within:ring-1 focus-within:ring-ring',
             className
           )}
         >

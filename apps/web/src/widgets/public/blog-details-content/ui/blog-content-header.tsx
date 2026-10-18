@@ -43,7 +43,7 @@ export async function BlogContentHeader({ blog }: { blog: PublicBlog }) {
   return (
     // One header rhythm instead of five hand-tuned margins: elements inside a block, and
     // title → subtitle (AGENTS.md §14, the public rhythm).
-    <header className="w-full space-y-4 md:space-y-6">
+    <header className="w-full space-y-3 md:space-y-6">
       {blog.coverImage && (
         <div className="relative aspect-[2/1] w-full overflow-hidden rounded-2xl border bg-muted">
           <Image

@@ -40,17 +40,15 @@ export function FilterSearchInput({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
-        className="h-11 pl-9 pr-11 md:h-9 md:pr-9 [&::-webkit-search-cancel-button]:appearance-none"
+        className="pl-9 pr-9 [&::-webkit-search-cancel-button]:appearance-none"
       />
 
       {value && (
-        // The glyph stays 14px, but the hit area fills the 44px field height on
-        // touch and collapses back to the original 22px box from md up, where the
-        // pointer is precise and the field is only 36px tall anyway.
+        // The glyph stays 14px in a 24px box; `touch-target` is the 44px strip.
         <button
           type="button"
           onClick={() => onChange('')}
-          className="absolute right-0 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:right-2 md:h-auto md:w-auto md:p-1"
+          className="absolute right-1 top-1/2 flex size-6 -translate-y-1/2 items-center justify-center rounded-sm text-muted-foreground transition-colors touch-target hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <X className="size-3.5" />
           <span className="sr-only">{clearLabel}</span>

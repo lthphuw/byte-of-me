@@ -17,10 +17,8 @@ import {
 } from '@/features/public/project-filters/lib';
 import { FilterSearchInput } from '@/shared/ui';
 
-// 24px tall like a chip, with the touch floor as an invisible hit area: the size's own `min-h`
-// made the See more button 32px (44px on touch) and pushed its row a chip-and-a-half tall.
-const FACET_BUTTON =
-  'relative h-6 min-h-6 can-hover:min-h-6 gap-1 px-2 text-[11px] text-muted-foreground before:absolute before:inset-x-0 before:-inset-y-2.5';
+// 24px tall like a chip; the Button's `touch-target` is the 44px floor, so the row stays one chip tall.
+const FACET_BUTTON = 'h-6 gap-1 px-2 text-[11px] text-muted-foreground';
 
 interface ProjectFiltersProps {
   value: ProjectFilterState;
@@ -100,7 +98,7 @@ export function ProjectFilters({ value, onChange }: ProjectFiltersProps) {
             variant="ghost"
             size="sm"
             onClick={handleReset}
-            className="h-11 shrink-0 px-3 text-xs text-muted-foreground md:h-9"
+            className="shrink-0 px-3 text-xs text-muted-foreground"
           >
             {t('reset')}
           </Button>

@@ -17,7 +17,7 @@ export async function HomepageFeaturedWorks() {
 
   return (
     <ContentFade>
-      <section id="featured-works" className="space-y-6 md:space-y-8">
+      <section id="featured-works" className="space-y-5 md:space-y-8">
         <h2 className="text-xl font-semibold md:text-3xl">
           {t('featuredWorksTitle')}
         </h2>

@@ -42,7 +42,7 @@ export function PublicHeaderAccountIsland({
       {account ? (
         <UserActionToggle />
       ) : (
-        <Skeleton className="size-9 rounded-full" />
+        <Skeleton className="size-8 rounded-full" />
       )}
     </HeaderIsland>
   );
